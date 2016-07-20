@@ -1,10 +1,18 @@
 import Html exposing (text)
 
-four =
-  2 * 2
+some_variable =
+  "Hello world! "
+
+{--}
+a_number = 5
+--}
+
+sq x =
+  x^2
 
 main =
   text (
-    toString
-      [four]
+      some_variable ++ toString sq(a_number)
   )
+
+--}
