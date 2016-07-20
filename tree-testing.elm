@@ -11,11 +11,18 @@ import Html.Events exposing (onCheck)
 main =
   beginnerProgram { model = model, view = view, update = update }
 
-
-
 -- MODEL
+{--
+type alias Model =
+  { style : Style
+  , password : String
+  , passwordAgain : String
+  }
+--}
 
-type Step = { name : String }
+
+
+type alias Step =  { name : String }
 type alias Model =
   { style : Style, steps : List Step
   }
@@ -27,6 +34,7 @@ type Style
   | Bold
 
 
+model : Model
 model =
   { style = Bold, steps = [{name="one"}, {name="two"}, {name="zero"}] }
 

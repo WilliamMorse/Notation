@@ -8572,7 +8572,7 @@ var _user$project$Main$ltos = function (list) {
 	} else {
 		return A2(
 			_elm_lang$core$Basics_ops['++'],
-			_p1._0,
+			_p1._0.name,
 			A2(
 				_elm_lang$core$Basics_ops['++'],
 				' ',
@@ -8586,6 +8586,9 @@ var _user$project$Main$update = F2(
 			model,
 			{style: _p3._0});
 	});
+var _user$project$Main$Step = function (a) {
+	return {name: a};
+};
 var _user$project$Main$Model = F2(
 	function (a, b) {
 		return {style: a, steps: b};
@@ -8594,7 +8597,11 @@ var _user$project$Main$Bold = {ctor: 'Bold'};
 var _user$project$Main$model = {
 	style: _user$project$Main$Bold,
 	steps: _elm_lang$core$Native_List.fromArray(
-		['one', 'two', 'zero'])
+		[
+			{name: 'one'},
+			{name: 'two'},
+			{name: 'zero'}
+		])
 };
 var _user$project$Main$Underline = {ctor: 'Underline'};
 var _user$project$Main$Red = {ctor: 'Red'};
