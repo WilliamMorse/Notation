@@ -13,13 +13,13 @@ model = 0
 
 view  model =
   div []
-    [ button [ onClick address Decrement ] [ text "-" ]
+    [ button [ onClick Decrement ] [ text "-" ]
     , div [] [ text (toString model) ]
-    , button [ onClick address Increment ] [ text "+" ]
+    , button [ onClick Increment ] [ text "+" ]
     ]
 
 
-type Action = Increment | Decrement
+type Msg = Increment | Decrement
 
 
 update action model =
