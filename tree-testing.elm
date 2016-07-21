@@ -12,17 +12,8 @@ main =
   beginnerProgram { model = model, view = view, update = update }
 
 -- MODEL
-{--
-type alias Model =
-  { style : Style
-  , password : String
-  , passwordAgain : String
-  }
---}
 
-
-
-type alias Step =  { name : String }
+type alias Step =  { name : String, eq : Tree a }
 type alias Model =
   { style : Style, steps : List Step
   }
@@ -33,15 +24,15 @@ type Style
   | Underline
   | Bold
 
+makeStep name eq_tree =
+  {name = name, eq = eq_tree}
 
 model : Model
 model =
-  { style = Bold, steps = [{name="one"}, {name="two"}, {name="zero"}] }
-
+  { style = Bold, steps = [{name="one", eq=Empty}, makeStep "zingo" Empty, {name="zero", eq=Empty}] }
 
 
 -- UPDATE
-
 
 type Msg =
   Switch Style

@@ -11,7 +11,7 @@ main =
 model = 0
 
 
-view address model =
+view  model =
   div []
     [ button [ onClick address Decrement ] [ text "-" ]
     , div [] [ text (toString model) ]

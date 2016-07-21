@@ -8586,6 +8586,9 @@ var _user$project$Main$update = F2(
 			model,
 			{style: _p3._0});
 	});
+var _user$project$Main$makeStep = function (name) {
+	return {name: name};
+};
 var _user$project$Main$Step = function (a) {
 	return {name: a};
 };
@@ -8599,7 +8602,7 @@ var _user$project$Main$model = {
 	steps: _elm_lang$core$Native_List.fromArray(
 		[
 			{name: 'one'},
-			{name: 'two'},
+			_user$project$Main$makeStep('zingo'),
 			{name: 'zero'}
 		])
 };
