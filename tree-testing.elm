@@ -12,11 +12,36 @@ main =
   beginnerProgram { model = model, view = view, update = update }
 
 -- MODEL
+-- TREES
 
-type alias Step =  { name : String, eq : Tree a }
-type alias Model =
-  { style : Style, steps : List Step
-  }
+type Tree a
+    = Empty
+    | Node a (List Tree a)
+
+
+empty : Tree a
+empty =
+    Empty
+
+
+leaf : a -> Tree a
+leaf v =
+    Node v Empty
+
+insert x tree under =
+    case tree of
+      Empty ->
+          leaf x
+
+      Node s children ->
+          if s == under then
+              Node y left (insert x right)
+
+          else if x < y then
+              Node y (insert x left) right
+
+          else
+              tree
 
 
 type Style
@@ -27,9 +52,13 @@ type Style
 makeStep name eq_tree =
   {name = name, eq = eq_tree}
 
+makeTreeNode step step_tree_node =
+    { node = step, parent = step_tree_node, children = [] }
+
+
 model : Model
 model =
-  { style = Bold, steps = [{name="one", eq=Empty}, makeStep "zingo" Empty, {name="zero", eq=Empty}] }
+  { style = Bold, stepsTree = Nothing }
 
 
 -- UPDATE
