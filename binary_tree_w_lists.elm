@@ -5,27 +5,29 @@ import Html.Attributes exposing (style)
 
 -- TREES
 
+type Placement =
+  Before | After
 
 type Tree a
-    = Z
+    = Zzz
     | Node a (List (Tree a))
 
 
 empty : Tree a
 empty =
-    Z
+    Zzz
 
 
 singleton : a -> Tree a
 singleton v =
-    Node v [Z, Z]
+    Node v []
 
 
 insert : comparable -> Tree comparable -> Tree comparable
 insert x tree =
     case tree of
-      Z ->
-          singleton x
+      Zzz ->
+        singleton x
 
       Node y [left, right] ->
           if x > y then
@@ -37,7 +39,32 @@ insert x tree =
           else
               tree
 
+      Node y cl ->
+        if x <= y then
+          Node y (List.append [singleton x] cl)
+        else
+          Node y (List.append cl [singleton x])
+{--
+
       _ -> tree
+--}
+
+insertUnder : comparable -> comparable -> Placement -> Tree comparable -> Tree comparable
+insertUnder this x inPlace tree =
+    case tree of
+      Zzz ->
+        Zzz
+
+      Node y cl ->
+        if y == this then
+          case inPlace of
+            After ->
+              Node y (List.append cl [singleton x])
+
+            Before ->
+              Node y (List.append [singleton x] cl)
+        else
+          Node y (List.map (insertUnder this x inPlace) cl)
 
 
 fromList : List comparable -> Tree comparable
@@ -48,7 +75,7 @@ fromList xs =
 depth : Tree a -> Int
 depth tree =
     case tree of
-      Z -> 0
+      Zzz -> 0
       Node v [left, right] ->
           1 + max (depth left) (depth right)
       _ -> 0
@@ -57,10 +84,11 @@ depth tree =
 map : (a -> a) -> Tree a -> Tree a
 map f tree =
     case tree of
-      Z -> Z
-      Node v [left, right] ->
-          Node (f v) [(map f left), (map f right)]
-      _ -> tree
+      Zzz ->
+        Zzz
+      Node v cl ->
+        Node (f v) (List.map (map f) cl)
+
 
 
 
@@ -80,6 +108,8 @@ main =
     [ display "depth deepTree" (depth deepTree)
     , display "depth niceTree" (depth niceTree)
     , display "incremented" (map (\n -> n + 1) niceTree)
+    , display "insertUnder 5 20 Before " (insertUnder 5 20 Before niceTree)
+    , display "insertUnder 5 20 After " (insertUnder 5 20 After niceTree)
     ]
 
 
