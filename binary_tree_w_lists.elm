@@ -18,8 +18,8 @@ empty =
     Zzz
 
 
-singleton : a -> Tree a
-singleton v =
+leaf : a -> Tree a
+leaf v =
     Node v []
 
 
@@ -27,27 +27,15 @@ insert : comparable -> Tree comparable -> Tree comparable
 insert x tree =
     case tree of
       Zzz ->
-        singleton x
-
-      Node y [left, right] ->
-          if x > y then
-              Node y [left, (insert x right)]
-
-          else if x < y then
-              Node y [(insert x left), right]
-
-          else
-              tree
+        leaf x
 
       Node y cl ->
         if x <= y then
-          Node y (List.append [singleton x] cl)
+          Node y (List.append [leaf x] cl)
         else
-          Node y (List.append cl [singleton x])
-{--
+          Node y (List.append cl [leaf x])
 
-      _ -> tree
---}
+
 
 insertUnder : comparable -> comparable -> Placement -> Tree comparable -> Tree comparable
 insertUnder this x inPlace tree =
@@ -59,10 +47,10 @@ insertUnder this x inPlace tree =
         if y == this then
           case inPlace of
             After ->
-              Node y (List.append cl [singleton x])
+              Node y (List.append cl [leaf x])
 
             Before ->
-              Node y (List.append [singleton x] cl)
+              Node y (List.append [leaf x] cl)
         else
           Node y (List.map (insertUnder this x inPlace) cl)
 
@@ -79,6 +67,19 @@ depth tree =
       Node v [left, right] ->
           1 + max (depth left) (depth right)
       _ -> 0
+
+
+
+find : comparable -> Tree comparable -> List Tree comparable
+find x tree =
+  case tree of
+    Zzz ->
+      []
+    Node y cl ->
+      if x == y then
+        List.append [tree] (List.map (find x) cl)
+      else
+        List.append [] (List.map (find x) cl)
 
 
 map : (a -> a) -> Tree a -> Tree a
@@ -110,6 +111,7 @@ main =
     , display "incremented" (map (\n -> n + 1) niceTree)
     , display "insertUnder 5 20 Before " (insertUnder 5 20 Before niceTree)
     , display "insertUnder 5 20 After " (insertUnder 5 20 After niceTree)
+    , display "find 2 " (find 2 niceTree)
     ]
 
 
