@@ -69,18 +69,38 @@ depth tree =
       _ -> 0
 
 
-
-find : comparable -> Tree comparable -> List Tree comparable
+{--}
+find : comparable -> Tree comparable -> List (Tree comparable)
 find x tree =
-  case tree of
-    Zzz ->
-      []
-    Node y cl ->
-      if x == y then
-        List.append [tree] (List.map (find x) cl)
-      else
-        List.append [] (List.map (find x) cl)
+  let
+    gotsome y cl =
+      List.head (List.filter notEmptyList (List.map (find x) cl))
 
+    onlysome y cl =
+      let some =
+        gotsome y cl
+      in
+        case some of
+          Just some -> some
+
+          Nothing -> []
+
+  in
+    case tree of
+      Zzz ->
+        []
+      Node y cl ->
+        if x == y then
+          [tree]
+        else
+          onlysome y cl
+--}
+
+notEmptyList: List (Tree number) -> Bool
+notEmptyList l =
+  case l of
+    [] -> False
+    _ -> True
 
 map : (a -> a) -> Tree a -> Tree a
 map f tree =
@@ -111,7 +131,9 @@ main =
     , display "incremented" (map (\n -> n + 1) niceTree)
     , display "insertUnder 5 20 Before " (insertUnder 5 20 Before niceTree)
     , display "insertUnder 5 20 After " (insertUnder 5 20 After niceTree)
-    , display "find 2 " (find 2 niceTree)
+    , display "find 5 " (find 5 niceTree)
+    , display "find 20 " (find 20 (insertUnder 20 30 After (insertUnder 5 20 After niceTree)))
+    , display "notEmptyList l  " (List.map notEmptyList [[], [niceTree]])
     ]
 
 
