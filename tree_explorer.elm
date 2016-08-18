@@ -3,6 +3,7 @@ import Html.App as Html
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput, onClick)
 import Tree.Tree as Tree exposing (..)
+import String exposing (..)
 
 
 main =
@@ -14,17 +15,21 @@ type alias Model =
   , equation : Tree Int -- Tree number
   , comments : String -- List String
   , opList : List String -- list to contain operation history
+  , under : Int
+  , new_node : Int
   }
 
 model : Model
 model =
-  Model "" (Tree.fromList [5,3, 21, 1, 2, 33]) "" []
+  Model "" (Tree.fromList [5,3, 21, 1, 2, 33]) "" [] 0 0
 
 
 -- update
 type Msg
     = Operation String
-    | Equation (Int, Int)
+    | InsertEquation
+    | Under String
+    | NewNode String
     | Comments String
 
 update : Msg -> Model -> Model
@@ -34,8 +39,14 @@ update msg model =
       { model | operation = op
                 , opList = List.append [op] model.opList } -- append the new operation to the history
 
-    Equation (x, y) ->
-      { model | equation = (Tree.insertUnder x y Tree.Before model.equation) }
+    InsertEquation  ->
+      { model | equation = (Tree.insertUnder model.under model.new_node Tree.Before model.equation) }
+
+    Under s ->
+      { model | under = Result.withDefault 0 (String.toInt s)}
+
+    NewNode s ->
+      { model | new_node = Result.withDefault 0 (String.toInt s)}
 
     Comments comms ->
       { model | comments = comms }
@@ -57,11 +68,14 @@ view : Model -> Html Msg
 view model =
   div []
     [ input [ type' "text", placeholder "operation", onInput Operation] []
-    , button [ onClick (Equation (3, 5)) ] [text "insertUnder 3 5"]
     , input [ type' "text", placeholder "comments", onInput Comments] []
     , p [] [ text model.operation ]
     , ul [] ( unpack_list model.opList )
-    , div [] [displayTree "equation tree " model.equation]
+    , div [] [
+        button [ onClick InsertEquation ] [text "insertUnder"]
+      , input [ type' "text", placeholder "under", onInput Under] []
+      , input [ type' "text", placeholder "new node", onInput NewNode] []
+      , displayTree "equation tree " model.equation]
     ]
 
 
