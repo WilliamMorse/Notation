@@ -1,34 +1,70 @@
-import Html exposing (div, button, text)
-import Html.App exposing (beginnerProgram)
-import Html.Events exposing (onClick)
+import Html exposing (..)
+import Html.App as Html
+import Html.Attributes exposing (..)
+import Html.Events exposing (onInput, onClick)
+import Tree.Tree as Tree exposing (..)
 
 
 main =
-  beginnerProgram { model = 1, view = view, update = update }
+  Html.beginnerProgram { model = model, view = view, update = update }
+
+-- model
+type alias Model =
+  { operation : String --List String -- create a string list
+  , equation : Tree Int -- Tree number
+  , comments : String -- List String
+  , opList : List String -- list to contain operation history
+  }
+
+model : Model
+model =
+  Model "" (Tree.fromList [5,3, 21, 1, 2, 33]) "" []
 
 
-view model =
-  div []
-    [ if model > 1 then button [ onClick Decrement ] [ text "-" ] else text "no fewer"
-    , div [] [ text (toString model) ]
-    , div [] (many_buttons model)
-    ]
+-- update
+type Msg
+    = Operation String
+    | Equation (Int, Int)
+    | Comments String
 
-many_buttons : number -> List (Html.Html Msg)
-many_buttons count =
-  if count > 0 then
-    List.append (many_buttons (count-1)) [button [ onClick Increment ] [ text "+" ]]
-  else
-    []
-
-
-type Msg = Increment | Decrement
-
-
+update : Msg -> Model -> Model
 update msg model =
   case msg of
-    Increment ->
-      model + 1
+    Operation op ->
+      { model | operation = op
+                , opList = List.append [op] model.opList } -- append the new operation to the history
 
-    Decrement ->
-      model - 1
+    Equation (x, y) ->
+      { model | equation = (Tree.insertUnder x y Tree.Before model.equation) }
+
+    Comments comms ->
+      { model | comments = comms }
+
+-- view
+
+
+--unpack_list : List String -> List (String, Html Msg)
+unpack_list l =
+  List.map f l
+
+--f : String -> List
+f a =
+  li [] [text a]
+
+
+
+view : Model -> Html Msg
+view model =
+  div []
+    [ input [ type' "text", placeholder "operation", onInput Operation] []
+    , button [ onClick (Equation (3, 5)) ] [text "insertUnder 3 5"]
+    , input [ type' "text", placeholder "comments", onInput Comments] []
+    , p [] [ text model.operation ]
+    , ul [] ( unpack_list model.opList )
+    , div [] [displayTree "equation tree " model.equation]
+    ]
+
+
+displayTree : String -> a -> Html msg
+displayTree name value =
+  div [] [ text (name ++ " ==> " ++ toString value) ]
