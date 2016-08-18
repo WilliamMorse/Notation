@@ -1,18 +1,20 @@
 module Tree.Tree exposing (..)
 
+--import List exposing(..)
+
 -- TREES
 
 type Placement =
   Before | After
 
 type Tree a
-    = Zzz
+    = Zip
     | Node a (List (Tree a))
 
 
 empty : Tree a
 empty =
-    Zzz
+    Zip
 
 
 leaf : a -> Tree a
@@ -23,7 +25,7 @@ leaf v =
 insert : comparable -> Tree comparable -> Tree comparable
 insert x tree =
     case tree of
-      Zzz ->
+      Zip ->
         leaf x
 
       Node y cl ->
@@ -32,13 +34,21 @@ insert x tree =
         else
           Node y (List.append cl [leaf x])
 
+hasParentIn : comparable -> Tree comparable -> Bool
+hasParentIn node tree =
+    case tree of
+      Zip ->
+        False
 
+      Node y cl ->
+        if List.member (leaf node) cl then True
+        else List.member True (List.map (hasParentIn node) cl)
 
 insertUnder : comparable -> comparable -> Placement -> Tree comparable -> Tree comparable
 insertUnder this x inPlace tree =
     case tree of
-      Zzz ->
-        Zzz
+      Zip ->
+        Zip
 
       Node y cl ->
         if y == this then
@@ -60,7 +70,7 @@ fromList xs =
 depth : Tree a -> Int
 depth tree =
     case tree of
-      Zzz -> 0
+      Zip -> 0
       Node v [left, right] ->
           1 + max (depth left) (depth right)
       _ -> 0
@@ -84,7 +94,7 @@ findNode x tree =
 
   in
     case tree of
-      Zzz ->
+      Zip ->
         []
       Node y cl ->
         if x == y then
@@ -102,7 +112,7 @@ notEmptyList l =
 map : (a -> a) -> Tree a -> Tree a
 map f tree =
     case tree of
-      Zzz ->
-        Zzz
+      Zip ->
+        Zip
       Node v cl ->
         Node (f v) (List.map (map f) cl)
