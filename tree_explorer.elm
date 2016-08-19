@@ -15,22 +15,21 @@ type alias Model =
   , equation_edits_tree : Tree Int -- Tree number
   , current_equation : Int
   , opList : List String -- list to contain operation history
-  , under : Int
   , new_node : Int
   }
 
 model : Model
 model =
-  Model "" (Tree.fromList [5,3, 21, 1, 2, 33]) 3 [] 0 0
+  Model "" (Tree.fromList [5,3, 21, 1, 2, 33]) 3 [] 0
 
 
 -- update
 type Msg
     = Operation String
     | InsertEquation
-    | Under String
     | NewNode String
     | GoUp
+    | GoDown Int
 
 
 update : Msg -> Model -> Model
@@ -41,15 +40,16 @@ update msg model =
                 , opList = List.append [op] model.opList } -- append the new operation to the history
 
     InsertEquation  ->
-      { model | equation_edits_tree = (Tree.insertUnder model.under model.new_node Tree.Before model.equation_edits_tree) }
-
-    Under s ->
-      { model | under = Result.withDefault 0 (String.toInt s)}
+      { model | equation_edits_tree = (Tree.insertUnder model.current_equation model.new_node Tree.Before model.equation_edits_tree) }
 
     NewNode s ->
       { model | new_node = Result.withDefault 0 (String.toInt s)}
 
-    GoUp -> model
+    GoUp ->
+      { model | current_equation = (Tree.findParentValue 0 model.current_equation model.equation_edits_tree) }
+
+    GoDown y ->
+      { model | current_equation = y }
 
 
 
@@ -73,38 +73,43 @@ view model =
     , p [] [ text model.operation ]
     , ul [] ( unpack_list model.opList )
     , div [] [
-        if Tree.hasParentIn model.current_equation model.equation_edits_tree then button [ onClick GoUp ] [text "go up"]
-        else div [] [text "your the tops..."]
-      , div [] [text ("current node = " ++ toString model.current_equation)]
+        if Tree.hasParentIn model.current_equation model.equation_edits_tree then
+          button [ onClick GoUp ] [text "go up"]
+        else
+          div [] [text "your the tops..."]
+      , div [] [text ("the current node is: " ++ toString model.current_equation)]
+      , input [ type' "text", placeholder "enter a new child Id", onInput NewNode] []
+      , button [ onClick InsertEquation ] [text "add child under this (current) node"]
       , div [] [childNav model.current_equation model.equation_edits_tree]
-      , button [ onClick InsertEquation ] [text "insertUnder"]
-      , input [ type' "text", placeholder "under", onInput Under] []
-      , input [ type' "text", placeholder "new node", onInput NewNode] []
       , displayTree "equation tree " model.equation_edits_tree]
     ]
 
+makeChildButton : Tree Int -> Html Msg
 makeChildButton tree =
   case tree of
     Zip -> span [] []
     Node y cl ->
-      button [] [text ("go to " ++ toString y)]
+      button [onClick (GoDown y) ] [text ("go to " ++ toString y)]
 
-childNav : comparable -> Tree comparable -> Html msg
-childNav node tree =
+childNav : Int -> Tree Int -> Html Msg
+childNav node_id tree =
   let
     sub_tree_list n t =
       Tree.findNode n t
 
-    sub_tree n t =
+    find_node : Int -> Tree Int -> Tree Int
+    find_node n t =
       st (List.head (sub_tree_list n t))
 
-    st some =
-      case some of
-        Just some -> some
+    st : Maybe (Tree Int) -> Tree Int
+    st some_tree =
+      case some_tree of
+        Just some_tree -> some_tree
         Nothing -> Zip
   in
-    case sub_tree node tree of
-      Zip -> div [] [text "no children at this time"]
+    case find_node node_id tree of
+      Zip ->
+        div [] [text "this node has no children at this time"]
       Node y cl ->
         div [] (List.map makeChildButton cl)
 
