@@ -12,36 +12,39 @@ type Tree a
     = Zip
     | Node a (List (Tree a))
 
+type alias TestEle =
+  { id : Int}
 
 empty : Tree a
 empty =
     Zip
 
 
-leaf : a -> Tree a
+leaf : TestEle -> Tree TestEle
 leaf v =
     Node v []
 
 
-insert : comparable -> Tree comparable -> Tree comparable
+insert : TestEle -> Tree TestEle -> Tree TestEle
 insert x tree =
     case tree of
       Zip ->
         leaf x
 
       Node y cl ->
-        if x <= y then
+        if x.id <= y.id then
           Node y (List.append [leaf x] cl)
         else
           Node y (List.append cl [leaf x])
 
 
 {--}
-findParentValue : Int -> Int -> Tree Int -> Int
-findParentValue p x tree =
+findParentNode : TestEle -> TestEle -> Tree TestEle -> TestEle
+findParentNode p x tree =
   let
+    -- lookElsewhere : TestEle -> TestEle -> List (Tree TestEle) -> TestEle
     lookElsewhere p y cl =
-      List.head (List.filter (\a -> a > 0) (List.map (findParentValue p x) cl))
+      List.head (List.filter (\a -> a.id > 0) (List.map (findParentNode p x) cl))
 
     findOtherNodes p y cl =
       let some =
@@ -49,22 +52,21 @@ findParentValue p x tree =
       in
         case some of
           Just some -> some
-
-          Nothing -> 0
+          Nothing -> TestEle 0
 
   in
     case tree of
       Zip ->
-        0
+        TestEle 0
       Node y cl ->
-        if x == y then
+        if x.id == y.id then
           p
         else
-          findOtherNodes (getIntVal tree) y cl
+          findOtherNodes y y cl -- why not getIntVal tree?
 --}
 
-
-getParent : comparable -> Tree comparable -> comparable
+{--
+getParent : TestEle -> Tree TestEle -> TestEle
 getParent node tree =
     case tree of
       Zip ->
@@ -72,12 +74,13 @@ getParent node tree =
 
       Node y cl ->
         if y == node then
-          0
+          TestEle 0
         else
-          max_in_list 0 (List.map (getParent node) cl)
+          max_in_list 0 (List.map node cl)
+--}
 
 {--
-getParentAux : comparable -> Tree comparable -> Int
+getParentAux : Int -> Tree Int -> Int
 getParentAux node tree =
     case tree of
       Zip ->
@@ -90,7 +93,7 @@ getParentAux node tree =
 --}
 
 
-hasParentIn : comparable -> Tree comparable -> Bool
+hasParentIn : TestEle -> Tree TestEle -> Bool
 hasParentIn node tree =
     case tree of
       Zip ->
@@ -101,7 +104,7 @@ hasParentIn node tree =
         else
           List.member True (List.map (hasParentAux node) cl)
 
-hasParentAux : comparable -> Tree comparable -> Bool
+hasParentAux : a -> Tree a -> Bool
 hasParentAux node tree =
     case tree of
       Zip ->
@@ -113,7 +116,7 @@ hasParentAux node tree =
           List.member True (List.map (hasParentAux node) cl)
 
 
-insertUnder : comparable -> comparable -> Placement -> Tree comparable -> Tree comparable
+insertUnder : TestEle -> TestEle -> Placement -> Tree TestEle -> Tree TestEle
 insertUnder this x inPlace tree =
     case tree of
       Zip ->
@@ -131,19 +134,19 @@ insertUnder this x inPlace tree =
           Node y (List.map (insertUnder this x inPlace) cl)
 
 
-fromList : List comparable -> Tree comparable
+fromList : List TestEle -> Tree TestEle
 fromList xs =
     List.foldl insert empty xs
 
 
-getIntVal: Tree Int -> Int
+getIntVal: Tree TestEle -> Int
 getIntVal t =
   case t of
     Node v cl ->
-      v
+      v.id
     Zip -> 0
 
-max_in_list : comparable -> List comparable -> comparable
+max_in_list : number -> List number -> number
 max_in_list v l =
   case l of
     [] -> v
@@ -155,7 +158,7 @@ max_in_list v l =
 
 
 
-depth : Tree comparable -> Int
+depth : Tree TestEle -> Int
 depth tree =
     case tree of
       Zip -> 0
@@ -164,7 +167,7 @@ depth tree =
 
 
 {--}
-findNode : comparable -> Tree comparable -> List (Tree comparable)
+findNode : TestEle -> Tree TestEle -> List (Tree TestEle)
 findNode x tree =
   let
     lookElsewhere y cl =
@@ -190,13 +193,13 @@ findNode x tree =
           findOtherNodes y cl
 --}
 
-notEmptyList: List (Tree number) -> Bool
+notEmptyList: List (Tree TestEle) -> Bool
 notEmptyList l =
   case l of
     [] -> False
     _ -> True
 
-map : (a -> a) -> Tree a -> Tree a
+map : (TestEle -> TestEle) -> Tree TestEle -> Tree TestEle
 map f tree =
     case tree of
       Zip ->
@@ -209,16 +212,16 @@ map f tree =
 
 
 niceTree =
-  fromList [5,2,1,4,3]
+  fromList [{id = 5},{id = 2},{id = 1},{id = 4},{id = 3}]
 
 niceTree2 =
-  insertUnder 5 20 Before niceTree
+  insertUnder {id = 5} {id = 20} Before niceTree
 
 niceTree3 =
-  insertUnder 20 22 After niceTree2
+  insertUnder {id = 20} {id = 22} After niceTree2
 
 niceTree4 =
-  insertUnder 8 90 After (insertUnder 20 8 Before niceTree3)
+  insertUnder {id = 8}  {id = 90} After (insertUnder {id = 20} {id = 8} Before niceTree3)
 
 main =
   div [ style [ ("font-family", "monospace") ] ]
@@ -231,24 +234,26 @@ main =
     , display "depth niceTree2" (depth niceTree2)
     , display "depth niceTree3" (depth niceTree3)
     , display "depth niceTree4" (depth niceTree4)
-    , display "incremented" (map (\n -> n + 1) niceTree)
-    , display "insertUnder 5 66 Before " (insertUnder 5 66 Before niceTree)
-    , display "insertUnder 5 66 After " (insertUnder 5 66 After niceTree)
-    , display "findNode 5 niceTree" (findNode 5 niceTree)
-    , display "findNode 20 niceTree4" (findNode 20 niceTree4)
-    , display "findNode 22 niceTree4" (findNode 22 niceTree4)
-    , display "findNode 8 niceTree4" (findNode 8 niceTree4)
-    , display "findNode 88 niceTree4" (findNode 88 niceTree4)
-    , display "findNode 83 niceTree4" (findNode 83 niceTree4)
-    , display "findNode 8 niceTree4" (findNode 8 niceTree4)
+    , display "incremented" (map (\n -> {n | id = n.id + 1}) niceTree)
+    , display "insertUnder 5 66 Before " (insertUnder {id = 5} {id = 66} Before niceTree)
+    , display "insertUnder 5 66 After " (insertUnder {id = 5} {id = 66} After niceTree)
+    , display "findNode 5 niceTree" (findNode {id = 5} niceTree)
+    , display "findNode 20 niceTree4" (findNode {id = 20} niceTree4)
+    , display "findNode 22 niceTree4" (findNode {id = 22} niceTree4)
+    , display "findNode 8 niceTree4" (findNode {id = 8} niceTree4)
+    , display "findNode 88 niceTree4" (findNode {id = 88} niceTree4)
+    , display "findNode 83 niceTree4" (findNode {id = 83} niceTree4)
+    , display "findNode 8 niceTree4" (findNode {id = 8} niceTree4)
     , display "notEmptyList niceTree  " (List.map notEmptyList [[], [niceTree]])
-    , display "hasParentIn 5 niceTree  " (hasParentIn 5 niceTree)
-    , display "hasParentIn 3 niceTree  " (hasParentIn 3 niceTree)
-    , display "hasParentIn 5 niceTree4  " (hasParentIn 5 niceTree4)
-    , display "hasParentIn 20 niceTree4  " (hasParentIn 20 niceTree4)
-    , display "hasParentIn 22 niceTree4  " (hasParentIn 22 niceTree4)
-    , display "hasParentIn 8 niceTree4  " (hasParentIn 8 niceTree4)
-    , display "findParentValue 0 8 niceTree4  " (findParentValue 0 8 niceTree4)
+    , display "hasParentIn 5 niceTree  " (hasParentIn {id = 5} niceTree)
+    , display "hasParentIn 3 niceTree  " (hasParentIn {id = 3} niceTree)
+    , display "hasParentIn 5 niceTree4  " (hasParentIn {id = 5} niceTree4)
+    , display "hasParentIn 20 niceTree4  " (hasParentIn {id = 20} niceTree4)
+    , display "hasParentIn 22 niceTree4  " (hasParentIn {id = 22} niceTree4)
+    , display "hasParentIn 8 niceTree4  " (hasParentIn {id = 8} niceTree4)
+    , display "hasParentIn 83 niceTree4  " (hasParentIn {id = 3} niceTree4)
+    , display "findParentNode 0 8 niceTree4  " (findParentNode {id = 0} {id = 8} niceTree4)
+    , display "findParentNode 0 90 niceTree4  " (findParentNode {id = 0} {id = 90} niceTree4)
     ]
 
 display : String -> a -> Html msg

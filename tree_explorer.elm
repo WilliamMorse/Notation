@@ -9,10 +9,13 @@ import String exposing (..)
 main =
   Html.beginnerProgram { model = model, view = view, update = update }
 
+type alias Step =
+  { id : Int, eq : String }
+
 -- model
 type alias Model =
   { operation : String --List String -- create a string list
-  , equation_edits_tree : Tree Int -- Tree number
+  , equation_edits_tree : Tree Step -- Tree Step
   , current_equation : Int
   , opList : List String -- list to contain operation history
   , new_node : Int
@@ -84,24 +87,24 @@ view model =
       , displayTree "equation tree " model.equation_edits_tree]
     ]
 
-makeChildButton : Tree Int -> Html Msg
+makeChildButton : Tree Step -> Html Msg
 makeChildButton tree =
   case tree of
     Zip -> span [] []
     Node y cl ->
       button [onClick (GoDown y) ] [text ("go to " ++ toString y)]
 
-childNav : Int -> Tree Int -> Html Msg
+childNav : Int -> Tree Step -> Html Msg
 childNav node_id tree =
   let
     sub_tree_list n t =
       Tree.findNode n t
 
-    find_node : Int -> Tree Int -> Tree Int
+    find_node : Int -> Tree Step -> Tree Step
     find_node n t =
       st (List.head (sub_tree_list n t))
 
-    st : Maybe (Tree Int) -> Tree Int
+    st : Maybe (Tree Step) -> Tree Step
     st some_tree =
       case some_tree of
         Just some_tree -> some_tree
