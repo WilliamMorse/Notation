@@ -9,21 +9,19 @@ import String exposing (..)
 main =
   Html.beginnerProgram { model = model, view = view, update = update }
 
-type alias Step =
-  { id : Int, eq : String }
 
 -- model
 type alias Model =
   { operation : String --List String -- create a string list
   , equation_edits_tree : Tree Step -- Tree Step
-  , current_equation : Int
+  , current_equation : Step
   , opList : List String -- list to contain operation history
   , new_node : Int
   }
 
 model : Model
 model =
-  Model "" (Tree.fromList [5,3, 21, 1, 2, 33]) 3 [] 0
+  Model "" (Tree.fromList [(newStep 5),(newStep 3), (newStep 21), (newStep 1), (newStep 2), (newStep 33)]) (newStep 3) [] 0
 
 
 -- update
@@ -43,16 +41,16 @@ update msg model =
                 , opList = List.append [op] model.opList } -- append the new operation to the history
 
     InsertEquation  ->
-      { model | equation_edits_tree = (Tree.insertUnder model.current_equation model.new_node Tree.Before model.equation_edits_tree) }
+      { model | equation_edits_tree = (Tree.insertUnder model.current_equation (newStep model.new_node) Tree.Before model.equation_edits_tree) }
 
     NewNode s ->
       { model | new_node = Result.withDefault 0 (String.toInt s)}
 
     GoUp ->
-      { model | current_equation = (Tree.findParentValue 0 model.current_equation model.equation_edits_tree) }
+      { model | current_equation = (Tree.findParentNode (newStep 0) model.current_equation model.equation_edits_tree) }
 
     GoDown y ->
-      { model | current_equation = y }
+      { model | current_equation = newStep y }
 
 
 
@@ -92,15 +90,15 @@ makeChildButton tree =
   case tree of
     Zip -> span [] []
     Node y cl ->
-      button [onClick (GoDown y) ] [text ("go to " ++ toString y)]
+      button [onClick (GoDown y.id) ] [text ("go to " ++ toString y)]
 
-childNav : Int -> Tree Step -> Html Msg
+childNav : Step -> Tree Step -> Html Msg
 childNav node_id tree =
   let
     sub_tree_list n t =
       Tree.findNode n t
 
-    find_node : Int -> Tree Step -> Tree Step
+    find_node : Step -> Tree Step -> Tree Step
     find_node n t =
       st (List.head (sub_tree_list n t))
 

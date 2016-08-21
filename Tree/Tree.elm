@@ -12,20 +12,25 @@ type Tree a
     = Zip
     | Node a (List (Tree a))
 
-type alias TestEle =
-  { id : Int}
+--type alias Step =
+--  { id : Int}
+type alias Step =
+  { id : Int, eq : String }
+
+newStep id =
+  {id = id, eq = ""}
 
 empty : Tree a
 empty =
     Zip
 
 
-leaf : TestEle -> Tree TestEle
+leaf : Step -> Tree Step
 leaf v =
     Node v []
 
 
-insert : TestEle -> Tree TestEle -> Tree TestEle
+insert : Step -> Tree Step -> Tree Step
 insert x tree =
     case tree of
       Zip ->
@@ -39,10 +44,10 @@ insert x tree =
 
 
 {--}
-findParentNode : TestEle -> TestEle -> Tree TestEle -> TestEle
+findParentNode : Step -> Step -> Tree Step -> Step
 findParentNode p x tree =
   let
-    -- lookElsewhere : TestEle -> TestEle -> List (Tree TestEle) -> TestEle
+    -- lookElsewhere : Step -> Step -> List (Tree Step) -> Step
     lookElsewhere p y cl =
       List.head (List.filter (\a -> a.id > 0) (List.map (findParentNode p x) cl))
 
@@ -52,12 +57,12 @@ findParentNode p x tree =
       in
         case some of
           Just some -> some
-          Nothing -> TestEle 0
+          Nothing -> newStep 0
 
   in
     case tree of
       Zip ->
-        TestEle 0
+        newStep 0
       Node y cl ->
         if x.id == y.id then
           p
@@ -66,7 +71,7 @@ findParentNode p x tree =
 --}
 
 {--
-getParent : TestEle -> Tree TestEle -> TestEle
+getParent : Step -> Tree Step -> Step
 getParent node tree =
     case tree of
       Zip ->
@@ -74,7 +79,7 @@ getParent node tree =
 
       Node y cl ->
         if y == node then
-          TestEle 0
+          Step 0
         else
           max_in_list 0 (List.map node cl)
 --}
@@ -93,7 +98,7 @@ getParentAux node tree =
 --}
 
 
-hasParentIn : TestEle -> Tree TestEle -> Bool
+hasParentIn : Step -> Tree Step -> Bool
 hasParentIn node tree =
     case tree of
       Zip ->
@@ -116,7 +121,7 @@ hasParentAux node tree =
           List.member True (List.map (hasParentAux node) cl)
 
 
-insertUnder : TestEle -> TestEle -> Placement -> Tree TestEle -> Tree TestEle
+insertUnder : Step -> Step -> Placement -> Tree Step -> Tree Step
 insertUnder this x inPlace tree =
     case tree of
       Zip ->
@@ -134,12 +139,12 @@ insertUnder this x inPlace tree =
           Node y (List.map (insertUnder this x inPlace) cl)
 
 
-fromList : List TestEle -> Tree TestEle
+fromList : List Step -> Tree Step
 fromList xs =
     List.foldl insert empty xs
 
 
-getIntVal: Tree TestEle -> Int
+getIntVal: Tree Step -> Int
 getIntVal t =
   case t of
     Node v cl ->
@@ -158,7 +163,7 @@ max_in_list v l =
 
 
 
-depth : Tree TestEle -> Int
+depth : Tree Step -> Int
 depth tree =
     case tree of
       Zip -> 0
@@ -167,7 +172,7 @@ depth tree =
 
 
 {--}
-findNode : TestEle -> Tree TestEle -> List (Tree TestEle)
+findNode : Step -> Tree Step -> List (Tree Step)
 findNode x tree =
   let
     lookElsewhere y cl =
@@ -193,13 +198,13 @@ findNode x tree =
           findOtherNodes y cl
 --}
 
-notEmptyList: List (Tree TestEle) -> Bool
+notEmptyList: List (Tree Step) -> Bool
 notEmptyList l =
   case l of
     [] -> False
     _ -> True
 
-map : (TestEle -> TestEle) -> Tree TestEle -> Tree TestEle
+map : (Step -> Step) -> Tree Step -> Tree Step
 map f tree =
     case tree of
       Zip ->
@@ -212,16 +217,16 @@ map f tree =
 
 
 niceTree =
-  fromList [{id = 5},{id = 2},{id = 1},{id = 4},{id = 3}]
+  fromList  [(newStep 5), (newStep 2), (newStep 1), (newStep 4), (newStep 3)]
 
 niceTree2 =
-  insertUnder {id = 5} {id = 20} Before niceTree
+  insertUnder (newStep 5) (newStep 20) Before niceTree
 
 niceTree3 =
-  insertUnder {id = 20} {id = 22} After niceTree2
+  insertUnder (newStep 20) (newStep 22) After niceTree2
 
 niceTree4 =
-  insertUnder {id = 8}  {id = 90} After (insertUnder {id = 20} {id = 8} Before niceTree3)
+  insertUnder (newStep 8)  (newStep 90) After (insertUnder (newStep 20) (newStep 8) Before niceTree3)
 
 main =
   div [ style [ ("font-family", "monospace") ] ]
@@ -235,25 +240,25 @@ main =
     , display "depth niceTree3" (depth niceTree3)
     , display "depth niceTree4" (depth niceTree4)
     , display "incremented" (map (\n -> {n | id = n.id + 1}) niceTree)
-    , display "insertUnder 5 66 Before " (insertUnder {id = 5} {id = 66} Before niceTree)
-    , display "insertUnder 5 66 After " (insertUnder {id = 5} {id = 66} After niceTree)
-    , display "findNode 5 niceTree" (findNode {id = 5} niceTree)
-    , display "findNode 20 niceTree4" (findNode {id = 20} niceTree4)
-    , display "findNode 22 niceTree4" (findNode {id = 22} niceTree4)
-    , display "findNode 8 niceTree4" (findNode {id = 8} niceTree4)
-    , display "findNode 88 niceTree4" (findNode {id = 88} niceTree4)
-    , display "findNode 83 niceTree4" (findNode {id = 83} niceTree4)
-    , display "findNode 8 niceTree4" (findNode {id = 8} niceTree4)
+    , display "insertUnder 5 66 Before " (insertUnder (newStep 5) (newStep 66) Before niceTree)
+    , display "insertUnder 5 66 After " (insertUnder (newStep 5) (newStep 66) After niceTree)
+    , display "findNode 5 niceTree" (findNode (newStep 5) niceTree)
+    , display "findNode 20 niceTree4" (findNode (newStep 20) niceTree4)
+    , display "findNode 22 niceTree4" (findNode (newStep 22) niceTree4)
+    , display "findNode 8 niceTree4" (findNode (newStep 8) niceTree4)
+    , display "findNode 88 niceTree4" (findNode (newStep 88) niceTree4)
+    , display "findNode 83 niceTree4" (findNode (newStep 83) niceTree4)
+    , display "findNode 8 niceTree4" (findNode (newStep 8) niceTree4)
     , display "notEmptyList niceTree  " (List.map notEmptyList [[], [niceTree]])
-    , display "hasParentIn 5 niceTree  " (hasParentIn {id = 5} niceTree)
-    , display "hasParentIn 3 niceTree  " (hasParentIn {id = 3} niceTree)
-    , display "hasParentIn 5 niceTree4  " (hasParentIn {id = 5} niceTree4)
-    , display "hasParentIn 20 niceTree4  " (hasParentIn {id = 20} niceTree4)
-    , display "hasParentIn 22 niceTree4  " (hasParentIn {id = 22} niceTree4)
-    , display "hasParentIn 8 niceTree4  " (hasParentIn {id = 8} niceTree4)
-    , display "hasParentIn 83 niceTree4  " (hasParentIn {id = 3} niceTree4)
-    , display "findParentNode 0 8 niceTree4  " (findParentNode {id = 0} {id = 8} niceTree4)
-    , display "findParentNode 0 90 niceTree4  " (findParentNode {id = 0} {id = 90} niceTree4)
+    , display "hasParentIn 5 niceTree  " (hasParentIn (newStep 5) niceTree)
+    , display "hasParentIn 3 niceTree  " (hasParentIn (newStep 3) niceTree)
+    , display "hasParentIn 5 niceTree4  " (hasParentIn (newStep 5) niceTree4)
+    , display "hasParentIn 20 niceTree4  " (hasParentIn (newStep 20) niceTree4)
+    , display "hasParentIn 22 niceTree4  " (hasParentIn (newStep 22) niceTree4)
+    , display "hasParentIn 8 niceTree4  " (hasParentIn (newStep 8) niceTree4)
+    , display "hasParentIn 83 niceTree4  " (hasParentIn (newStep 3) niceTree4)
+    , display "findParentNode 0 8 niceTree4  " (findParentNode (newStep 0) (newStep 8) niceTree4)
+    , display "findParentNode 0 90 niceTree4  " (findParentNode (newStep 0) (newStep 90) niceTree4)
     ]
 
 display : String -> a -> Html msg
