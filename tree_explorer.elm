@@ -21,7 +21,7 @@ type alias Model =
 
 model : Model
 model =
-  Model "" (Tree.fromList [(newStep 5),(newStep 3), (newStep 21), (newStep 1), (newStep 2), (newStep 33)]) (newStep 3) [] 0
+  Model "" (Tree.fromList [(newStep 5),(newStep 3), (newStep 21), (newStep 1), (newStep 2), (newStep 33)]) (newStep 3) [] 100
 
 
 -- update
@@ -41,7 +41,8 @@ update msg model =
                 , opList = List.append [op] model.opList } -- append the new operation to the history
 
     InsertEquation  ->
-      { model | equation_edits_tree = (Tree.insertUnder model.current_equation (newStep model.new_node) Tree.Before model.equation_edits_tree) }
+      { model | equation_edits_tree = (Tree.insertUnder model.current_equation (newStep model.new_node) Tree.Before model.equation_edits_tree),
+                new_node = model.new_node + 1 }
 
     NewNode s ->
       { model | new_node = Result.withDefault 0 (String.toInt s)}
@@ -79,7 +80,7 @@ view model =
         else
           div [] [text "your the tops..."]
       , div [] [text ("the current node is: " ++ toString model.current_equation)]
-      , input [ type' "text", placeholder "enter a new child Id", onInput NewNode] []
+--      , input [ type' "text", placeholder "enter a new child Id", onInput NewNode] []
       , button [ onClick InsertEquation ] [text "add child under this (current) node"]
       , div [] [childNav model.current_equation model.equation_edits_tree]
       , displayTree "equation tree " model.equation_edits_tree]
