@@ -17,8 +17,13 @@ type Tree a
 type alias Step =
   { id : Int, eq : String }
 
-newStep id =
-  {id = id, eq = ""}
+newStep : Int -> Step
+newStep new_id =
+  {id = new_id, eq = ""}
+
+newStep2 : Int -> String -> Step
+newStep2 new_id equa =
+  {id = new_id, eq = equa}
 
 empty : Tree a
 empty =
@@ -144,13 +149,6 @@ fromList xs =
     List.foldl insert empty xs
 
 
-getIntVal: Tree Step -> Int
-getIntVal t =
-  case t of
-    Node v cl ->
-      v.id
-    Zip -> 0
-
 max_in_list : number -> List number -> number
 max_in_list v l =
   case l of
@@ -170,13 +168,24 @@ depth tree =
       Node v cl ->
           1 + max_in_list 0 (List.map depth cl)
 
+{--
+find : Int -> Tree Step -> Maybe Step
+find id tree =
+  case List.head (findSubTrees {id = id} tree) of
+    Nothing ->
+      Nothing
+
+    Tree a ->
+      a
+--}
+
 
 {--}
-findNode : Step -> Tree Step -> List (Tree Step)
-findNode x tree =
+findSubTrees : Step -> Tree Step -> List (Tree Step)
+findSubTrees x tree =
   let
     lookElsewhere y cl =
-      List.head (List.filter notEmptyList (List.map (findNode x) cl))
+      List.head (List.filter notEmptyList (List.map (findSubTrees x) cl))
 
     findOtherNodes y cl =
       let some =
@@ -192,7 +201,7 @@ findNode x tree =
       Zip ->
         []
       Node y cl ->
-        if x == y then
+        if x.id == y.id then
           [tree]
         else
           findOtherNodes y cl
@@ -242,13 +251,13 @@ main =
     , display "incremented" (map (\n -> {n | id = n.id + 1}) niceTree)
     , display "insertUnder 5 66 Before " (insertUnder (newStep 5) (newStep 66) Before niceTree)
     , display "insertUnder 5 66 After " (insertUnder (newStep 5) (newStep 66) After niceTree)
-    , display "findNode 5 niceTree" (findNode (newStep 5) niceTree)
-    , display "findNode 20 niceTree4" (findNode (newStep 20) niceTree4)
-    , display "findNode 22 niceTree4" (findNode (newStep 22) niceTree4)
-    , display "findNode 8 niceTree4" (findNode (newStep 8) niceTree4)
-    , display "findNode 88 niceTree4" (findNode (newStep 88) niceTree4)
-    , display "findNode 83 niceTree4" (findNode (newStep 83) niceTree4)
-    , display "findNode 8 niceTree4" (findNode (newStep 8) niceTree4)
+    , display "findSubTrees 5 niceTree" (findSubTrees (newStep 5) niceTree)
+    , display "findSubTrees 20 niceTree4" (findSubTrees (newStep 20) niceTree4)
+    , display "findSubTrees 22 niceTree4" (findSubTrees (newStep 22) niceTree4)
+    , display "findSubTrees 8 niceTree4" (findSubTrees (newStep 8) niceTree4)
+    , display "findSubTrees 88 niceTree4" (findSubTrees (newStep 88) niceTree4)
+    , display "findSubTrees 83 niceTree4" (findSubTrees (newStep 83) niceTree4)
+    , display "findSubTrees 8 niceTree4" (findSubTrees (newStep 8) niceTree4)
     , display "notEmptyList niceTree  " (List.map notEmptyList [[], [niceTree]])
     , display "hasParentIn 5 niceTree  " (hasParentIn (newStep 5) niceTree)
     , display "hasParentIn 3 niceTree  " (hasParentIn (newStep 3) niceTree)
