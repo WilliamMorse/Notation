@@ -61,7 +61,7 @@ update msg model =
           ( keyboardModel, keyboardCmd ) =
               Keyboard.update keyMsg model.keyboardModel
       in
-        if   Keyboard.isPressed Keyboard.Enter keyboardModel
+        if Keyboard.isPressed Keyboard.Enter keyboardModel
 --          && Keyboard.isPressed Keyboard.Shift keyboardModel
         then
           ( { model
@@ -71,17 +71,18 @@ update msg model =
             }
           , Cmd.map KeyboardMsg keyboardCmd
           )
-        else (model, Cmd.none)
+        else ({ model
+            | keyboardModel = keyboardModel }, Cmd.none)
     InsertEquation  ->
       ({ model | equation_edits_tree = (Tree.insertUnder model.current_equation (newStep2 model.new_node model.laTex) Tree.Before model.equation_edits_tree),
-                new_node = model.new_node + 1 }, Cmd.none)
+                new_node = model.new_node + 1 }, Cmd.map GoDown (Cmd model.new_node))
 
     GoUp ->
       ({ model | current_equation = (Tree.findParentNode (newStep 0) model.current_equation model.equation_edits_tree) }
       , Cmd.none)
 
     GoDown y ->
-      ({ model | current_equation = newStep y }, Cmd.none)
+      ({ model | current_equation = Tree.find y model.equation_edits_tree }, Cmd.none)
 
 
 

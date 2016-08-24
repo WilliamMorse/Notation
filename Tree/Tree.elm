@@ -110,18 +110,18 @@ hasParentIn node tree =
         False
 
       Node y cl ->
-        if y == node then False
+        if y.id == node.id then False
         else
           List.member True (List.map (hasParentAux node) cl)
 
-hasParentAux : a -> Tree a -> Bool
+hasParentAux : Step -> Tree Step -> Bool
 hasParentAux node tree =
     case tree of
       Zip ->
         False
 
       Node y cl ->
-        if y == node then True
+        if y.id == node.id then True
         else
           List.member True (List.map (hasParentAux node) cl)
 
@@ -133,7 +133,7 @@ insertUnder this x inPlace tree =
         Zip
 
       Node y cl ->
-        if y == this then
+        if y.id == this.id then
           case inPlace of
             After ->
               Node y (List.append cl [leaf x])
@@ -168,15 +168,19 @@ depth tree =
       Node v cl ->
           1 + max_in_list 0 (List.map depth cl)
 
-{--
-find : Int -> Tree Step -> Maybe Step
+{--}
+find : Int -> Tree Step -> Step
 find id tree =
-  case List.head (findSubTrees {id = id} tree) of
-    Nothing ->
-      Nothing
-
-    Tree a ->
-      a
+  let
+    found = List.head (findSubTrees (newStep id) tree)
+    found_tree =
+      case found of
+        Nothing -> leaf (newStep 0)
+        Just tree -> tree
+  in
+    case found_tree of
+      Zip -> newStep 0
+      Node y cl -> y
 --}
 
 
