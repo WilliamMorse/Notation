@@ -37,7 +37,7 @@ init =
     ( keyboardModel, keyboardCmd ) =
         Keyboard.init
   in
-    ( Model keyboardModel "" (Tree.fromList [(newStep 5),(newStep 3), (newStep 21), (newStep 1), (newStep 2), (newStep 33)]) (newStep 3) 100
+    ( Model keyboardModel "" (Tree.fromList [newStep 0]) (newStep 0) 100
     , Cmd.map KeyboardMsg keyboardCmd
     )
 
@@ -45,7 +45,7 @@ init =
 -- update
 type Msg
     = LaTex String
-    | InsertEquation
+--    | InsertEquation
     | GoUp
     | GoDown Int
     | KeyboardMsg Keyboard.Msg
@@ -55,37 +55,52 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
   case msg of
-    LaTex s -> ({ model | laTex = s }, Cmd.none)
+    LaTex s -> { model | laTex = s } ! []
     KeyboardMsg keyMsg ->
       let
           ( keyboardModel, keyboardCmd ) =
               Keyboard.update keyMsg model.keyboardModel
+
+          next_id = model.new_node + 1
       in
         if Keyboard.isPressed Keyboard.Enter keyboardModel
 --          && Keyboard.isPressed Keyboard.Shift keyboardModel
         then
-          ( { model
-              | keyboardModel = keyboardModel
-              , equation_edits_tree = (Tree.insertUnder model.current_equation (newStep2 model.new_node model.laTex) Tree.Before model.equation_edits_tree)
-              , new_node = model.new_node + 1
-            }
-          , Cmd.map KeyboardMsg keyboardCmd
-          )
-        else ({ model
-            | keyboardModel = keyboardModel }, Cmd.none)
-    InsertEquation  ->
-      ({ model | equation_edits_tree = (Tree.insertUnder model.current_equation (newStep2 model.new_node model.laTex) Tree.Before model.equation_edits_tree),
-                new_node = model.new_node + 1 }, Cmd.map GoDown (Cmd model.new_node))
+          (enterAndGo model keyboardModel next_id) ! [Cmd.map KeyboardMsg keyboardCmd]
+        else { model
+            | keyboardModel = keyboardModel } ! [Cmd.map KeyboardMsg keyboardCmd]
+--    InsertEquation  ->
+--      { model | equation_edits_tree = (Tree.insertUnder model.current_equation (newStep2 model.new_node model.laTex) Tree.Before model.equation_edits_tree),
+--                new_node = model.new_node + 1 } ! []
 
     GoUp ->
-      ({ model | current_equation = (Tree.findParentNode (newStep 0) model.current_equation model.equation_edits_tree) }
-      , Cmd.none)
+      let
+        new_eq = (Tree.findParentNode (newStep 0) model.current_equation model.equation_edits_tree)
+      in
+        { model | current_equation = new_eq
+              , laTex = new_eq.eq} ! []
 
     GoDown y ->
-      ({ model | current_equation = Tree.find y model.equation_edits_tree }, Cmd.none)
+      let
+        new_eq = Tree.find y model.equation_edits_tree
+      in
+        { model | current_equation = new_eq
+              , laTex = new_eq.eq } ! []
 
 
+enterAndGo model keyboardModel next_id =
+  let
+    new_tree = (Tree.insertUnder model.current_equation (newStep2 next_id model.laTex) Tree.After model.equation_edits_tree)
 
+    new_current_eq = Tree.find next_id new_tree
+  in
+    { model
+      | keyboardModel = keyboardModel
+      , equation_edits_tree = new_tree
+      , current_equation = new_current_eq
+      , laTex = new_current_eq.eq
+      , new_node = next_id
+    }
 
 
 -- view
@@ -104,18 +119,18 @@ f a =
 view : Model -> Html Msg
 view model =
   div []
-    [ input [ type' "text", placeholder "laTex", onInput LaTex] []
+    [ input [ type' "text", placeholder "laTex", onInput LaTex, value model.laTex] []
     , p [] [ text model.laTex ]
     , div [] [
         if Tree.hasParentIn model.current_equation model.equation_edits_tree then
-          button [ onClick GoUp ] [text "go up"]
+          button [ onClick GoUp ] [text "go back"]
         else
-          div [] [text "your the tops..."]
-      , div [] [text ("the current node is: " ++ toString model.current_equation)]
+          div [] [text "you're at the very beginning"]
+--      , div [] [text ("the current node is: " ++ toString model.current_equation)]
 --      , input [ type' "text", placeholder "enter a new child Id", onInput NewNode] []
-      , button [ onClick InsertEquation ] [text "add child under this (current) node"]
+--      , button [ onClick InsertEquation ] [text "add child under this (current) node"]
       , div [] [childNav model.current_equation model.equation_edits_tree]
-      , displayTree "equation tree " model.equation_edits_tree]
+      , displayTree "equation edits tree " model.equation_edits_tree]
     ]
 
 makeChildButton : Tree Step -> Html Msg
@@ -123,7 +138,7 @@ makeChildButton tree =
   case tree of
     Zip -> span [] []
     Node y cl ->
-      button [onClick (GoDown y.id) ] [text ("go to " ++ toString y)]
+      div [] [button [onClick (GoDown y.id) ] [text "go ahead to:"], span [] [text (toString y)]]
 
 childNav : Step -> Tree Step -> Html Msg
 childNav node_id tree =
@@ -149,7 +164,7 @@ childNav node_id tree =
 
 displayTree : String -> a -> Html msg
 displayTree name value =
-  div [] [ text (name ++ " ==> " ++ toString value) ]
+  div [style [("margin-top", "22px")]] [ text (name ++ " ==> " ++ toString value) ]
 
 
 -- Subscriptions
