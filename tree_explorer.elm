@@ -4,6 +4,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onInput, onClick)
 import Tree.Tree as Tree exposing (..)
 import String exposing (..)
+--import Set exposing (..)
 import Keyboard.Extra as Keyboard
 
 
@@ -45,7 +46,6 @@ init =
 -- update
 type Msg
     = LaTex String
---    | InsertEquation
     | GoUp
     | GoDown Int
     | KeyboardMsg Keyboard.Msg
@@ -55,39 +55,78 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
   case msg of
-    LaTex s -> { model | laTex = s } ! []
+    LaTex s ->
+      { model | laTex = s } ! []
+
     KeyboardMsg keyMsg ->
       let
           ( keyboardModel, keyboardCmd ) =
               Keyboard.update keyMsg model.keyboardModel
 
           next_id = model.new_node + 1
+--          get_last_id step =
+--            last_child_id cl
+
+          shift_enter = Keyboard.isPressed Keyboard.Enter keyboardModel
+            && Keyboard.isPressed Keyboard.Shift keyboardModel
+          shift_back = Keyboard.isPressed Keyboard.ArrowLeft keyboardModel
+             && Keyboard.isPressed Keyboard.Shift keyboardModel
+          shift_forward = Keyboard.isPressed Keyboard.ArrowRight keyboardModel
+             && Keyboard.isPressed Keyboard.Shift keyboardModel
+
       in
-        if Keyboard.isPressed Keyboard.Enter keyboardModel
---          && Keyboard.isPressed Keyboard.Shift keyboardModel
-        then
+        if shift_enter then
           (enterAndGo model keyboardModel next_id) ! [Cmd.map KeyboardMsg keyboardCmd]
-        else { model
-            | keyboardModel = keyboardModel } ! [Cmd.map KeyboardMsg keyboardCmd]
+        else if shift_back then
+          (goBackUp model) ! [Cmd.map KeyboardMsg keyboardCmd]
+--        else if shift_forward then
+--          (goNextDn (get_last_id model.current_equation) model) ! [Cmd.map KeyboardMsg keyboardCmd]
+        else
+          { model | keyboardModel = keyboardModel } ! [Cmd.map KeyboardMsg keyboardCmd]
 --    InsertEquation  ->
 --      { model | equation_edits_tree = (Tree.insertUnder model.current_equation (newStep2 model.new_node model.laTex) Tree.Before model.equation_edits_tree),
 --                new_node = model.new_node + 1 } ! []
 
     GoUp ->
       let
-        new_eq = (Tree.findParentNode (newStep 0) model.current_equation model.equation_edits_tree)
+        next_id = model.new_node + 1
       in
-        { model | current_equation = new_eq
-              , laTex = new_eq.eq} ! []
+        (goBackUp model) ! []
 
     GoDown y ->
-      let
-        new_eq = Tree.find y model.equation_edits_tree
-      in
-        { model | current_equation = new_eq
-              , laTex = new_eq.eq } ! []
+        (goNextDn y model) ! []
 
 
+last_child_id : List Step -> Int
+last_child_id cl =
+  let
+    maybe_last cl =
+      List.head (List.reverse cl)
+  in
+    case (maybe_last cl) of
+      Just it ->
+        it.id
+      Nothing -> -1
+
+
+
+goNextDn : Int -> Model -> Model
+goNextDn to_id model =
+  let
+    new_eq = Tree.find to_id model.equation_edits_tree
+  in
+    { model | current_equation = new_eq
+            , laTex = new_eq.eq }
+
+goBackUp : Model -> Model
+goBackUp model =
+  let
+    new_eq = (Tree.findParentNode (newStep 0) model.current_equation model.equation_edits_tree)
+  in
+    { model | current_equation = new_eq
+          , laTex = new_eq.eq }
+
+--enterAndGo : Model -> msg -> Int -> Model
 enterAndGo model keyboardModel next_id =
   let
     new_tree = (Tree.insertUnder model.current_equation (newStep2 next_id model.laTex) Tree.After model.equation_edits_tree)
@@ -104,18 +143,6 @@ enterAndGo model keyboardModel next_id =
 
 
 -- view
-
-
---unpack_list : List String -> List (String, Html Msg)
-unpack_list l =
-  List.map f l
-
---f : String -> List
-f a =
-  li [] [text a]
-
-
-
 view : Model -> Html Msg
 view model =
   div []
