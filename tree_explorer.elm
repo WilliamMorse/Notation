@@ -72,17 +72,17 @@ update msg model =
 
           shift_enter = Keyboard.isPressed Keyboard.Enter keyboardModel
             && Keyboard.isPressed Keyboard.Shift keyboardModel
-          shift_back = Keyboard.isPressed Keyboard.ArrowLeft keyboardModel
-             && Keyboard.isPressed Keyboard.Shift keyboardModel
-          shift_forward = Keyboard.isPressed Keyboard.ArrowRight keyboardModel
-             && Keyboard.isPressed Keyboard.Shift keyboardModel
+          ctl_back = Keyboard.isPressed Keyboard.ArrowLeft keyboardModel
+             && Keyboard.isPressed Keyboard.Control keyboardModel
+          ctl_forward = Keyboard.isPressed Keyboard.ArrowRight keyboardModel
+             && Keyboard.isPressed Keyboard.Control keyboardModel
 
       in
         if shift_enter then
           (enterAndGo model keyboardModel next_id) ! [Cmd.map KeyboardMsg keyboardCmd]
-        else if shift_back then
+        else if ctl_back then
           (goBackUp model) ! [Cmd.map KeyboardMsg keyboardCmd]
---        else if shift_forward then
+--        else if ctl_forward then
 --          (goNextDn (get_last_id model.current_equation) model) ! [Cmd.map KeyboardMsg keyboardCmd]
         else
           { model | keyboardModel = keyboardModel } ! [Cmd.map KeyboardMsg keyboardCmd]
@@ -100,7 +100,7 @@ update msg model =
       (goNextDn y model) ! []
 
     RenderEquation ->
-      (model, Port.renderEquation model.current_equation.eq)
+      (model, Port.renderEquation model.laTeX)
 
 
 last_child_id : List Step -> Int
@@ -150,8 +150,8 @@ enterAndGo model keyboardModel next_id =
 view : Model -> Html Msg
 view model =
   div []
-    [ textarea [onInput LaTeX] [text model.laTeX]
-    , p [] [ text model.laTeX ]
+    [ input [type' "text", onInput LaTeX, value model.laTeX] []
+    , p [id "math-jax-out"] []
     , button [ onClick RenderEquation ] [ text "Render Equation Now" ]
     , div [] [
         if Tree.hasParentIn model.current_equation model.equation_edits_tree then

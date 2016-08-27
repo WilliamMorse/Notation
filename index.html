@@ -7,8 +7,10 @@
       html,head,body { padding:0; margin:0; }
       body { font-family: calibri, helvetica, arial, sans-serif; }
     </style>
-    <script type="text/javascript">
+    <script type="text/javascript" async
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
     </script>
+
   </head>
   <body>
     <div id="tree_explorer"></div>
@@ -18,7 +20,9 @@
         var app = Elm.Main.embed(node);
 
         app.ports.renderEquation.subscribe(function(en_TeX) {
-            alert(en_TeX);
+          var node = document.getElementById('math-jax-out');
+          node.innerHTML = "$$" + en_TeX + "$$";
+          MathJax.Hub.Queue(["Typeset",MathJax.Hub,"math-jax-out"]);
         });
     </script>
   </body>

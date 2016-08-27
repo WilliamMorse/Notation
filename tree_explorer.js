@@ -9811,15 +9811,15 @@ var _user$project$Main$update = F2(
 				var keyboardModel = _p3._0;
 				var keyboardCmd = _p3._1;
 				var shift_enter = A2(_ohanhi$keyboard_extra$Keyboard_Extra$isPressed, _ohanhi$keyboard_extra$Keyboard_Extra$Enter, keyboardModel) && A2(_ohanhi$keyboard_extra$Keyboard_Extra$isPressed, _ohanhi$keyboard_extra$Keyboard_Extra$Shift, keyboardModel);
-				var shift_back = A2(_ohanhi$keyboard_extra$Keyboard_Extra$isPressed, _ohanhi$keyboard_extra$Keyboard_Extra$ArrowLeft, keyboardModel) && A2(_ohanhi$keyboard_extra$Keyboard_Extra$isPressed, _ohanhi$keyboard_extra$Keyboard_Extra$Shift, keyboardModel);
-				var shift_forward = A2(_ohanhi$keyboard_extra$Keyboard_Extra$isPressed, _ohanhi$keyboard_extra$Keyboard_Extra$ArrowRight, keyboardModel) && A2(_ohanhi$keyboard_extra$Keyboard_Extra$isPressed, _ohanhi$keyboard_extra$Keyboard_Extra$Shift, keyboardModel);
+				var ctl_back = A2(_ohanhi$keyboard_extra$Keyboard_Extra$isPressed, _ohanhi$keyboard_extra$Keyboard_Extra$ArrowLeft, keyboardModel) && A2(_ohanhi$keyboard_extra$Keyboard_Extra$isPressed, _ohanhi$keyboard_extra$Keyboard_Extra$Control, keyboardModel);
+				var ctl_forward = A2(_ohanhi$keyboard_extra$Keyboard_Extra$isPressed, _ohanhi$keyboard_extra$Keyboard_Extra$ArrowRight, keyboardModel) && A2(_ohanhi$keyboard_extra$Keyboard_Extra$isPressed, _ohanhi$keyboard_extra$Keyboard_Extra$Control, keyboardModel);
 				return shift_enter ? A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					A3(_user$project$Main$enterAndGo, model, keyboardModel, next_id),
 					_elm_lang$core$Native_List.fromArray(
 						[
 							A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$KeyboardMsg, keyboardCmd)
-						])) : (shift_back ? A2(
+						])) : (ctl_back ? A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_user$project$Main$goBackUp(model),
 					_elm_lang$core$Native_List.fromArray(
@@ -9851,7 +9851,7 @@ var _user$project$Main$update = F2(
 				return {
 					ctor: '_Tuple2',
 					_0: model,
-					_1: _user$project$Port_Port$renderEquation(model.current_equation.eq)
+					_1: _user$project$Port_Port$renderEquation(model.laTeX)
 				};
 		}
 	});
@@ -9955,23 +9955,23 @@ var _user$project$Main$view = function (model) {
 		_elm_lang$core$Native_List.fromArray(
 			[
 				A2(
-				_elm_lang$html$Html$textarea,
+				_elm_lang$html$Html$input,
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_elm_lang$html$Html_Events$onInput(_user$project$Main$LaTeX)
+						_elm_lang$html$Html_Attributes$type$('text'),
+						_elm_lang$html$Html_Events$onInput(_user$project$Main$LaTeX),
+						_elm_lang$html$Html_Attributes$value(model.laTeX)
 					]),
 				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html$text(model.laTeX)
-					])),
+					[])),
 				A2(
 				_elm_lang$html$Html$p,
 				_elm_lang$core$Native_List.fromArray(
-					[]),
-				_elm_lang$core$Native_List.fromArray(
 					[
-						_elm_lang$html$Html$text(model.laTeX)
-					])),
+						_elm_lang$html$Html_Attributes$id('math-jax-out')
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[])),
 				A2(
 				_elm_lang$html$Html$button,
 				_elm_lang$core$Native_List.fromArray(
