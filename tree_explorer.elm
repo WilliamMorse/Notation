@@ -1,3 +1,5 @@
+--port module TreeExplorer exposing (..)
+
 import Html exposing (..)
 import Html.App as Html
 import Html.Attributes exposing (..)
@@ -6,7 +8,7 @@ import Tree.Tree as Tree exposing (..)
 import String exposing (..)
 --import Set exposing (..)
 import Keyboard.Extra as Keyboard
-
+import Port.Port as Port exposing (..)
 
 
 --main =
@@ -23,7 +25,7 @@ main =
 -- model
 type alias Model =
   { keyboardModel : Keyboard.Model
-  , laTex : String -- edit to the current nodes laTex string
+  , laTeX : String -- edit to the current nodes laTeX string
   , equation_edits_tree : Tree Step -- Tree Step
   , current_equation : Step
   , new_node : Int
@@ -45,18 +47,19 @@ init =
 
 -- update
 type Msg
-    = LaTex String
+    = LaTeX String
     | GoUp
     | GoDown Int
     | KeyboardMsg Keyboard.Msg
+    | RenderEquation
 
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
   case msg of
-    LaTex s ->
-      { model | laTex = s } ! []
+    LaTeX s ->
+      { model | laTeX = s } ! []
 
     KeyboardMsg keyMsg ->
       let
@@ -84,7 +87,7 @@ update msg model =
         else
           { model | keyboardModel = keyboardModel } ! [Cmd.map KeyboardMsg keyboardCmd]
 --    InsertEquation  ->
---      { model | equation_edits_tree = (Tree.insertUnder model.current_equation (newStep2 model.new_node model.laTex) Tree.Before model.equation_edits_tree),
+--      { model | equation_edits_tree = (Tree.insertUnder model.current_equation (newStep2 model.new_node model.laTeX) Tree.Before model.equation_edits_tree),
 --                new_node = model.new_node + 1 } ! []
 
     GoUp ->
@@ -94,7 +97,10 @@ update msg model =
         (goBackUp model) ! []
 
     GoDown y ->
-        (goNextDn y model) ! []
+      (goNextDn y model) ! []
+
+    RenderEquation ->
+      (model, Port.renderEquation model.current_equation.eq)
 
 
 last_child_id : List Step -> Int
@@ -108,15 +114,13 @@ last_child_id cl =
         it.id
       Nothing -> -1
 
-
-
 goNextDn : Int -> Model -> Model
 goNextDn to_id model =
   let
     new_eq = Tree.find to_id model.equation_edits_tree
   in
     { model | current_equation = new_eq
-            , laTex = new_eq.eq }
+            , laTeX = new_eq.eq }
 
 goBackUp : Model -> Model
 goBackUp model =
@@ -124,12 +128,12 @@ goBackUp model =
     new_eq = (Tree.findParentNode (newStep 0) model.current_equation model.equation_edits_tree)
   in
     { model | current_equation = new_eq
-          , laTex = new_eq.eq }
+          , laTeX = new_eq.eq }
 
 --enterAndGo : Model -> msg -> Int -> Model
 enterAndGo model keyboardModel next_id =
   let
-    new_tree = (Tree.insertUnder model.current_equation (newStep2 next_id model.laTex) Tree.After model.equation_edits_tree)
+    new_tree = (Tree.insertUnder model.current_equation (newStep2 next_id model.laTeX) Tree.After model.equation_edits_tree)
 
     new_current_eq = Tree.find next_id new_tree
   in
@@ -137,7 +141,7 @@ enterAndGo model keyboardModel next_id =
       | keyboardModel = keyboardModel
       , equation_edits_tree = new_tree
       , current_equation = new_current_eq
-      , laTex = new_current_eq.eq
+      , laTeX = new_current_eq.eq
       , new_node = next_id
     }
 
@@ -146,8 +150,9 @@ enterAndGo model keyboardModel next_id =
 view : Model -> Html Msg
 view model =
   div []
-    [ input [ type' "text", placeholder "laTex", onInput LaTex, value model.laTex] []
-    , p [] [ text model.laTex ]
+    [ textarea [onInput LaTeX] [text model.laTeX]
+    , p [] [ text model.laTeX ]
+    , button [ onClick RenderEquation ] [ text "Render Equation Now" ]
     , div [] [
         if Tree.hasParentIn model.current_equation model.equation_edits_tree then
           button [ onClick GoUp ] [text "go back"]
