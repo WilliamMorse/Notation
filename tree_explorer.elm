@@ -91,9 +91,6 @@ update msg model =
 --                new_node = model.new_node + 1 } ! []
 
     GoUp ->
-      let
-        next_id = model.new_node + 1
-      in
         (goBackUp model) ! []
 
     GoDown y ->
