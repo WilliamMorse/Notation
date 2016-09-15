@@ -23,7 +23,7 @@ import Html.Lazy exposing (lazy, lazy2)
 import Json.Decode as Json
 import String
 import Task
-
+import Port.MathJax as MathJax exposing (..)
 
 
 main : Program (Maybe Model)
@@ -116,6 +116,7 @@ type Msg
     | Check Int Bool
     | CheckAll Bool
     | ChangeVisibility String
+    | RenderEquation Int
 
 
 -- How we update our Model on a given Msg?
@@ -188,7 +189,16 @@ update msg model =
       { model | visibility = visibility }
         ! []
 
+    RenderEquation id ->
+      (model, MathJax.renderEquation "x = y")
 
+
+-- (List.filter (isTheOne id)
+isTheOne the_id item =
+  item.id == the_id
+
+getFirst list =
+  "\\frac {y - b} {m} = x"
 
 -- VIEW
 
@@ -298,7 +308,7 @@ viewEntry todo =
             ]
             []
         , label
-            [ onDoubleClick (EditingEntry todo.id True) ]
+            [id ("math-jax-out-" ++ toString todo.id), onDoubleClick (EditingEntry todo.id True) ]
             [ text todo.description ]
         , button
             [ class "destroy"

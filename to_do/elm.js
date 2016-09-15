@@ -8319,6 +8319,12 @@ var _elm_lang$html$Html_Lazy$lazy3 = _elm_lang$virtual_dom$VirtualDom$lazy3;
 var _elm_lang$html$Html_Lazy$lazy2 = _elm_lang$virtual_dom$VirtualDom$lazy2;
 var _elm_lang$html$Html_Lazy$lazy = _elm_lang$virtual_dom$VirtualDom$lazy;
 
+var _evancz$elm_todomvc$Port_MathJax$renderEquation = _elm_lang$core$Native_Platform.outgoingPort(
+	'renderEquation',
+	function (v) {
+		return v;
+	});
+
 var _evancz$elm_todomvc$Todo$infoFooter = A2(
 	_elm_lang$html$Html$footer,
 	_elm_lang$core$Native_List.fromArray(
@@ -8359,6 +8365,13 @@ var _evancz$elm_todomvc$Todo$viewControlsCount = function (entriesLeft) {
 				A2(_elm_lang$core$Basics_ops['++'], item_, ' left'))
 			]));
 };
+var _evancz$elm_todomvc$Todo$getFirst = function (list) {
+	return '\\frac {y - b} {m} = x';
+};
+var _evancz$elm_todomvc$Todo$isTheOne = F2(
+	function (the_id, item) {
+		return _elm_lang$core$Native_Utils.eq(item.id, the_id);
+	});
 var _evancz$elm_todomvc$Todo$newEntry = F2(
 	function (desc, id) {
 		return {description: desc, do_show: true, editing: false, id: id};
@@ -8398,6 +8411,9 @@ var _evancz$elm_todomvc$Todo$Entry = F4(
 	function (a, b, c, d) {
 		return {description: a, do_show: b, editing: c, id: d};
 	});
+var _evancz$elm_todomvc$Todo$RenderEquation = function (a) {
+	return {ctor: 'RenderEquation', _0: a};
+};
 var _evancz$elm_todomvc$Todo$ChangeVisibility = function (a) {
 	return {ctor: 'ChangeVisibility', _0: a};
 };
@@ -8663,7 +8679,7 @@ var _evancz$elm_todomvc$Todo$update = F2(
 						}),
 					_elm_lang$core$Native_List.fromArray(
 						[]));
-			default:
+			case 'ChangeVisibility':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
@@ -8671,6 +8687,12 @@ var _evancz$elm_todomvc$Todo$update = F2(
 						{visibility: _p0._0}),
 					_elm_lang$core$Native_List.fromArray(
 						[]));
+			default:
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: _evancz$elm_todomvc$Port_MathJax$renderEquation('x = y')
+				};
 		}
 	});
 var _evancz$elm_todomvc$Todo$updateWithStorage = F2(
@@ -8772,6 +8794,11 @@ var _evancz$elm_todomvc$Todo$viewEntry = function (todo) {
 						_elm_lang$html$Html$label,
 						_elm_lang$core$Native_List.fromArray(
 							[
+								_elm_lang$html$Html_Attributes$id(
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									'math-jax-out-',
+									_elm_lang$core$Basics$toString(todo.id))),
 								_elm_lang$html$Html_Events$onDoubleClick(
 								A2(_evancz$elm_todomvc$Todo$EditingEntry, todo.id, true))
 							]),
