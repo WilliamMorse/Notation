@@ -336,32 +336,28 @@ viewEntry todo =
 viewControls : String -> List Entry -> Html Msg
 viewControls visibility entries =
   let
-    entriesShown =
+    entriesPrimary =
       List.length (List.filter .do_show entries)
-
-    entriesLeft =
-      List.length entries - entriesShown
   in
     footer
       [ class "footer"
       , hidden (List.isEmpty entries)
       ]
-      [ lazy viewControlsCount entriesLeft
+      [ lazy viewControlsCount entriesPrimary
       , lazy viewControlsFilters visibility
-      --, lazy viewControlsClear entriesShown
       ]
 
 
 viewControlsCount : Int -> Html Msg
 viewControlsCount entriesLeft =
   let
-    item_ =
-      if entriesLeft == 1 then " item" else " items"
+    steps_ =
+      if entriesLeft == 1 then " step" else " steps"
   in
     span
       [ class "todo-count" ]
       [ strong [] [ text (toString entriesLeft) ]
-      , text (item_ ++ " left")
+      , text ("primary " ++ steps_)
       ]
 
 
