@@ -8343,7 +8343,7 @@ var _evancz$elm_todomvc$Todo$infoFooter = A2(
 				]))
 		]));
 var _evancz$elm_todomvc$Todo$viewControlsCount = function (entriesLeft) {
-	var item_ = _elm_lang$core$Native_Utils.eq(entriesLeft, 1) ? ' item' : ' items';
+	var steps_ = _elm_lang$core$Native_Utils.eq(entriesLeft, 1) ? ' step' : ' steps';
 	return A2(
 		_elm_lang$html$Html$span,
 		_elm_lang$core$Native_List.fromArray(
@@ -8362,7 +8362,7 @@ var _evancz$elm_todomvc$Todo$viewControlsCount = function (entriesLeft) {
 						_elm_lang$core$Basics$toString(entriesLeft))
 					])),
 				_elm_lang$html$Html$text(
-				A2(_elm_lang$core$Basics_ops['++'], item_, ' left'))
+				A2(_elm_lang$core$Basics_ops['++'], ' primary ', steps_))
 			]));
 };
 var _evancz$elm_todomvc$Todo$getFirst = function (list) {
@@ -8466,14 +8466,13 @@ var _evancz$elm_todomvc$Todo$viewControlsFilters = function (visibility) {
 };
 var _evancz$elm_todomvc$Todo$viewControls = F2(
 	function (visibility, entries) {
-		var entriesShown = _elm_lang$core$List$length(
+		var entriesPrimary = _elm_lang$core$List$length(
 			A2(
 				_elm_lang$core$List$filter,
 				function (_) {
 					return _.do_show;
 				},
 				entries));
-		var entriesLeft = _elm_lang$core$List$length(entries) - entriesShown;
 		return A2(
 			_elm_lang$html$Html$footer,
 			_elm_lang$core$Native_List.fromArray(
@@ -8484,7 +8483,7 @@ var _evancz$elm_todomvc$Todo$viewControls = F2(
 				]),
 			_elm_lang$core$Native_List.fromArray(
 				[
-					A2(_elm_lang$html$Html_Lazy$lazy, _evancz$elm_todomvc$Todo$viewControlsCount, entriesLeft),
+					A2(_elm_lang$html$Html_Lazy$lazy, _evancz$elm_todomvc$Todo$viewControlsCount, entriesPrimary),
 					A2(_elm_lang$html$Html_Lazy$lazy, _evancz$elm_todomvc$Todo$viewControlsFilters, visibility)
 				]));
 	});
@@ -8735,14 +8734,14 @@ var _evancz$elm_todomvc$Todo$viewInput = function (task) {
 					[]),
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_elm_lang$html$Html$text('todos')
+						_elm_lang$html$Html$text('explain')
 					])),
 				A2(
 				_elm_lang$html$Html$input,
 				_elm_lang$core$Native_List.fromArray(
 					[
 						_elm_lang$html$Html_Attributes$class('new-todo'),
-						_elm_lang$html$Html_Attributes$placeholder('What needs to be done?'),
+						_elm_lang$html$Html_Attributes$placeholder('Enter math in laTeX, mix in some words to...'),
 						_elm_lang$html$Html_Attributes$autofocus(true),
 						_elm_lang$html$Html_Attributes$value(task),
 						_elm_lang$html$Html_Attributes$name('newTodo'),
@@ -8880,30 +8879,6 @@ var _evancz$elm_todomvc$Todo$viewEntries = F2(
 				]),
 			_elm_lang$core$Native_List.fromArray(
 				[
-					A2(
-					_elm_lang$html$Html$input,
-					_elm_lang$core$Native_List.fromArray(
-						[
-							_elm_lang$html$Html_Attributes$class('toggle-all'),
-							_elm_lang$html$Html_Attributes$type$('checkbox'),
-							_elm_lang$html$Html_Attributes$name('toggle'),
-							_elm_lang$html$Html_Attributes$checked(allShown),
-							_elm_lang$html$Html_Events$onClick(
-							_evancz$elm_todomvc$Todo$CheckAll(
-								_elm_lang$core$Basics$not(allShown)))
-						]),
-					_elm_lang$core$Native_List.fromArray(
-						[])),
-					A2(
-					_elm_lang$html$Html$label,
-					_elm_lang$core$Native_List.fromArray(
-						[
-							_elm_lang$html$Html_Attributes$for('toggle-all')
-						]),
-					_elm_lang$core$Native_List.fromArray(
-						[
-							_elm_lang$html$Html$text('Mark all as complete')
-						])),
 					A2(
 					_elm_lang$html$Html_Keyed$ul,
 					_elm_lang$core$Native_List.fromArray(

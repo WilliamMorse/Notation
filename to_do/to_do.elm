@@ -269,18 +269,7 @@ viewEntries visibility entries =
       [ class "main"
       , style [ ("visibility", cssVisibility) ]
       ]
-      [ input
-          [ class "toggle-all"
-          , type' "checkbox"
-          , name "toggle"
-          , checked allShown
-          , onClick (CheckAll (not allShown))
-          ]
-          []
-      , label
-          [ for "toggle-all" ]
-          [ text "Mark all as complete" ]
-      , Keyed.ul [ class "todo-list" ] <|
+      [ Keyed.ul [ class "todo-list" ] <|
           List.map viewKeyedEntry (List.filter isVisible entries)
       ]
 
