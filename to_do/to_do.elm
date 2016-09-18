@@ -223,10 +223,10 @@ viewInput : String -> Html Msg
 viewInput task =
   header
     [ class "header" ]
-    [ h1 [] [ text "todos" ]
+    [ h1 [] [ text "explain" ]
     , input
         [ class "new-todo"
-        , placeholder "What needs to be done?"
+        , placeholder "Enter math in laTeX, mix in some words to..."
         , autofocus True
         , value task
         , name "newTodo"
@@ -357,7 +357,7 @@ viewControlsCount entriesLeft =
     span
       [ class "todo-count" ]
       [ strong [] [ text (toString entriesLeft) ]
-      , text ("primary " ++ steps_)
+      , text (" primary " ++ steps_)
       ]
 
 
