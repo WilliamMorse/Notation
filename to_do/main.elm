@@ -1,4 +1,4 @@
-port module Todo exposing (..)
+port module Main exposing (..)
 {-| TodoMVC implemented in Elm, using plain HTML and CSS for rendering.
 
 ~/.../to_do$ elm-make to_do.elm --output elm.js
@@ -72,6 +72,8 @@ type alias Entry =
     , editing : Bool
     , id : Int
     }
+
+
 
 
 emptyModel : Model
@@ -296,8 +298,9 @@ viewEntry todo =
             , onClick (Check todo.id (not todo.do_show))
             ]
             []
+        , div [id ("math-jax-out-" ++ toString todo.id)] [text "here"]
         , label
-            [id ("math-jax-out-" ++ toString todo.id), onDoubleClick (EditingEntry todo.id True) ]
+            [onDoubleClick (EditingEntry todo.id True) ]
             [ text todo.description ]
         , button
             [ class "destroy"

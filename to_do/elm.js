@@ -8325,7 +8325,7 @@ var _evancz$elm_todomvc$Port_MathJax$renderEquation = _elm_lang$core$Native_Plat
 		return v;
 	});
 
-var _evancz$elm_todomvc$Todo$infoFooter = A2(
+var _evancz$elm_todomvc$Main$infoFooter = A2(
 	_elm_lang$html$Html$footer,
 	_elm_lang$core$Native_List.fromArray(
 		[
@@ -8342,7 +8342,7 @@ var _evancz$elm_todomvc$Todo$infoFooter = A2(
 					_elm_lang$html$Html$text('Double-click to edit an equation')
 				]))
 		]));
-var _evancz$elm_todomvc$Todo$viewControlsCount = function (entriesLeft) {
+var _evancz$elm_todomvc$Main$viewControlsCount = function (entriesLeft) {
 	var steps_ = _elm_lang$core$Native_Utils.eq(entriesLeft, 1) ? ' step' : ' steps';
 	return A2(
 		_elm_lang$html$Html$span,
@@ -8365,32 +8365,32 @@ var _evancz$elm_todomvc$Todo$viewControlsCount = function (entriesLeft) {
 				A2(_elm_lang$core$Basics_ops['++'], ' primary ', steps_))
 			]));
 };
-var _evancz$elm_todomvc$Todo$getFirst = function (list) {
+var _evancz$elm_todomvc$Main$getFirst = function (list) {
 	return '\\frac {y - b} {m} = x';
 };
-var _evancz$elm_todomvc$Todo$isTheOne = F2(
+var _evancz$elm_todomvc$Main$isTheOne = F2(
 	function (the_id, item) {
 		return _elm_lang$core$Native_Utils.eq(item.id, the_id);
 	});
-var _evancz$elm_todomvc$Todo$newEntry = F2(
+var _evancz$elm_todomvc$Main$newEntry = F2(
 	function (desc, id) {
 		return {description: desc, do_show: true, editing: false, id: id};
 	});
-var _evancz$elm_todomvc$Todo$emptyModel = {
+var _evancz$elm_todomvc$Main$emptyModel = {
 	entries: _elm_lang$core$Native_List.fromArray(
 		[]),
 	visibility: 'All',
 	field: '',
 	uid: 0
 };
-var _evancz$elm_todomvc$Todo$init = function (savedModel) {
+var _evancz$elm_todomvc$Main$init = function (savedModel) {
 	return A2(
 		_elm_lang$core$Platform_Cmd_ops['!'],
-		A2(_elm_lang$core$Maybe$withDefault, _evancz$elm_todomvc$Todo$emptyModel, savedModel),
+		A2(_elm_lang$core$Maybe$withDefault, _evancz$elm_todomvc$Main$emptyModel, savedModel),
 		_elm_lang$core$Native_List.fromArray(
 			[]));
 };
-var _evancz$elm_todomvc$Todo$setStorage = _elm_lang$core$Native_Platform.outgoingPort(
+var _evancz$elm_todomvc$Main$setStorage = _elm_lang$core$Native_Platform.outgoingPort(
 	'setStorage',
 	function (v) {
 		return {
@@ -8403,28 +8403,28 @@ var _evancz$elm_todomvc$Todo$setStorage = _elm_lang$core$Native_Platform.outgoin
 			visibility: v.visibility
 		};
 	});
-var _evancz$elm_todomvc$Todo$Model = F4(
+var _evancz$elm_todomvc$Main$Model = F4(
 	function (a, b, c, d) {
 		return {entries: a, field: b, uid: c, visibility: d};
 	});
-var _evancz$elm_todomvc$Todo$Entry = F4(
+var _evancz$elm_todomvc$Main$Entry = F4(
 	function (a, b, c, d) {
 		return {description: a, do_show: b, editing: c, id: d};
 	});
-var _evancz$elm_todomvc$Todo$RenderEquation = function (a) {
+var _evancz$elm_todomvc$Main$RenderEquation = function (a) {
 	return {ctor: 'RenderEquation', _0: a};
 };
-var _evancz$elm_todomvc$Todo$ChangeVisibility = function (a) {
+var _evancz$elm_todomvc$Main$ChangeVisibility = function (a) {
 	return {ctor: 'ChangeVisibility', _0: a};
 };
-var _evancz$elm_todomvc$Todo$visibilitySwap = F3(
+var _evancz$elm_todomvc$Main$visibilitySwap = F3(
 	function (uri, visibility, actualVisibility) {
 		return A2(
 			_elm_lang$html$Html$li,
 			_elm_lang$core$Native_List.fromArray(
 				[
 					_elm_lang$html$Html_Events$onClick(
-					_evancz$elm_todomvc$Todo$ChangeVisibility(visibility))
+					_evancz$elm_todomvc$Main$ChangeVisibility(visibility))
 				]),
 			_elm_lang$core$Native_List.fromArray(
 				[
@@ -8449,7 +8449,7 @@ var _evancz$elm_todomvc$Todo$visibilitySwap = F3(
 						]))
 				]));
 	});
-var _evancz$elm_todomvc$Todo$viewControlsFilters = function (visibility) {
+var _evancz$elm_todomvc$Main$viewControlsFilters = function (visibility) {
 	return A2(
 		_elm_lang$html$Html$ul,
 		_elm_lang$core$Native_List.fromArray(
@@ -8458,13 +8458,13 @@ var _evancz$elm_todomvc$Todo$viewControlsFilters = function (visibility) {
 			]),
 		_elm_lang$core$Native_List.fromArray(
 			[
-				A3(_evancz$elm_todomvc$Todo$visibilitySwap, '#/', 'All', visibility),
+				A3(_evancz$elm_todomvc$Main$visibilitySwap, '#/', 'All', visibility),
 				_elm_lang$html$Html$text(' '),
-				A3(_evancz$elm_todomvc$Todo$visibilitySwap, '#/active', 'Primary', visibility),
+				A3(_evancz$elm_todomvc$Main$visibilitySwap, '#/active', 'Primary', visibility),
 				_elm_lang$html$Html$text(' ')
 			]));
 };
-var _evancz$elm_todomvc$Todo$viewControls = F2(
+var _evancz$elm_todomvc$Main$viewControls = F2(
 	function (visibility, entries) {
 		var entriesPrimary = _elm_lang$core$List$length(
 			A2(
@@ -8483,19 +8483,19 @@ var _evancz$elm_todomvc$Todo$viewControls = F2(
 				]),
 			_elm_lang$core$Native_List.fromArray(
 				[
-					A2(_elm_lang$html$Html_Lazy$lazy, _evancz$elm_todomvc$Todo$viewControlsCount, entriesPrimary),
-					A2(_elm_lang$html$Html_Lazy$lazy, _evancz$elm_todomvc$Todo$viewControlsFilters, visibility)
+					A2(_elm_lang$html$Html_Lazy$lazy, _evancz$elm_todomvc$Main$viewControlsCount, entriesPrimary),
+					A2(_elm_lang$html$Html_Lazy$lazy, _evancz$elm_todomvc$Main$viewControlsFilters, visibility)
 				]));
 	});
-var _evancz$elm_todomvc$Todo$CheckAll = function (a) {
+var _evancz$elm_todomvc$Main$CheckAll = function (a) {
 	return {ctor: 'CheckAll', _0: a};
 };
-var _evancz$elm_todomvc$Todo$Check = F2(
+var _evancz$elm_todomvc$Main$Check = F2(
 	function (a, b) {
 		return {ctor: 'Check', _0: a, _1: b};
 	});
-var _evancz$elm_todomvc$Todo$DeleteComplete = {ctor: 'DeleteComplete'};
-var _evancz$elm_todomvc$Todo$viewControlsClear = function (entriesShown) {
+var _evancz$elm_todomvc$Main$DeleteComplete = {ctor: 'DeleteComplete'};
+var _evancz$elm_todomvc$Main$viewControlsClear = function (entriesShown) {
 	return A2(
 		_elm_lang$html$Html$button,
 		_elm_lang$core$Native_List.fromArray(
@@ -8503,7 +8503,7 @@ var _evancz$elm_todomvc$Todo$viewControlsClear = function (entriesShown) {
 				_elm_lang$html$Html_Attributes$class('clear-show'),
 				_elm_lang$html$Html_Attributes$hidden(
 				_elm_lang$core$Native_Utils.eq(entriesShown, 0)),
-				_elm_lang$html$Html_Events$onClick(_evancz$elm_todomvc$Todo$DeleteComplete)
+				_elm_lang$html$Html_Events$onClick(_evancz$elm_todomvc$Main$DeleteComplete)
 			]),
 		_elm_lang$core$Native_List.fromArray(
 			[
@@ -8517,23 +8517,23 @@ var _evancz$elm_todomvc$Todo$viewControlsClear = function (entriesShown) {
 						')')))
 			]));
 };
-var _evancz$elm_todomvc$Todo$Delete = function (a) {
+var _evancz$elm_todomvc$Main$Delete = function (a) {
 	return {ctor: 'Delete', _0: a};
 };
-var _evancz$elm_todomvc$Todo$Add = {ctor: 'Add'};
-var _evancz$elm_todomvc$Todo$UpdateEntry = F2(
+var _evancz$elm_todomvc$Main$Add = {ctor: 'Add'};
+var _evancz$elm_todomvc$Main$UpdateEntry = F2(
 	function (a, b) {
 		return {ctor: 'UpdateEntry', _0: a, _1: b};
 	});
-var _evancz$elm_todomvc$Todo$EditingEntry = F2(
+var _evancz$elm_todomvc$Main$EditingEntry = F2(
 	function (a, b) {
 		return {ctor: 'EditingEntry', _0: a, _1: b};
 	});
-var _evancz$elm_todomvc$Todo$UpdateField = function (a) {
+var _evancz$elm_todomvc$Main$UpdateField = function (a) {
 	return {ctor: 'UpdateField', _0: a};
 };
-var _evancz$elm_todomvc$Todo$NoOp = {ctor: 'NoOp'};
-var _evancz$elm_todomvc$Todo$update = F2(
+var _evancz$elm_todomvc$Main$NoOp = {ctor: 'NoOp'};
+var _evancz$elm_todomvc$Main$update = F2(
 	function (msg, model) {
 		var _p0 = msg;
 		switch (_p0.ctor) {
@@ -8556,7 +8556,7 @@ var _evancz$elm_todomvc$Todo$update = F2(
 								model.entries,
 								_elm_lang$core$Native_List.fromArray(
 									[
-										A2(_evancz$elm_todomvc$Todo$newEntry, model.field, model.uid)
+										A2(_evancz$elm_todomvc$Main$newEntry, model.field, model.uid)
 									]))
 						}),
 					_elm_lang$core$Native_List.fromArray(
@@ -8593,10 +8593,10 @@ var _evancz$elm_todomvc$Todo$update = F2(
 							A3(
 							_elm_lang$core$Task$perform,
 							function (_p1) {
-								return _evancz$elm_todomvc$Todo$NoOp;
+								return _evancz$elm_todomvc$Main$NoOp;
 							},
 							function (_p2) {
-								return _evancz$elm_todomvc$Todo$NoOp;
+								return _evancz$elm_todomvc$Main$NoOp;
 							},
 							focus)
 						]));
@@ -8694,9 +8694,9 @@ var _evancz$elm_todomvc$Todo$update = F2(
 				};
 		}
 	});
-var _evancz$elm_todomvc$Todo$updateWithStorage = F2(
+var _evancz$elm_todomvc$Main$updateWithStorage = F2(
 	function (msg, model) {
-		var _p5 = A2(_evancz$elm_todomvc$Todo$update, msg, model);
+		var _p5 = A2(_evancz$elm_todomvc$Main$update, msg, model);
 		var newModel = _p5._0;
 		var cmds = _p5._1;
 		return {
@@ -8705,21 +8705,21 @@ var _evancz$elm_todomvc$Todo$updateWithStorage = F2(
 			_1: _elm_lang$core$Platform_Cmd$batch(
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_evancz$elm_todomvc$Todo$setStorage(newModel),
+						_evancz$elm_todomvc$Main$setStorage(newModel),
 						cmds
 					]))
 		};
 	});
-var _evancz$elm_todomvc$Todo$onEnter = function (msg) {
+var _evancz$elm_todomvc$Main$onEnter = function (msg) {
 	var tagger = function (code) {
-		return _elm_lang$core$Native_Utils.eq(code, 13) ? msg : _evancz$elm_todomvc$Todo$NoOp;
+		return _elm_lang$core$Native_Utils.eq(code, 13) ? msg : _evancz$elm_todomvc$Main$NoOp;
 	};
 	return A2(
 		_elm_lang$html$Html_Events$on,
 		'keydown',
 		A2(_elm_lang$core$Json_Decode$map, tagger, _elm_lang$html$Html_Events$keyCode));
 };
-var _evancz$elm_todomvc$Todo$viewInput = function (task) {
+var _evancz$elm_todomvc$Main$viewInput = function (task) {
 	return A2(
 		_elm_lang$html$Html$header,
 		_elm_lang$core$Native_List.fromArray(
@@ -8745,14 +8745,14 @@ var _evancz$elm_todomvc$Todo$viewInput = function (task) {
 						_elm_lang$html$Html_Attributes$autofocus(true),
 						_elm_lang$html$Html_Attributes$value(task),
 						_elm_lang$html$Html_Attributes$name('newTodo'),
-						_elm_lang$html$Html_Events$onInput(_evancz$elm_todomvc$Todo$UpdateField),
-						_evancz$elm_todomvc$Todo$onEnter(_evancz$elm_todomvc$Todo$Add)
+						_elm_lang$html$Html_Events$onInput(_evancz$elm_todomvc$Main$UpdateField),
+						_evancz$elm_todomvc$Main$onEnter(_evancz$elm_todomvc$Main$Add)
 					]),
 				_elm_lang$core$Native_List.fromArray(
 					[]))
 			]));
 };
-var _evancz$elm_todomvc$Todo$viewEntry = function (todo) {
+var _evancz$elm_todomvc$Main$viewEntry = function (todo) {
 	return A2(
 		_elm_lang$html$Html$li,
 		_elm_lang$core$Native_List.fromArray(
@@ -8783,23 +8783,32 @@ var _evancz$elm_todomvc$Todo$viewEntry = function (todo) {
 								_elm_lang$html$Html_Attributes$checked(todo.do_show),
 								_elm_lang$html$Html_Events$onClick(
 								A2(
-									_evancz$elm_todomvc$Todo$Check,
+									_evancz$elm_todomvc$Main$Check,
 									todo.id,
 									_elm_lang$core$Basics$not(todo.do_show)))
 							]),
 						_elm_lang$core$Native_List.fromArray(
 							[])),
 						A2(
-						_elm_lang$html$Html$label,
+						_elm_lang$html$Html$div,
 						_elm_lang$core$Native_List.fromArray(
 							[
 								_elm_lang$html$Html_Attributes$id(
 								A2(
 									_elm_lang$core$Basics_ops['++'],
 									'math-jax-out-',
-									_elm_lang$core$Basics$toString(todo.id))),
+									_elm_lang$core$Basics$toString(todo.id)))
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html$text('here')
+							])),
+						A2(
+						_elm_lang$html$Html$label,
+						_elm_lang$core$Native_List.fromArray(
+							[
 								_elm_lang$html$Html_Events$onDoubleClick(
-								A2(_evancz$elm_todomvc$Todo$EditingEntry, todo.id, true))
+								A2(_evancz$elm_todomvc$Main$EditingEntry, todo.id, true))
 							]),
 						_elm_lang$core$Native_List.fromArray(
 							[
@@ -8811,7 +8820,7 @@ var _evancz$elm_todomvc$Todo$viewEntry = function (todo) {
 							[
 								_elm_lang$html$Html_Attributes$class('destroy'),
 								_elm_lang$html$Html_Events$onClick(
-								_evancz$elm_todomvc$Todo$Delete(todo.id))
+								_evancz$elm_todomvc$Main$Delete(todo.id))
 							]),
 						_elm_lang$core$Native_List.fromArray(
 							[]))
@@ -8829,24 +8838,24 @@ var _evancz$elm_todomvc$Todo$viewEntry = function (todo) {
 							'todo-',
 							_elm_lang$core$Basics$toString(todo.id))),
 						_elm_lang$html$Html_Events$onInput(
-						_evancz$elm_todomvc$Todo$UpdateEntry(todo.id)),
+						_evancz$elm_todomvc$Main$UpdateEntry(todo.id)),
 						_elm_lang$html$Html_Events$onBlur(
-						A2(_evancz$elm_todomvc$Todo$EditingEntry, todo.id, false)),
-						_evancz$elm_todomvc$Todo$onEnter(
-						A2(_evancz$elm_todomvc$Todo$EditingEntry, todo.id, false))
+						A2(_evancz$elm_todomvc$Main$EditingEntry, todo.id, false)),
+						_evancz$elm_todomvc$Main$onEnter(
+						A2(_evancz$elm_todomvc$Main$EditingEntry, todo.id, false))
 					]),
 				_elm_lang$core$Native_List.fromArray(
 					[]))
 			]));
 };
-var _evancz$elm_todomvc$Todo$viewKeyedEntry = function (todo) {
+var _evancz$elm_todomvc$Main$viewKeyedEntry = function (todo) {
 	return {
 		ctor: '_Tuple2',
 		_0: _elm_lang$core$Basics$toString(todo.id),
-		_1: A2(_elm_lang$html$Html_Lazy$lazy, _evancz$elm_todomvc$Todo$viewEntry, todo)
+		_1: A2(_elm_lang$html$Html_Lazy$lazy, _evancz$elm_todomvc$Main$viewEntry, todo)
 	};
 };
-var _evancz$elm_todomvc$Todo$viewEntries = F2(
+var _evancz$elm_todomvc$Main$viewEntries = F2(
 	function (visibility, entries) {
 		var cssVisibility = _elm_lang$core$List$isEmpty(entries) ? 'hidden' : 'visible';
 		var allShown = A2(
@@ -8887,11 +8896,11 @@ var _evancz$elm_todomvc$Todo$viewEntries = F2(
 						]),
 					A2(
 						_elm_lang$core$List$map,
-						_evancz$elm_todomvc$Todo$viewKeyedEntry,
+						_evancz$elm_todomvc$Main$viewKeyedEntry,
 						A2(_elm_lang$core$List$filter, isVisible, entries)))
 				]));
 	});
-var _evancz$elm_todomvc$Todo$view = function (model) {
+var _evancz$elm_todomvc$Main$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
@@ -8913,19 +8922,19 @@ var _evancz$elm_todomvc$Todo$view = function (model) {
 					]),
 				_elm_lang$core$Native_List.fromArray(
 					[
-						A3(_elm_lang$html$Html_Lazy$lazy2, _evancz$elm_todomvc$Todo$viewEntries, model.visibility, model.entries),
-						A2(_elm_lang$html$Html_Lazy$lazy, _evancz$elm_todomvc$Todo$viewInput, model.field),
-						A3(_elm_lang$html$Html_Lazy$lazy2, _evancz$elm_todomvc$Todo$viewControls, model.visibility, model.entries)
+						A3(_elm_lang$html$Html_Lazy$lazy2, _evancz$elm_todomvc$Main$viewEntries, model.visibility, model.entries),
+						A2(_elm_lang$html$Html_Lazy$lazy, _evancz$elm_todomvc$Main$viewInput, model.field),
+						A3(_elm_lang$html$Html_Lazy$lazy2, _evancz$elm_todomvc$Main$viewControls, model.visibility, model.entries)
 					])),
-				_evancz$elm_todomvc$Todo$infoFooter
+				_evancz$elm_todomvc$Main$infoFooter
 			]));
 };
-var _evancz$elm_todomvc$Todo$main = {
+var _evancz$elm_todomvc$Main$main = {
 	main: _elm_lang$html$Html_App$programWithFlags(
 		{
-			init: _evancz$elm_todomvc$Todo$init,
-			view: _evancz$elm_todomvc$Todo$view,
-			update: _evancz$elm_todomvc$Todo$updateWithStorage,
+			init: _evancz$elm_todomvc$Main$init,
+			view: _evancz$elm_todomvc$Main$view,
+			update: _evancz$elm_todomvc$Main$updateWithStorage,
 			subscriptions: function (_p7) {
 				return _elm_lang$core$Platform_Sub$none;
 			}
@@ -8988,8 +8997,8 @@ var _evancz$elm_todomvc$Todo$main = {
 };
 
 var Elm = {};
-Elm['Todo'] = Elm['Todo'] || {};
-_elm_lang$core$Native_Platform.addPublicModule(Elm['Todo'], 'Todo', typeof _evancz$elm_todomvc$Todo$main === 'undefined' ? null : _evancz$elm_todomvc$Todo$main);
+Elm['Main'] = Elm['Main'] || {};
+_elm_lang$core$Native_Platform.addPublicModule(Elm['Main'], 'Main', typeof _evancz$elm_todomvc$Main$main === 'undefined' ? null : _evancz$elm_todomvc$Main$main);
 
 if (typeof define === "function" && define['amd'])
 {

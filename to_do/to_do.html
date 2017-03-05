@@ -20,25 +20,39 @@
 <body>
   <div id="pasta-proof"></div>
   <script>
-      var node = document.getElementById('pasta-proof');
+/*      var node = document.getElementById('pasta-proof');
       var app = Elm.Main.embed(node);
 
-      app.ports.renderEquation.subscribe(function(en_TeX, id) {
-        var id_selector = 'math-jax-out-' + id;
+      app.ports.renderEquation.subscribe(function(json_str) {
+        var obj = JSON.parse(json_str);
+
+        var id_selector = 'math-jax-out-' + obj.id;
         var node = document.getElementById(id_selector);
-        node.innerHTML = "$$" + en_TeX + "$$";
+        node.innerHTML = "$$" + obj.en_TeX + "$$";
         MathJax.Hub.Queue(["Typeset", MathJax.Hub, id_selector]);
       });
+      */
   </script>
 </body>
 
 <script type="text/javascript">
-var storedState = localStorage.getItem('elm-todo-save');
+storedState = localStorage.getItem('elm-todo-save');
 var startingState = storedState ? JSON.parse(storedState) : null;
-var todomvc = Elm.Todo.fullscreen(startingState);
-todomvc.ports.setStorage.subscribe(function(state) {
+var app = Elm.Main.fullscreen(startingState);
+app.ports.setStorage.subscribe(function(state) {
     localStorage.setItem('elm-todo-save', JSON.stringify(state));
+    for(e in state.entries) {
+      renderEquation(state.entries[e]);
+    }
 });
+
+function renderEquation(obj) {
+
+  var id_selector = 'math-jax-out-' + obj.id;
+  var node = document.getElementById(id_selector);
+  node.innerHTML = "$$" + obj.description + "$$";
+  MathJax.Hub.Queue(["Typeset", MathJax.Hub, id_selector]);
+}
 </script>
 
 </html>

@@ -149,7 +149,7 @@ fromList xs =
     List.foldl insert empty xs
 
 
-max_in_list : number -> List number -> number
+max_in_list : Int -> List Int -> Int
 max_in_list v l =
   case l of
     [] -> v
