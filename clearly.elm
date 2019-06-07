@@ -166,7 +166,7 @@ viewSolvingStepParagraphStyle model index =
             , spacing 15
             ]
             [ el [ alignLeft, width (fillPortion 1) ] (paragraph [] [ text (getString index model.operations) ])
-            , el [ width (fillPortion 5) ] (text (getString index model.equations))
+            , el [ width (fillPortion 5), height fill ] (el [ alignBottom ] (text (getString index model.equations)))
             ]
         , row
             [ width fill
