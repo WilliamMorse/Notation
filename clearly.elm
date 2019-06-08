@@ -3,7 +3,7 @@ module Main exposing (Model, Msg(..), init, main, subscriptions, update, view)
 import Array as A exposing (Array)
 import Browser exposing (..)
 import Browser.Dom as Bd
-import Browser.Events as Be exposing (onClick)
+import Browser.Events as Be
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
@@ -26,21 +26,14 @@ main =
 -- MODEL
 
 
-type alias SolvingStep =
-    { operation : String
-    , equation : String
-    , notes : String
-    }
-
-
 type alias Model =
     { windowHeight : Int
     , windowWidth : Int
     , ids : Array Int
-    , equations : Array String
     , operations : Array String
+    , equations : Array String
     , notes : Array String
-    , editSteps : Bool
+    , editStep : Int
     }
 
 
@@ -57,7 +50,7 @@ init _ =
             , equations = A.fromList [ "y=mx+b" ]
             , operations = A.fromList [ "Operation: Begin With" ]
             , notes = A.fromList [ "This is a starting example" ]
-            , editSteps = False
+            , editStep = 0
             }
     in
     ( model, Task.perform HeresTheViewport Bd.getViewport )
@@ -77,9 +70,10 @@ type Msg
     | WindowSize Int Int
     | HeresTheViewport Bd.Viewport
     | GenerateNewEntry
+    | OperationText Int String
     | EquationText Int String
     | NotesText Int String
-    | ToggleEditing
+    | EditStep Int
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -115,6 +109,11 @@ update msg model =
             in
             ( { model | ids = i, equations = e, notes = n, operations = o }, Cmd.none )
 
+        OperationText index newOperation ->
+            ( { model | operations = A.set index newOperation model.operations }
+            , Cmd.none
+            )
+
         EquationText index newEquation ->
             ( { model | equations = A.set index newEquation model.equations }
             , Cmd.none
@@ -125,16 +124,10 @@ update msg model =
             , Cmd.none
             )
 
-        ToggleEditing ->
-            if model.editSteps then
-                ( { model | editSteps = False }
-                , Cmd.none
-                )
-
-            else
-                ( { model | editSteps = True }
-                , Cmd.none
-                )
+        EditStep index ->
+            ( { model | editStep = index }
+            , Cmd.none
+            )
 
 
 
@@ -165,7 +158,13 @@ viewSolvingStepParagraphStyle model index =
             [ width fill
             , spacing 15
             ]
-            [ el [ alignLeft, width (fillPortion 1) ] (paragraph [] [ text (getString index model.operations) ])
+            [ Input.button
+                [ alignLeft
+                , width (fillPortion 1)
+                ]
+                { onPress = Just (EditStep index)
+                , label = paragraph [] [ text (getString index model.operations) ]
+                }
             , el [ width (fillPortion 5), height fill ] (el [ alignBottom ] (text (getString index model.equations)))
             ]
         , row
@@ -180,36 +179,46 @@ viewSolvingStepParagraphStyle model index =
 
 viewSolvingStep : Model -> Int -> Element Msg
 viewSolvingStep model index =
-    if model.editSteps then
+    if model.editStep == index then
         column
-            []
-            [ Input.text
-                [ Font.center ]
-                { onChange = EquationText index
-                , text =
-                    case A.get index model.equations of
-                        Just a ->
-                            a
+            [ width fill, spacing 15 ]
+            [ row [ width fill, spacing 15 ]
+                [ Input.text [ width (fillPortion 1) ]
+                    { onChange = OperationText index
+                    , text = getString index model.operations
+                    , placeholder = Nothing
+                    , label = Input.labelHidden "operation Input"
+                    }
+                , Input.text
+                    [ width (fillPortion 5) ]
+                    { onChange = EquationText index
+                    , text =
+                        case A.get index model.equations of
+                            Just a ->
+                                a
 
-                        Nothing ->
-                            ""
-                , placeholder = Nothing
-                , label = Input.labelRight [ Font.size 14, centerY, padding 5 ] (text (String.fromInt index))
-                }
-            , Input.multiline
-                [ Font.size 14 ]
-                { onChange = NotesText index
-                , text =
-                    case A.get index model.notes of
-                        Just a ->
-                            a
+                            Nothing ->
+                                ""
+                    , placeholder = Nothing
+                    , label = Input.labelRight [ Font.size 14, centerY, padding 5 ] (text (String.fromInt index))
+                    }
+                ]
+            , row [ width fill, spacing 15 ]
+                [ el [ alignLeft, width (fillPortion 1) ] none
+                , Input.multiline [ Font.size 20, width (fillPortion 5), height (px 200) ]
+                    { onChange = NotesText index
+                    , text =
+                        case A.get index model.notes of
+                            Just a ->
+                                a
 
-                        Nothing ->
-                            ""
-                , placeholder = Nothing
-                , label = Input.labelAbove [ Font.size 5 ] (text "")
-                , spellcheck = True
-                }
+                            Nothing ->
+                                ""
+                    , placeholder = Nothing
+                    , label = Input.labelAbove [ Font.size 5 ] (text "")
+                    , spellcheck = True
+                    }
+                ]
             ]
 
     else
@@ -235,14 +244,9 @@ view model =
                         , Border.color grey
                         , padding 10
                         ]
-                        { onPress = Just GenerateNewEntry, label = text " New solving step " }
-                  , Input.button
-                        [ Border.width 2
-                        , Border.rounded 5
-                        , Border.color grey
-                        , padding 10
-                        ]
-                        { onPress = Just ToggleEditing, label = text " toggle editing " }
+                        { onPress = Just GenerateNewEntry
+                        , label = text " New solving step "
+                        }
                   ]
                 ]
             )
