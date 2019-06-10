@@ -7,6 +7,7 @@ import Browser.Events as Be
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
+import Element.Events as Event
 import Element.Font as Font
 import Element.Input as Input
 import Html exposing (Html)
@@ -26,13 +27,18 @@ main =
 -- MODEL
 
 
+type alias Step =
+    { operation : String
+    , equation : String
+    , note : String
+    }
+
+
 type alias Model =
     { windowHeight : Int
     , windowWidth : Int
     , ids : Array Int
-    , operations : Array String
-    , equations : Array String
-    , notes : Array String
+    , steps : Array Step
     , editStep : Int
     }
 
@@ -43,13 +49,17 @@ init _ =
         vp =
             Bd.getViewport
 
+        firstStep =
+            { operation = "Operation: Begin With"
+            , equation = "y=mx+b"
+            , note = "This is a starting example"
+            }
+
         model =
             { windowHeight = 200
             , windowWidth = 200
             , ids = A.initialize 1 identity
-            , equations = A.fromList [ "y=mx+b" ]
-            , operations = A.fromList [ "Operation: Begin With" ]
-            , notes = A.fromList [ "This is a starting example" ]
+            , steps = A.fromList [ firstStep ]
             , editStep = 0
             }
     in
@@ -70,9 +80,9 @@ type Msg
     | WindowSize Int Int
     | HeresTheViewport Bd.Viewport
     | GenerateNewEntry
-    | OperationText Int String
-    | EquationText Int String
-    | NotesText Int String
+    | OperationText Int Step String
+    | EquationText Int Step String
+    | NotesText Int Step String
     | EditStep Int
 
 
@@ -96,31 +106,31 @@ update msg model =
         GenerateNewEntry ->
             let
                 i =
-                    A.initialize (A.length model.equations + 1) identity
+                    A.initialize (A.length model.steps + 1) identity
 
-                e =
-                    A.push "y=mx+b" model.equations
+                newStep =
+                    Step
+                        "tell us how you got this one!"
+                        "y=mx+b"
+                        "On the whole, it would take much less energy to aim at the temperatures than at the densities and would be much more feasible. For this reason, physicists have been attempting, all through the nuclear age, to heat thin wisps of hydrogen to enormous temperature. Since the gas is thin, the nuclei are farther apart and collide with each other far fewer times per second. To achieve fusion ignition, therefore, temperatures must be considerably higher than those at the center of the sun. In 1944 Fermi calculated that it might take a temperature of 50,000,000° to ignite a hydrogen-3 fusion with hydrogen-2 under earthly conditions, and 400,000,000° to ignite hydrogen-2 fusion alone. To ignite hydrogen-1 fusion, which is what goes on in the sun (at a mere 15,000,000°), physicists would have to raise their sights to beyond the billion-degree mark."
 
-                n =
-                    A.push "Albert Einstein (/ˈaɪnstaɪn/ EYEN-styne;[4] German: [ˈalbɛɐ̯t ˈʔaɪnʃtaɪn] (About this soundlisten); 14 March 1879 – 18 April 1955) was a German-born theoretical physicist[5] who developed the theory of relativity, one of the two pillars of modern physics (alongside quantum mechanics).[3][6]:274 His work is also known for its influence on the philosophy of science.[7][8] He is best known to the general public for his mass–energy equivalence formula E = mc2, which has been dubbed \"the world's most famous equation\".[9] He received the 1921 Nobel Prize in Physics \"for his services to theoretical physics, and especially for his discovery of the law of the photoelectric effect\",[10] a pivotal step in the development of quantum theory." model.notes
-
-                o =
-                    A.push "How did you get that one??" model.operations
+                s =
+                    A.push newStep model.steps
             in
-            ( { model | ids = i, equations = e, notes = n, operations = o }, Cmd.none )
+            ( { model | ids = i, steps = s }, Cmd.none )
 
-        OperationText index newOperation ->
-            ( { model | operations = A.set index newOperation model.operations }
+        OperationText index step newOperation ->
+            ( { model | steps = A.set index { step | operation = newOperation } model.steps }
             , Cmd.none
             )
 
-        EquationText index newEquation ->
-            ( { model | equations = A.set index newEquation model.equations }
+        EquationText index step newEquation ->
+            ( { model | steps = A.set index { step | operation = newEquation } model.steps }
             , Cmd.none
             )
 
-        NotesText index newNote ->
-            ( { model | notes = A.set index newNote model.notes }
+        NotesText index step newNote ->
+            ( { model | steps = A.set index { step | operation = newNote } model.steps }
             , Cmd.none
             )
 
@@ -148,57 +158,60 @@ getString index array =
             ""
 
 
-viewSolvingStepParagraphStyle : Model -> Int -> Element Msg
-viewSolvingStepParagraphStyle model index =
+getStep : Int -> Array Step -> Step
+getStep index array =
+    case A.get index array of
+        Just a ->
+            a
+
+        Nothing ->
+            Step "" "" ""
+
+
+viewSolvingStepParagraphStyle : Step -> Int -> Element Msg
+viewSolvingStepParagraphStyle step index =
     column
         [ width fill
         , spacing 15
+        , Event.onDoubleClick (EditStep index)
         ]
         [ row
             [ width fill
             , spacing 15
             ]
-            [ Input.button
-                [ alignLeft
-                , width (fillPortion 1)
-                ]
-                { onPress = Just (EditStep index)
-                , label = paragraph [] [ text (getString index model.operations) ]
-                }
-            , el [ width (fillPortion 5), height fill ] (el [ alignBottom ] (text (getString index model.equations)))
+            [ paragraph [ alignLeft, width (fillPortion 1) ] [ text step.operation ]
+            , el [ width (fillPortion 5), height fill ] (el [ alignBottom ] (text step.equation))
             ]
         , row
             [ width fill
             , spacing 15
             ]
-            [ el [ alignLeft, width (fillPortion 1) ] none
-            , paragraph [ width (fillPortion 5) ] [ text (getString index model.notes) ]
+            [ el [ alignLeft, width (fillPortion 1) ] none -- filler to format the equations and operations
+            , paragraph [ width (fillPortion 5) ] [ text step.note ]
             ]
         ]
 
 
 viewSolvingStep : Model -> Int -> Element Msg
 viewSolvingStep model index =
+    let
+        step =
+            getStep index model.steps
+    in
     if model.editStep == index then
         column
             [ width fill, spacing 15 ]
             [ row [ width fill, spacing 15 ]
                 [ Input.text [ width (fillPortion 1) ]
-                    { onChange = OperationText index
-                    , text = getString index model.operations
+                    { onChange = OperationText index (getStep index model.steps)
+                    , text = (getStep index model.steps).operation
                     , placeholder = Nothing
                     , label = Input.labelHidden "operation Input"
                     }
                 , Input.text
                     [ width (fillPortion 5) ]
-                    { onChange = EquationText index
-                    , text =
-                        case A.get index model.equations of
-                            Just a ->
-                                a
-
-                            Nothing ->
-                                ""
+                    { onChange = EquationText index (getStep index model.steps)
+                    , text = (getStep index model.steps).equation
                     , placeholder = Nothing
                     , label = Input.labelRight [ Font.size 14, centerY, padding 5 ] (text (String.fromInt index))
                     }
@@ -206,14 +219,8 @@ viewSolvingStep model index =
             , row [ width fill, spacing 15 ]
                 [ el [ alignLeft, width (fillPortion 1) ] none
                 , Input.multiline [ Font.size 20, width (fillPortion 5), height (px 200) ]
-                    { onChange = NotesText index
-                    , text =
-                        case A.get index model.notes of
-                            Just a ->
-                                a
-
-                            Nothing ->
-                                ""
+                    { onChange = NotesText index (getStep index model.steps)
+                    , text = (getStep index model.steps).note
                     , placeholder = Nothing
                     , label = Input.labelAbove [ Font.size 5 ] (text "")
                     , spellcheck = True
@@ -222,7 +229,7 @@ viewSolvingStep model index =
             ]
 
     else
-        viewSolvingStepParagraphStyle model index
+        viewSolvingStepParagraphStyle step index
 
 
 view : Model -> Html Msg
@@ -234,7 +241,7 @@ view model =
             (List.concat
                 [ List.map (viewSolvingStep model) (A.toList model.ids)
                 , [ text
-                        (model.equations
+                        (model.steps
                             |> A.length
                             |> String.fromInt
                         )
