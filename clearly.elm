@@ -203,15 +203,15 @@ viewSolvingStep model index =
             [ width fill, spacing 15 ]
             [ row [ width fill, spacing 15 ]
                 [ Input.text [ width (fillPortion 1) ]
-                    { onChange = OperationText index (getStep index model.steps)
-                    , text = (getStep index model.steps).operation
+                    { onChange = OperationText index step
+                    , text = step.operation
                     , placeholder = Nothing
                     , label = Input.labelHidden "operation Input"
                     }
                 , Input.text
                     [ width (fillPortion 5) ]
-                    { onChange = EquationText index (getStep index model.steps)
-                    , text = (getStep index model.steps).equation
+                    { onChange = EquationText index step
+                    , text = step.equation
                     , placeholder = Nothing
                     , label = Input.labelRight [ Font.size 14, centerY, padding 5 ] (text (String.fromInt index))
                     }
@@ -219,8 +219,8 @@ viewSolvingStep model index =
             , row [ width fill, spacing 15 ]
                 [ el [ alignLeft, width (fillPortion 1) ] none
                 , Input.multiline [ Font.size 20, width (fillPortion 5), height (px 200) ]
-                    { onChange = NotesText index (getStep index model.steps)
-                    , text = (getStep index model.steps).note
+                    { onChange = NotesText index step
+                    , text = step.note
                     , placeholder = Nothing
                     , label = Input.labelAbove [ Font.size 5 ] (text "")
                     , spellcheck = True
