@@ -27,8 +27,21 @@ main =
 -- MODEL
 
 
+type Operation
+    = Standalone { name : String }
+    | Procedure
+        { name : String
+        , visibility : Bool
+        , process : List Step
+        }
+
+
+
+--name, children visable, list of children
+
+
 type alias Step =
-    { operation : String
+    { operation : Operation
     , equation : String
     , note : String
     }
@@ -50,7 +63,7 @@ init _ =
             Bd.getViewport
 
         firstStep =
-            { operation = "Operation: Begin With"
+            { operation = Standalone { name = "Operation: Begin With" }
             , equation = "y=mx+b"
             , note = "This is a starting example"
             }
@@ -110,7 +123,7 @@ update msg model =
 
                 newStep =
                     Step
-                        "tell us how you got this one!"
+                        (Standalone { name = "tell us how you got this one!" })
                         "y=mx+b"
                         "On the whole, it would take much less energy to aim at the temperatures than at the densities and would be much more feasible. For this reason, physicists have been attempting, all through the nuclear age, to heat thin wisps of hydrogen to enormous temperature. Since the gas is thin, the nuclei are farther apart and collide with each other far fewer times per second. To achieve fusion ignition, therefore, temperatures must be considerably higher than those at the center of the sun. In 1944 Fermi calculated that it might take a temperature of 50,000,000° to ignite a hydrogen-3 fusion with hydrogen-2 under earthly conditions, and 400,000,000° to ignite hydrogen-2 fusion alone. To ignite hydrogen-1 fusion, which is what goes on in the sun (at a mere 15,000,000°), physicists would have to raise their sights to beyond the billion-degree mark."
 
@@ -120,17 +133,22 @@ update msg model =
             ( { model | ids = i, steps = s }, Cmd.none )
 
         OperationText index step newOperation ->
-            ( { model | steps = A.set index { step | operation = newOperation } model.steps }
+            ( { model
+                | steps =
+                    A.set index
+                        { step | operation = makeOp newOperation }
+                        model.steps
+              }
             , Cmd.none
             )
 
         EquationText index step newEquation ->
-            ( { model | steps = A.set index { step | operation = newEquation } model.steps }
+            ( { model | steps = A.set index { step | equation = newEquation } model.steps }
             , Cmd.none
             )
 
         NotesText index step newNote ->
-            ( { model | steps = A.set index { step | operation = newNote } model.steps }
+            ( { model | steps = A.set index { step | note = newNote } model.steps }
             , Cmd.none
             )
 
@@ -148,16 +166,6 @@ grey =
     Element.rgb 0.8 0.8 0.8
 
 
-getString : Int -> Array String -> String
-getString index array =
-    case A.get index array of
-        Just a ->
-            a
-
-        Nothing ->
-            ""
-
-
 getStep : Int -> Array Step -> Step
 getStep index array =
     case A.get index array of
@@ -165,7 +173,18 @@ getStep index array =
             a
 
         Nothing ->
-            Step "" "" ""
+            makeStep "" "" ""
+
+
+makeOp : String -> Operation
+makeOp op =
+    Standalone { name = op }
+
+
+makeStep : String -> String -> String -> Step
+makeStep op eq note =
+    --for making a standalone step
+    Step (makeOp op) eq note
 
 
 viewSolvingStepParagraphStyle : Step -> Int -> Element Msg
@@ -179,7 +198,7 @@ viewSolvingStepParagraphStyle step index =
             [ width fill
             , spacing 15
             ]
-            [ paragraph [ alignLeft, width (fillPortion 1) ] [ text step.operation ]
+            [ paragraph [ alignLeft, width (fillPortion 1) ] [ text step.operation.name ]
             , el [ width (fillPortion 5), height fill ] (el [ alignBottom ] (text step.equation))
             ]
         , row
