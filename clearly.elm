@@ -1,7 +1,7 @@
 module Main exposing (Model, Msg(..), init, main, subscriptions, update, view)
 
 import Array as A exposing (Array)
-import Browser exposing (..)
+import Browser
 import Browser.Dom as Bd
 import Browser.Events as Be
 import Element exposing (..)
@@ -11,7 +11,8 @@ import Element.Events as Event
 import Element.Font as Font
 import Element.Input as Input
 import Html exposing (Html)
-import Task exposing (..)
+import Task
+import Tree exposing (Operation(..), Step)
 
 
 main =
@@ -27,32 +28,13 @@ main =
 -- MODEL
 
 
-type Operation
-    = Standalone { name : String }
-    | Procedure
-        { name : String
-        , visibility : Bool
-        , process : List Step
-        }
-
-
-
---name, children visable, list of children
-
-
-type alias Step =
-    { operation : Operation
-    , equation : String
-    , note : String
-    }
-
-
 type alias Model =
     { windowHeight : Int
     , windowWidth : Int
     , ids : Array Int
     , steps : Array Step
     , editStep : Int
+    , operations : List Operation
     }
 
 
@@ -63,7 +45,7 @@ init _ =
             Bd.getViewport
 
         firstStep =
-            { operation = Standalone { name = "Operation: Begin With" }
+            { operation = "Operation: Begin With"
             , equation = "y=mx+b"
             , note = "This is a starting example"
             }
@@ -123,7 +105,7 @@ update msg model =
 
                 newStep =
                     Step
-                        (Standalone { name = "tell us how you got this one!" })
+                        "tell us how you got this one!"
                         "y=mx+b"
                         "On the whole, it would take much less energy to aim at the temperatures than at the densities and would be much more feasible. For this reason, physicists have been attempting, all through the nuclear age, to heat thin wisps of hydrogen to enormous temperature. Since the gas is thin, the nuclei are farther apart and collide with each other far fewer times per second. To achieve fusion ignition, therefore, temperatures must be considerably higher than those at the center of the sun. In 1944 Fermi calculated that it might take a temperature of 50,000,000° to ignite a hydrogen-3 fusion with hydrogen-2 under earthly conditions, and 400,000,000° to ignite hydrogen-2 fusion alone. To ignite hydrogen-1 fusion, which is what goes on in the sun (at a mere 15,000,000°), physicists would have to raise their sights to beyond the billion-degree mark."
 
@@ -136,7 +118,7 @@ update msg model =
             ( { model
                 | steps =
                     A.set index
-                        { step | operation = makeOp newOperation }
+                        { step | operation = newOperation }
                         model.steps
               }
             , Cmd.none
@@ -173,18 +155,7 @@ getStep index array =
             a
 
         Nothing ->
-            makeStep "" "" ""
-
-
-makeOp : String -> Operation
-makeOp op =
-    Standalone { name = op }
-
-
-makeStep : String -> String -> String -> Step
-makeStep op eq note =
-    --for making a standalone step
-    Step (makeOp op) eq note
+            Step "" "" ""
 
 
 viewSolvingStepParagraphStyle : Step -> Int -> Element Msg
@@ -198,7 +169,7 @@ viewSolvingStepParagraphStyle step index =
             [ width fill
             , spacing 15
             ]
-            [ paragraph [ alignLeft, width (fillPortion 1) ] [ text step.operation.name ]
+            [ paragraph [ alignLeft, width (fillPortion 1) ] [ text step.operation ]
             , el [ width (fillPortion 5), height fill ] (el [ alignBottom ] (text step.equation))
             ]
         , row

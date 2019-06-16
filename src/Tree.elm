@@ -17,38 +17,33 @@ type alias Step =
 
 type Operation
     = Standalone Step
-    | Procedure Step (Array Operation)
+    | Procedure Step (List Operation)
 
 
 {-| Flattens a Rose Tree of Operations into one Pre-Order Array. Flat records are easier to
 update because we can simply pass the index to the update function.
 Use this with the depth function to make an flat records from the operation trees
 -}
-flatpackSteps : Array Operation -> Array Step
+flatpackSteps : List Operation -> List Step
 flatpackSteps operations =
-    let
-        firstOp =
-            A.get 0 operations
-
-        restOfOps =
-            case List.tail (A.toList operations) of
-                Just a ->
-                    A.fromList a
-
-                Nothing ->
-                    A.empty
-    in
-    case firstOp of
-        Just op ->
-            case op of
+    case operations of
+        firstOp :: restOfOps ->
+            case firstOp of
                 Standalone step ->
-                    A.append (A.fromList [ step ]) (flatpackSteps restOfOps)
+                    List.append
+                        [ step ]
+                        (flatpackSteps restOfOps)
 
-                Procedure step array ->
-                    A.append (A.append (A.fromList [ step ]) (flatpackSteps array)) (flatpackSteps restOfOps)
+                Procedure step process ->
+                    List.append
+                        (List.append
+                            [ step ]
+                            (flatpackSteps process)
+                        )
+                        (flatpackSteps restOfOps)
 
-        Nothing ->
-            A.empty
+        [] ->
+            []
 
 
 {-| Mesures the depth of each node in a Rose Tree of Operations.
@@ -56,43 +51,33 @@ The depths are packed into a Pre-Order Array of Ints. Flat records are easier to
 update because we can simply pass the index to the update function.
 Use this with the flatpack function to make an flat records from the operation trees
 -}
-flatpackDepths : Array Operation -> Array Int
+flatpackDepths : List Operation -> List Int
 flatpackDepths operations =
-    let
-        firstOp =
-            A.get 0 operations
-
-        restOfOps =
-            case List.tail (A.toList operations) of
-                Just a ->
-                    A.fromList a
-
-                Nothing ->
-                    A.empty
-    in
-    case firstOp of
-        Just op ->
-            case op of
+    case operations of
+        firstOp :: restOfOps ->
+            case firstOp of
                 Standalone step ->
-                    A.append
-                        (A.fromList [ 0 ])
+                    List.append
+                        [ 0 ]
                         (flatpackDepths restOfOps)
 
                 Procedure step array ->
-                    A.append
-                        (A.append
-                            (A.fromList [ 0 ])
-                            (A.map ((+) 1) (flatpackDepths array))
+                    List.append
+                        (List.append
+                            [ 0 ]
+                            (List.map ((+) 1) (flatpackDepths array))
                         )
                         (flatpackDepths restOfOps)
 
-        Nothing ->
-            A.empty
+        [] ->
+            []
 
 
-flatpack : Array Operation -> ( Array Step, Array Int )
+flatpack : List Operation -> ( Array Step, Array Int )
 flatpack ops =
-    ( flatpackSteps ops, flatpackDepths ops )
+    ( A.fromList (flatpackSteps ops)
+    , A.fromList (flatpackDepths ops)
+    )
 
 
 {-| unpacks two flat arrays into a Rose tree of operations. The first input Array
@@ -118,11 +103,11 @@ fileStep : ( Step, Int ) -> TreeBuilder -> TreeBuilder
 fileStep ( step, depth ) d =
     --check if there are any children to add to the tree branch
     case Dict.get (depth + 1) d of
-        Just list ->
+        Just process ->
             d
                 |> Dict.remove (depth + 1)
                 -- if so, add them to the parent step
-                |> mergeDict (Dict.singleton depth [ Procedure step (A.fromList list) ])
+                |> mergeDict (Dict.singleton depth [ Procedure step process ])
 
         Nothing ->
             d
@@ -142,7 +127,7 @@ branch stepsDepths branchesToAssemble =
             branchesToAssemble
 
 
-sprout : ( Array Step, Array Int ) -> Array Operation
+sprout : ( Array Step, Array Int ) -> List Operation
 sprout ( steps, depths ) =
     let
         reversedSteps =
@@ -155,11 +140,11 @@ sprout ( steps, depths ) =
             List.map2 Tuple.pair reversedSteps reversedDepths
     in
     case Dict.get 0 (branch zipped Dict.empty) of
-        Just list ->
-            A.fromList list
+        Just root ->
+            root
 
         Nothing ->
-            A.empty
+            []
 
 
 
@@ -179,19 +164,42 @@ pr =
 
 
 t =
-    A.fromList
+    [ sa
+    , sa
+    , sa
+    , pr
+        [ sa
+        , sa
+        , pr
+            [ sa
+            , sa
+            , pr
+                [ pr
+                    [ pr
+                        [ pr
+                            [ pr
+                                [ sa
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        , sa
+        , sa
+        ]
+    , sa
+    , sa
+    , pr
         [ sa
         , sa
         , sa
         , pr
-            (A.fromList
-                [ sa
-                , sa
-                , pr (A.fromList [ sa, sa ])
-                , sa
-                , sa
+            [ pr
+                [ pr
+                    [ sa
+                    ]
                 ]
-            )
-        , sa
-        , sa
+            ]
         ]
+    ]
