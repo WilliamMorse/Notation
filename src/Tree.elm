@@ -116,13 +116,12 @@ mergeDict pushStep laterSteps =
 
 fileStep : ( Step, Int ) -> TreeBuilder -> TreeBuilder
 fileStep ( step, depth ) d =
-    --check if there are any children to absorb
+    --check if there are any children to add to the tree branch
     case Dict.get (depth + 1) d of
         Just list ->
             d
-                -- absorb them!!
                 |> Dict.remove (depth + 1)
-                -- okay also add them to the parent step
+                -- if so, add them to the parent step
                 |> mergeDict (Dict.singleton depth [ Procedure step (A.fromList list) ])
 
         Nothing ->
@@ -132,26 +131,15 @@ fileStep ( step, depth ) d =
 
 
 branch : List ( Step, Int ) -> TreeBuilder -> TreeBuilder
-branch sd tb =
-    let
-        newTreeBuilder =
-            case List.head sd of
-                Just a ->
-                    fileStep a tb
+branch stepsDepths branchesToAssemble =
+    case stepsDepths of
+        nextStep :: restOfSteps ->
+            branchesToAssemble
+                |> fileStep nextStep
+                |> branch restOfSteps
 
-                --Done
-                Nothing ->
-                    tb
-
-        nextTreeBuilder =
-            case List.tail sd of
-                Just a ->
-                    branch a newTreeBuilder
-
-                Nothing ->
-                    tb
-    in
-    nextTreeBuilder
+        [] ->
+            branchesToAssemble
 
 
 sprout : ( Array Step, Array Int ) -> Array Operation
@@ -175,7 +163,6 @@ sprout ( steps, depths ) =
 
 
 
---makeTree (A.toList steps) (A.toList depths)
 -- Test tools:
 
 
