@@ -33,8 +33,8 @@ type alias Model =
     , windowWidth : Int
     , ids : Array Int
     , steps : Array Step
+    , depths : Array Int
     , editStep : Int
-    , operations : List Operation
     }
 
 
@@ -48,6 +48,7 @@ init _ =
             { operation = "Operation: Begin With"
             , equation = "y=mx+b"
             , note = "This is a starting example"
+            , ref = []
             }
 
         model =
@@ -55,6 +56,7 @@ init _ =
             , windowWidth = 200
             , ids = A.initialize 1 identity
             , steps = A.fromList [ firstStep ]
+            , depths = A.fromList [ 0 ]
             , editStep = 0
             }
     in
@@ -74,7 +76,9 @@ type Msg
     = NoOp
     | WindowSize Int Int
     | HeresTheViewport Bd.Viewport
-    | GenerateNewEntry
+    | GenerateNewStep
+    | GenerateNewStepBelow Int
+    | DeleteStep Int
     | OperationText Int Step String
     | EquationText Int Step String
     | NotesText Int Step String
@@ -98,7 +102,7 @@ update msg model =
             , Cmd.none
             )
 
-        GenerateNewEntry ->
+        GenerateNewStep ->
             let
                 i =
                     A.initialize (A.length model.steps + 1) identity
@@ -108,11 +112,18 @@ update msg model =
                         "tell us how you got this one!"
                         "y=mx+b"
                         "On the whole, it would take much less energy to aim at the temperatures than at the densities and would be much more feasible. For this reason, physicists have been attempting, all through the nuclear age, to heat thin wisps of hydrogen to enormous temperature. Since the gas is thin, the nuclei are farther apart and collide with each other far fewer times per second. To achieve fusion ignition, therefore, temperatures must be considerably higher than those at the center of the sun. In 1944 Fermi calculated that it might take a temperature of 50,000,000° to ignite a hydrogen-3 fusion with hydrogen-2 under earthly conditions, and 400,000,000° to ignite hydrogen-2 fusion alone. To ignite hydrogen-1 fusion, which is what goes on in the sun (at a mere 15,000,000°), physicists would have to raise their sights to beyond the billion-degree mark."
+                        []
 
                 s =
                     A.push newStep model.steps
             in
             ( { model | ids = i, steps = s }, Cmd.none )
+
+        GenerateNewStepBelow aboveStep ->
+            ( model, Cmd.none )
+
+        DeleteStep stepToDelete ->
+            ( model, Cmd.none )
 
         OperationText index step newOperation ->
             ( { model
@@ -125,12 +136,22 @@ update msg model =
             )
 
         EquationText index step newEquation ->
-            ( { model | steps = A.set index { step | equation = newEquation } model.steps }
+            ( { model
+                | steps =
+                    A.set index
+                        { step | equation = newEquation }
+                        model.steps
+              }
             , Cmd.none
             )
 
         NotesText index step newNote ->
-            ( { model | steps = A.set index { step | note = newNote } model.steps }
+            ( { model
+                | steps =
+                    A.set index
+                        { step | note = newNote }
+                        model.steps
+              }
             , Cmd.none
             )
 
@@ -155,7 +176,27 @@ getStep index array =
             a
 
         Nothing ->
-            Step "" "" ""
+            Step "" "" "" []
+
+
+viewOperation : Operation -> Element Msg
+viewOperation op =
+    case op of
+        Standalone step ->
+            none
+
+        Procedure step procedure ->
+            none
+
+
+viewProceedureStart : Step -> Element Msg
+viewProceedureStart step =
+    none
+
+
+viewProceedureEnd : Step -> Element Msg
+viewProceedureEnd step =
+    none
 
 
 viewSolvingStepParagraphStyle : Step -> Int -> Element Msg
@@ -241,7 +282,7 @@ view model =
                         , Border.color grey
                         , padding 10
                         ]
-                        { onPress = Just GenerateNewEntry
+                        { onPress = Just GenerateNewStep
                         , label = text " New solving step "
                         }
                   ]

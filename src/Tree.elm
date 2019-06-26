@@ -1,4 +1,4 @@
-module Tree exposing (Operation(..), Step, flatpack, sprout, t)
+module Tree exposing (Operation(..), Path, Step, TreeBuilder, branch, extractStepFrom, fileStep, flatpack, flatpackDepths, flatpackSteps, genPath, generatePaths, listRefs, makeTrail, mergeDict, o, pr, q, sa, searchOperation, searchStep, set, setOperaton, sprout, st, t)
 
 import Array as A exposing (Array, fromList)
 import Dict exposing (Dict)
@@ -8,10 +8,15 @@ import Dict exposing (Dict)
 -- MODEL
 
 
+type alias Path =
+    List Int
+
+
 type alias Step =
     { operation : String
     , equation : String
     , note : String
+    , ref : Path
     }
 
 
@@ -61,11 +66,11 @@ flatpackDepths operations =
                         [ 0 ]
                         (flatpackDepths restOfOps)
 
-                Procedure step array ->
+                Procedure step process ->
                     List.append
                         (List.append
                             [ 0 ]
-                            (List.map ((+) 1) (flatpackDepths array))
+                            (List.map ((+) 1) (flatpackDepths process))
                         )
                         (flatpackDepths restOfOps)
 
@@ -148,11 +153,216 @@ sprout ( steps, depths ) =
 
 
 
+{- Defines an index system to reference nodes on the tree.
+   The convention is taken from textbook equation numbering and software versioning
+    1.1.1.2 is at detph 4 and has indicies for depth.
+-}
+
+
+genPath : Path -> Int -> Operation -> Operation
+genPath parentRef index op =
+    let
+        r =
+            List.append parentRef [ index ]
+    in
+    case op of
+        Standalone step ->
+            Standalone
+                { step | ref = r }
+
+        Procedure step furtherOps ->
+            Procedure
+                { step | ref = r }
+                (List.indexedMap (genPath r) furtherOps)
+
+
+generatePaths : List Operation -> List Operation
+generatePaths tree =
+    List.indexedMap (genPath []) tree
+
+
+searchOperation : Path -> List Operation -> Maybe Operation
+searchOperation path ops =
+    case path of
+        index :: restOfPath ->
+            case List.drop index ops of
+                op :: _ ->
+                    case op of
+                        Standalone _ ->
+                            if restOfPath == [] then
+                                Just op
+
+                            else
+                                Nothing
+
+                        Procedure _ children ->
+                            if restOfPath == [] then
+                                Just op
+
+                            else
+                                searchOperation restOfPath children
+
+                [] ->
+                    Nothing
+
+        [] ->
+            Nothing
+
+
+searchStep : Path -> List Operation -> Maybe Step
+searchStep path ops =
+    case searchOperation path ops of
+        Just op ->
+            Just (extractStepFrom op)
+
+        Nothing ->
+            Nothing
+
+
+listRefs : List Operation -> List Path
+listRefs ops =
+    let
+        ( flatSteps, _ ) =
+            flatpack ops
+    in
+    List.map .ref (A.toList flatSteps)
+
+
+extractStepFrom : Operation -> Step
+extractStepFrom op =
+    case op of
+        Standalone step ->
+            step
+
+        Procedure step _ ->
+            step
+
+
+
+{--
+splitOperations : Int -> List Operation -> ( List Operation, List Operation, List Operation )
+splitOperations index ops =
+    let
+        operations =
+            ops
+                |> A.fromList
+
+        opsBefore =
+            operations
+                |> A.slice 0 index
+                |> A.toList
+
+        operation =
+            operations
+                |> A.slice index (index + 1)
+                |> A.toList
+
+        opsAfter =
+            operations
+                |> A.slice (index + 1) (A.length operations)
+                |> A.toList
+    in
+    ( opsBefore, operation, opsAfter )
+
+
+updateOperation : Path -> Operation -> List Operation -> List Operation
+updateOperation path newOp tree =
+    case path of
+        head :: tail ->
+            let
+                ( before, operation, after ) =
+                    splitOperations head tree
+            in
+            case List.head operation of
+                Just (Standalone step) ->
+                    List.concat [ before, [ newOp ], after ]
+
+                Just (Procedure step process) ->
+                    List.concat
+                        [ before
+                        , [ Procedure
+                                step
+                                (updateOperation
+                                    tail
+                                    newOp
+                                    process
+                                )
+                          ]
+                        , after
+                        ]
+
+                Nothing ->
+                    []
+
+        [] ->
+            tree
+
+{--
+set : Operation -> List Operation -> List Operation
+set newOperation tree =
+    let
+        step =
+            extractStepFrom newOperation
+
+        path =
+            step.ref
+    in
+    updateOperation path newOperation tree
+--}
+--}
+
+
+makeTrail : Path -> List Path
+makeTrail path =
+    path
+        |> List.repeat (List.length path)
+        |> List.indexedMap (\i -> List.take (i + 1))
+        |> List.foldl (::) []
+
+
+setOperaton : Int -> Operation -> List Operation -> List Operation
+setOperaton index op forest =
+    forest
+        |> A.fromList
+        |> A.set index op
+        |> A.toList
+
+
+set : Operation -> List Operation -> List (Maybe Operation)
+set op tree =
+    let
+        trail =
+            op
+                |> extractStepFrom
+                |> .ref
+                |> makeTrail
+    in
+    trail
+        |> List.map (\p -> searchOperation p tree)
+
+
+o =
+    Standalone <| Step "hi" "low" "middle" [ 3, 1 ]
+
+
+
+{--case inputList of
+        head :: tail ->
+            List.foldl (::)
+                []
+                (triangeify
+                    (chunks ++ [ inputList ])
+                    tail
+                )
+
+        [] ->
+            chunks
+--}
 -- Test tools:
 
 
 st =
-    Step "" "" ""
+    Step "" "" "" []
 
 
 sa =
@@ -161,6 +371,17 @@ sa =
 
 pr =
     Procedure st
+
+
+q =
+    [ sa
+    , sa
+    , sa
+    , pr
+        [ sa
+        , sa
+        ]
+    ]
 
 
 t =
