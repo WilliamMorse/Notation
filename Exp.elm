@@ -73,6 +73,7 @@ subscriptions model =
 
 type Msg
     = EditStep (Zipper Step)
+    | RenderStep (Zipper Step)
     | OperationText (Zipper Step) String
     | EquationText (Zipper Step) String
     | NotesText (Zipper Step) String
@@ -148,10 +149,18 @@ update msg model =
             let
                 newModel =
                     zip
+                        |> Zipper.map (\a -> { a | editStep = False })
                         |> Zipper.updateItem (\a -> { a | editStep = True })
                         |> Zipper.root
             in
             ( newModel, Cmd.none )
+
+        RenderStep zip ->
+            ( zip
+                |> Zipper.updateItem (\s -> { s | editStep = False })
+                |> Zipper.root
+            , Cmd.none
+            )
 
         OperationText zip newOp ->
             ( zip
@@ -181,6 +190,7 @@ update msg model =
 
                 newModel =
                     zipling
+                        |> Zipper.updateItem (\s -> { s | editStep = False })
                         |> insertAndUpdateIndex newStep
                         |> Zipper.root
             in
@@ -262,7 +272,10 @@ editStandaloneStep zip =
             Zipper.current zip
     in
     column
-        [ width fill, spacing 15 ]
+        [ width fill
+        , spacing 15
+        , Event.onLoseFocus (RenderStep zip)
+        ]
         [ row [ width fill, spacing 15 ]
             [ Input.text [ width (fillPortion 1) ]
                 { onChange = OperationText zip
@@ -271,7 +284,8 @@ editStandaloneStep zip =
                 , label = Input.labelHidden "operation Input"
                 }
             , Input.text
-                [ width (fillPortion 5) ]
+                [ width (fillPortion 5)
+                ]
                 { onChange = EquationText zip
                 , text = step.equation
                 , placeholder = Nothing
@@ -282,14 +296,15 @@ editStandaloneStep zip =
             [ column
                 [ alignLeft
                 , width (fillPortion 1)
+                , Event.onDoubleClick (RenderStep zip)
                 ]
                 [ Input.button
-                    []
+                    [ padding 5 ]
                     { onPress = Just (ConsecutiveStep zip)
                     , label = text "new step below"
                     }
                 , Input.button
-                    []
+                    [ padding 5 ]
                     { onPress = Just (NewProcessStep zip)
                     , label = text "new child step"
                     }
@@ -319,7 +334,9 @@ view : Model -> Html Msg
 view model =
     layout []
         (column
-            []
+            [ width fill
+            , padding 30
+            ]
             (model
                 |> viewProcess
             )
