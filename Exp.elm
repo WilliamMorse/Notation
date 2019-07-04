@@ -56,7 +56,7 @@ init _ =
 
         startingStep =
             Tree.singleton
-                (Step "starting Operation" "y=mx+b" "notesnotesnotes" 0 False False)
+                (Step "starting Operation" "y=mx+b" "notesnotesnotes" 0 True False)
 
         z =
             root
@@ -80,6 +80,10 @@ type Msg
     | ConsecutiveStep (Zipper Step)
     | NewProcessStep (Zipper Step)
     | ToggleProcess (Zipper Step)
+
+
+blankStep =
+    Step "Operation" "Equation" "Notes" 0 True False
 
 
 upOrRoot : Zipper a -> Zipper a
@@ -110,6 +114,27 @@ splitList index list =
 incrementId : Forest Step -> Forest Step
 incrementId list =
     Tree.forestMap (\s -> { s | id = s.id + 1 }) list
+
+
+nest : Step -> Zipper Step -> Zipper Step
+nest newStep parent =
+    let
+        newId =
+            0
+
+        step =
+            { newStep | id = newId }
+                |> Tree.singleton
+                |> (\a -> LList.fromList [ a ])
+
+        inc =
+            incrementId (Tree.descendants (Zipper.getTree parent))
+
+        output =
+            LList.concat (LList.fromList [ step, inc ])
+                |> Tree (Zipper.current parent)
+    in
+    Zipper.setTree output parent
 
 
 insertAndUpdateIndex : Step -> Zipper Step -> Zipper Step
@@ -185,25 +210,21 @@ update msg model =
 
         ConsecutiveStep zipling ->
             let
-                newStep =
-                    Step "new" "new" "new" 0 True False
-
                 newModel =
                     zipling
                         |> Zipper.updateItem (\s -> { s | editStep = False })
-                        |> insertAndUpdateIndex newStep
+                        |> insertAndUpdateIndex blankStep
                         |> Zipper.root
             in
             ( newModel, Cmd.none )
 
         NewProcessStep parent ->
             let
-                newStep =
-                    Step "new" "new" "new" 0 True False
-
                 newModel =
                     parent
-                        |> Zipper.insert (Tree.singleton newStep)
+                        |> Zipper.updateItem (\s -> { s | editStep = False })
+                        |> Zipper.updateItem (\s -> { s | process = True })
+                        |> nest blankStep
                         |> Zipper.root
             in
             ( newModel, Cmd.none )
@@ -224,11 +245,16 @@ editOrDisplay zip =
         step =
             Zipper.current zip
     in
-    if step.editStep then
-        editStandaloneStep zip
+    zip
+        |> (if step.editStep then
+                editStandaloneStep
 
-    else
-        viewStandaloneStep zip
+            else if step.process then
+                viewProcessStep
+
+            else
+                viewStandaloneStep
+           )
 
 
 viewProcess : Zipper Step -> List (Element Msg)
@@ -252,14 +278,16 @@ viewStandaloneStep zip =
             , spacing 15
             ]
             [ paragraph [ alignLeft, width (fillPortion 1) ] [ text step.operation ]
-            , el [ width (fillPortion 5), height fill ] (el [ alignBottom ] (text step.equation))
-            , text (String.fromInt step.id)
+            , row [ width (fillPortion 5) ]
+                [ el [ height fill ] (el [ alignBottom ] (text step.equation))
+                , el [ alignRight ] (text (labelEquation zip))
+                ]
             ]
         , row
             [ width fill
             , spacing 15
             ]
-            [ el [ alignLeft, width (fillPortion 1) ] (text (fromBool step.editStep)) -- filler to format the equations and operations
+            [ el [ alignLeft, width (fillPortion 1) ] none -- filler to format the equations and operations
             , paragraph [ width (fillPortion 5) ] [ text step.note ]
             ]
         ]
@@ -274,7 +302,6 @@ editStandaloneStep zip =
     column
         [ width fill
         , spacing 15
-        , Event.onLoseFocus (RenderStep zip)
         ]
         [ row [ width fill, spacing 15 ]
             [ Input.text [ width (fillPortion 1) ]
@@ -289,7 +316,107 @@ editStandaloneStep zip =
                 { onChange = EquationText zip
                 , text = step.equation
                 , placeholder = Nothing
-                , label = Input.labelRight [ Font.size 14, centerY, padding 5 ] (text (String.fromInt step.id))
+                , label = Input.labelRight [ Font.size 14, centerY, padding 5 ] (text (labelEquation zip))
+                }
+            ]
+        , row [ width fill, spacing 15 ]
+            [ column
+                [ alignLeft
+                , width (fillPortion 1)
+                , Event.onDoubleClick (RenderStep zip)
+                ]
+                [ Input.button
+                    [ padding 5 ]
+                    { onPress = Just (ConsecutiveStep zip)
+                    , label = text "new step below"
+                    }
+                , Input.button
+                    [ padding 5 ]
+                    { onPress = Just (NewProcessStep zip)
+                    , label = text "new child step"
+                    }
+                ]
+            , Input.multiline [ Font.size 20, width (fillPortion 5), height (px 200) ]
+                { onChange = NotesText zip
+                , text = step.note
+                , placeholder = Nothing
+                , label = Input.labelAbove [ Font.size 5 ] (text "")
+                , spellcheck = True
+                }
+            ]
+        ]
+
+
+viewProcessStep : Zipper Step -> Element Msg
+viewProcessStep zip =
+    let
+        step =
+            Zipper.current zip
+    in
+    column
+        [ width fill
+        , spacing 15
+        ]
+        ([]
+            ++ [ row
+                    [ width fill
+                    , spacing 15
+                    ]
+                    [ paragraph
+                        [ alignLeft
+                        , width (fillPortion 1)
+                        , Event.onDoubleClick (EditStep zip)
+                        ]
+                        [ text ("Begin " ++ step.operation) ]
+                    , el [ width (fillPortion 5) ] (el [ alignRight ] none)
+                    ]
+               ]
+            ++ viewProcess zip
+            ++ [ row
+                    [ width fill
+                    , spacing 15
+                    ]
+                    [ paragraph [ alignLeft, width (fillPortion 1) ] [ text ("Finish " ++ step.operation) ]
+                    , row [ width (fillPortion 5) ]
+                        [ el [ height fill ] (el [ alignBottom ] (text step.equation))
+                        , el [ alignRight ] (text (labelEquation zip))
+                        ]
+                    ]
+               , row
+                    [ width fill
+                    , spacing 15
+                    ]
+                    [ el [ alignLeft, width (fillPortion 1) ] none -- filler to format the equations and operations
+                    , paragraph [ width (fillPortion 5) ] [ text step.note ]
+                    ]
+               ]
+        )
+
+
+editProcessStep : Zipper Step -> Element Msg
+editProcessStep zip =
+    let
+        step =
+            Zipper.current zip
+    in
+    column
+        [ width fill
+        , spacing 15
+        ]
+        [ row [ width fill, spacing 15 ]
+            [ Input.text [ width (fillPortion 1) ]
+                { onChange = OperationText zip
+                , text = step.operation
+                , placeholder = Nothing
+                , label = Input.labelHidden "operation Input"
+                }
+            , Input.text
+                [ width (fillPortion 5)
+                ]
+                { onChange = EquationText zip
+                , text = step.equation
+                , placeholder = Nothing
+                , label = Input.labelRight [ Font.size 14, centerY, padding 5 ] (text (labelEquation zip))
                 }
             ]
         , row [ width fill, spacing 15 ]
@@ -330,12 +457,26 @@ fromBool bool =
             "False"
 
 
+labelEquation : Zipper Step -> String
+labelEquation zip =
+    zip
+        |> Zipper.getPath identity
+        |> List.map .id
+        --gets rid of the root node id
+        |> List.drop 1
+        -- convert from computer indexing to one that starts at 1
+        |> List.map ((+) 1)
+        |> List.map String.fromInt
+        |> String.join "."
+
+
 view : Model -> Html Msg
 view model =
     layout []
         (column
             [ width fill
             , padding 30
+            , spacing 20
             ]
             (model
                 |> viewProcess
