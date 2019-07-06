@@ -5350,6 +5350,25 @@ var author$project$Exp$nest = F2(
 		return A2(turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$setTree, output, parent);
 	});
 var elm$core$Basics$not = _Basics_not;
+var elm$core$List$isEmpty = function (xs) {
+	if (!xs.b) {
+		return true;
+	} else {
+		return false;
+	}
+};
+var turboMaCk$lazy_tree_with_zipper$Lazy$Tree$children = A2(
+	elm$core$Basics$composeL,
+	A2(
+		elm$core$Basics$composeL,
+		elm$core$List$map(turboMaCk$lazy_tree_with_zipper$Lazy$Tree$item),
+		turboMaCk$lazy_tree_with_zipper$Lazy$LList$toList),
+	turboMaCk$lazy_tree_with_zipper$Lazy$Tree$descendants);
+var turboMaCk$lazy_tree_with_zipper$Lazy$Tree$isEmpty = A2(elm$core$Basics$composeL, elm$core$List$isEmpty, turboMaCk$lazy_tree_with_zipper$Lazy$Tree$children);
+var turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$isEmpty = function (_n0) {
+	var tree = _n0.a;
+	return turboMaCk$lazy_tree_with_zipper$Lazy$Tree$isEmpty(tree);
+};
 var turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$Breadcrumb = function (a) {
 	return {$: 'Breadcrumb', a: a};
 };
@@ -5505,16 +5524,27 @@ var author$project$Exp$update = F2(
 				return _Utils_Tuple2(newModel, elm$core$Platform$Cmd$none);
 			default:
 				var zip = msg.a;
-				var newModel = turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(
-					A2(
-						turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
-						function (a) {
-							return _Utils_update(
-								a,
-								{process: !a.process});
-						},
-						zip));
-				return _Utils_Tuple2(newModel, elm$core$Platform$Cmd$none);
+				return turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$isEmpty(zip) ? _Utils_Tuple2(
+					turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(
+						A2(
+							turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
+							function (a) {
+								return _Utils_update(
+									a,
+									{process: false});
+							},
+							zip)),
+					elm$core$Platform$Cmd$none) : _Utils_Tuple2(
+					turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(
+						A2(
+							turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
+							function (a) {
+								return _Utils_update(
+									a,
+									{process: !a.process});
+							},
+							zip)),
+					elm$core$Platform$Cmd$none);
 		}
 	});
 var author$project$Exp$ToggleProcess = function (a) {
@@ -5636,13 +5666,6 @@ var mdgriffith$elm_ui$Internal$Model$contextClasses = function (context) {
 			return mdgriffith$elm_ui$Internal$Model$paragraphClass;
 		default:
 			return mdgriffith$elm_ui$Internal$Model$pageClass;
-	}
-};
-var elm$core$List$isEmpty = function (xs) {
-	if (!xs.b) {
-		return true;
-	} else {
-		return false;
 	}
 };
 var mdgriffith$elm_ui$Internal$Model$Keyed = function (a) {

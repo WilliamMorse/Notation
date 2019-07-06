@@ -230,13 +230,19 @@ update msg model =
             ( newModel, Cmd.none )
 
         ToggleProcess zip ->
-            let
-                newModel =
-                    zip
-                        |> Zipper.updateItem (\a -> { a | process = not a.process })
-                        |> Zipper.root
-            in
-            ( newModel, Cmd.none )
+            if Zipper.isEmpty zip then
+                ( zip
+                    |> Zipper.updateItem (\a -> { a | process = False })
+                    |> Zipper.root
+                , Cmd.none
+                )
+
+            else
+                ( zip
+                    |> Zipper.updateItem (\a -> { a | process = not a.process })
+                    |> Zipper.root
+                , Cmd.none
+                )
 
 
 editOrDisplay : Zipper Step -> Element Msg
