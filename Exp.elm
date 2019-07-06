@@ -271,14 +271,21 @@ viewStandaloneStep zip =
     column
         [ width fill
         , spacing 15
-        , Event.onDoubleClick (EditStep zip)
         ]
         [ row
             [ width fill
             , spacing 15
             ]
-            [ paragraph [ alignLeft, width (fillPortion 1) ] [ text step.operation ]
-            , row [ width (fillPortion 5) ]
+            [ paragraph
+                [ alignLeft
+                , width (fillPortion 1)
+                , Event.onDoubleClick (ToggleProcess zip)
+                ]
+                [ text step.operation ]
+            , row
+                [ width (fillPortion 5)
+                , Event.onDoubleClick (EditStep zip)
+                ]
                 [ el [ height fill ] (el [ alignBottom ] (text step.equation))
                 , el [ alignRight ] (text (labelEquation zip))
                 ]
@@ -286,6 +293,7 @@ viewStandaloneStep zip =
         , row
             [ width fill
             , spacing 15
+            , Event.onDoubleClick (EditStep zip)
             ]
             [ el [ alignLeft, width (fillPortion 1) ] none -- filler to format the equations and operations
             , paragraph [ width (fillPortion 5) ] [ text step.note ]
@@ -323,7 +331,6 @@ editStandaloneStep zip =
             [ column
                 [ alignLeft
                 , width (fillPortion 1)
-                , Event.onDoubleClick (RenderStep zip)
                 ]
                 [ Input.button
                     [ padding 5 ]
@@ -334,6 +341,11 @@ editStandaloneStep zip =
                     [ padding 5 ]
                     { onPress = Just (NewProcessStep zip)
                     , label = text "new child step"
+                    }
+                , Input.button
+                    [ padding 5 ]
+                    { onPress = Just (RenderStep zip)
+                    , label = text "close editor"
                     }
                 ]
             , Input.multiline [ Font.size 20, width (fillPortion 5), height (px 200) ]
@@ -365,7 +377,7 @@ viewProcessStep zip =
                     [ paragraph
                         [ alignLeft
                         , width (fillPortion 1)
-                        , Event.onDoubleClick (EditStep zip)
+                        , Event.onDoubleClick (ToggleProcess zip)
                         ]
                         [ text ("Begin " ++ step.operation) ]
                     , el [ width (fillPortion 5) ] (el [ alignRight ] none)
