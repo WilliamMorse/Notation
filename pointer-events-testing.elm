@@ -55,7 +55,7 @@ port capture : Value -> Cmd msg
 
 view : Model -> Html Msg
 view model =
-    div []
+    ul []
         [ p
             [ Pointer.onUp (EventMsg << Up)
             , Pointer.onMove (EventMsg << Move)
