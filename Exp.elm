@@ -9,7 +9,7 @@ port module Main exposing
     , fromBool
     , init
     , insertBelow
-    , labelEquation
+    , labelEquation 
     , main
     , nest
     , render
@@ -25,17 +25,18 @@ port module Main exposing
     , viewStep
     )
 
+--import Element.Background as Background
+--import Element.Border as Border
+--import Katex as KaTex
+
 import Browser
 import Element exposing (..)
-import Element.Background as Background
-import Element.Border as Border
 import Element.Events as Event
 import Element.Font as Font
 import Element.Input as Input
 import Html exposing (Html)
 import Html.Attributes
 import Json.Encode as E
-import Lazy.LList as LList exposing (LList)
 import Lazy.Tree as Tree exposing (Forest, Tree(..))
 import Lazy.Tree.Zipper as Zipper exposing (Zipper)
 
@@ -43,11 +44,12 @@ import Lazy.Tree.Zipper as Zipper exposing (Zipper)
 port render : E.Value -> Cmd msg
 
 
+main : Program () Model Msg
 main =
     Browser.element
         { init = init
         , subscriptions = subscriptions
-        , update = update
+        , update = addCmd
         , view = view
         }
 
@@ -61,7 +63,7 @@ type Process
 type alias Step =
     { operation : String
     , equation : String
-    , note : String
+    , note : String 
     , id : Int
     , edit : Bool
     , process : Process
@@ -89,23 +91,22 @@ init _ =
         startingStep =
             Tree.singleton
                 (Step "Starting Operation" "y=mx+b" "notesnotesnotes" 0 False Standalone)
-
-        z =
-            root
-                |> Tree.insert startingStep
-                |> Zipper.fromTree
     in
-    ( z, Cmd.none )
+    ( root
+        |> Tree.insert startingStep
+        |> Zipper.fromTree
+    , Cmd.none
+    )
 
 
 subscriptions : Model -> Sub Msg
-subscriptions model =
+subscriptions _ =
     Sub.none
 
 
 type Msg
     = EditStep (Zipper Step)
-    | RenderStep (Zipper Step)
+    | RenderStep (Zipper Step) 
     | OperationText (Zipper Step) String
     | EquationText (Zipper Step) String
     | NotesText (Zipper Step) String
@@ -114,6 +115,7 @@ type Msg
     | ToggleProcess (Zipper Step)
 
 
+blankStep : Step
 blankStep =
     Step "Operation" "Equation" "Notes" 0 False Standalone
 
@@ -139,82 +141,73 @@ nest step zip =
         |> Zipper.update (Tree.sortBy .id)
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+addCmd : Msg -> (Msg -> Model) -> () Model Cmd Msg
+addCmd msg up = 
+    case msg of 
+        RenderStep _ ->
+            (up msg, render)
+        _ _ ->
+        
+                
+                
+                (up msg, cmd.none) 
+
+update : Msg -> Model
+update msg =
     case msg of
         EditStep zip ->
-            ( zip
+            zip
                 |> Zipper.map (\a -> { a | edit = False })
                 |> Zipper.updateItem (\a -> { a | edit = True })
                 |> Zipper.root
-            , Cmd.none
-            )
 
         RenderStep zip ->
-            ( zip
+            zip
                 |> Zipper.updateItem (\s -> { s | edit = False })
                 |> Zipper.root
-            , Cmd.none
-            )
 
         OperationText zip newOp ->
-            ( zip
+            zip
                 |> Zipper.updateItem (\s -> { s | operation = newOp })
                 |> Zipper.root
-            , Cmd.none
-            )
 
         EquationText zip newEq ->
-            ( zip
+            zip
                 |> Zipper.updateItem (\s -> { s | equation = newEq })
                 |> Zipper.root
-            , Cmd.none
-            )
 
         NotesText zip newNote ->
-            ( zip
+            zip
                 |> Zipper.updateItem (\s -> { s | note = newNote })
                 |> Zipper.root
-            , Cmd.none
-            )
 
         ConsecutiveStep zip ->
-            ( zip
+            zip
                 |> Zipper.map (\s -> { s | edit = False })
                 |> insertBelow { blankStep | id = 1 + (Zipper.current zip).id }
                 |> Zipper.root
-            , Cmd.none
-            )
 
         NewProcessStep parent ->
-            ( parent
+            parent
                 |> Zipper.map (\s -> { s | edit = False })
                 |> Zipper.updateItem (\s -> { s | process = Expanded })
                 |> nest { blankStep | id = List.length <| Zipper.children parent }
                 |> Zipper.root
-            , Cmd.none
-            )
 
         ToggleProcess zip ->
             case (Zipper.current zip).process of
                 Standalone ->
-                    ( model
-                    , Cmd.none
-                    )
+                    zip |> Zipper.root
 
                 Expanded ->
-                    ( zip
+                    zip
                         |> Zipper.updateItem (\a -> { a | process = Collapsed })
                         |> Zipper.root
-                    , Cmd.none
-                    )
 
                 Collapsed ->
-                    ( zip
+                    zip
                         |> Zipper.updateItem (\a -> { a | process = Expanded })
                         |> Zipper.root
-                    , Cmd.none
-                    )
 
 
 viewProcess : Zipper Step -> List (Element Msg)
@@ -237,14 +230,14 @@ viewProcessIcon zip =
     in
     case step.process of
         Standalone ->
-            -- normal standalone step
+            -- plain step
             Input.button [ a ]
                 { onPress = Just <| NewProcessStep zip
                 , label = text "[^]"
                 }
 
         Expanded ->
-            -- there is a process that we are showing
+            -- step has a process that we are showing
             Input.button [ a ]
                 { onPress = Just <| NewProcessStep zip
                 , label = text "[^]"
@@ -303,7 +296,11 @@ viewKatexEquation zip =
                 |> htmlAttribute
             ]
             -- leave empty so that KaTex can fill in (perhaps it would be better to use the autorender extension?)
-            none
+            (text <|
+                "$$ "
+                    ++ (Zipper.current zip).equation
+                    ++ " $$"
+            )
 
         -- equation label
         , el [ alignRight ] (el [ width <| px 100, alignLeft ] <| text <| labelEquation zip)

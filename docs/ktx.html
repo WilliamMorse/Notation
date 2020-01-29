@@ -10,23 +10,30 @@
             src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js"
             integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz"
             crossorigin="anonymous"></script>
+        <!-- To automatically render math in text elements, include the auto-render extension: -->
+        <script
+            src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js"
+            integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI"
+            crossorigin="anonymous"
+            onload="document.getElementById('elm');"></script>
         <script src="elm.js"></script>
     </head>
     <body>
-        <div id="elm"> </div>
+        <div id="elm"> $$ y=mx+b $$ </div>
         <script>
-            var app = Elm.Main.init({
-                node: document.getElementById('elm')
-            });
-			app.ports.render.subscribe(function(data) {
-                console.log("well")
-                katex.render(data
-                    , document.getElementById("eq")
-                    , {throwOnError: false
-                });
+             var app = Elm.Main.init({
+                   node: document.getElementById('elm')
+            }); 
+
+            app.ports.render.subscribe(function (data) {
+                    console.log("well")
+                    // katex.render(data
+                    //     , document.getElementById("eq")
+                    //     , {
+                    //         throwOnError: false
             });
 			
-	  	    console.log("oh")
-		</script>
+	  	    //console.log("oh") 
+        </script>
     </body>
 </html>
