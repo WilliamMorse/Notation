@@ -192,7 +192,7 @@ update msg model =
                     ( zip
                         |> Zipper.updateItem (\a -> { a | process = Expanded })
                         |> Zipper.root
-                    , sendToKatex zip
+                    , Cmd.none
                     )
 
         RenderAll ->
@@ -284,13 +284,12 @@ viewKatexEquation : Zipper Step -> Element Msg
 viewKatexEquation zip =
     row [ width fill ]
         -- equation
-        [ el
-            [ labelEquation zip
-                |> Html.Attributes.id
-                |> htmlAttribute
-            ]
-            -- leave empty so that KaTex can fill in (perhaps it would be better to use the autorender extension?)
-            (el [] (text "placeholder"))
+        [ -- leave empty so that KaTex can fill in (perhaps it would be better to use the autorender extension?)
+          el
+            [ centerX ]
+            (html <|
+                Html.span [ Html.Attributes.id <| labelEquation zip ] []
+            )
 
         -- equation label
         , el [ alignRight ] (el [ width <| px 100, alignLeft ] <| text <| labelEquation zip)
@@ -366,19 +365,19 @@ labelEquation : Zipper Step -> String
 labelEquation zip =
     if Zipper.isRoot zip then
         --gets rid of the root node id
-        zip
-            -- follow the path from the root node to the current location picking up the ids allong the way
-            |> Zipper.getPath .id
-            |> List.drop 1
-            |> List.map ((+) 1)
-            |> List.map String.fromInt
-            |> String.join "."
+        "Turtle Shell"
 
     else
         zip
+            -- get id path to current node
             |> Zipper.getPath .id
+            -- drop off the root node (it is never renderd)
+            |> List.drop 1
+            -- start counting at 1 instead of 0
             |> List.map ((+) 1)
+            -- convert to string
             |> List.map String.fromInt
+            -- join with dot notation
             |> String.join "."
 
 

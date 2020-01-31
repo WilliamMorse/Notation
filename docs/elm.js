@@ -5588,7 +5588,7 @@ var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$isRoot = function (_v0) {
 	return $elm$core$List$isEmpty(bs);
 };
 var $author$project$Exp$labelEquation = function (zip) {
-	return $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$isRoot(zip) ? A2(
+	return $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$isRoot(zip) ? 'Turtle Shell' : A2(
 		$elm$core$String$join,
 		'.',
 		A2(
@@ -5605,21 +5605,7 @@ var $author$project$Exp$labelEquation = function (zip) {
 						function ($) {
 							return $.id;
 						},
-						zip))))) : A2(
-		$elm$core$String$join,
-		'.',
-		A2(
-			$elm$core$List$map,
-			$elm$core$String$fromInt,
-			A2(
-				$elm$core$List$map,
-				$elm$core$Basics$add(1),
-				A2(
-					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$getPath,
-					function ($) {
-						return $.id;
-					},
-					zip))));
+						zip)))));
 };
 var $elm$json$Json$Encode$object = function (pairs) {
 	return _Json_wrap(
@@ -5842,7 +5828,7 @@ var $author$project$Exp$update = F2(
 											{process: $author$project$Exp$Expanded});
 									},
 									zip)),
-							$author$project$Exp$sendToKatex(zip));
+							$elm$core$Platform$Cmd$none);
 				}
 			default:
 				return _Utils_Tuple2(
@@ -11969,12 +11955,20 @@ var $mdgriffith$elm_ui$Internal$Model$Left = {$: 'Left'};
 var $mdgriffith$elm_ui$Element$alignLeft = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$Left);
 var $mdgriffith$elm_ui$Internal$Model$Right = {$: 'Right'};
 var $mdgriffith$elm_ui$Element$alignRight = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$Right);
-var $mdgriffith$elm_ui$Element$htmlAttribute = $mdgriffith$elm_ui$Internal$Model$Attr;
+var $mdgriffith$elm_ui$Internal$Model$CenterX = {$: 'CenterX'};
+var $mdgriffith$elm_ui$Element$centerX = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$CenterX);
+var $elm$core$Basics$always = F2(
+	function (a, _v0) {
+		return a;
+	});
+var $mdgriffith$elm_ui$Internal$Model$unstyled = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Unstyled, $elm$core$Basics$always);
+var $mdgriffith$elm_ui$Element$html = $mdgriffith$elm_ui$Internal$Model$unstyled;
 var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
 var $mdgriffith$elm_ui$Internal$Model$Px = function (a) {
 	return {$: 'Px', a: a};
 };
 var $mdgriffith$elm_ui$Element$px = $mdgriffith$elm_ui$Internal$Model$Px;
+var $elm$html$Html$span = _VirtualDom_node('span');
 var $author$project$Exp$viewKatexEquation = function (zip) {
 	return A2(
 		$mdgriffith$elm_ui$Element$row,
@@ -11987,15 +11981,16 @@ var $author$project$Exp$viewKatexEquation = function (zip) {
 				A2(
 				$mdgriffith$elm_ui$Element$el,
 				_List_fromArray(
-					[
-						$mdgriffith$elm_ui$Element$htmlAttribute(
-						$elm$html$Html$Attributes$id(
-							$author$project$Exp$labelEquation(zip)))
-					]),
-				A2(
-					$mdgriffith$elm_ui$Element$el,
-					_List_Nil,
-					$mdgriffith$elm_ui$Element$text('placeholder'))),
+					[$mdgriffith$elm_ui$Element$centerX]),
+				$mdgriffith$elm_ui$Element$html(
+					A2(
+						$elm$html$Html$span,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$id(
+								$author$project$Exp$labelEquation(zip))
+							]),
+						_List_Nil))),
 				A2(
 				$mdgriffith$elm_ui$Element$el,
 				_List_fromArray(
