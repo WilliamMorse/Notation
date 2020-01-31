@@ -15,7 +15,7 @@ main =
         , view = view
         , update = update
         , subscriptions = always Sub.none
-        } 
+        }
 
 
 type alias Model =

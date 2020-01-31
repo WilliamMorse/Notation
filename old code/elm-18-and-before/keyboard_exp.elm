@@ -1,6 +1,6 @@
 module Main exposing (..)
 
-import Html exposing (Html, p, ul, li, text)
+import Html exposing (Html, li, p, text, ul)
 import Html.App as Html
 import Keyboard.Extra as Keyboard
 
@@ -37,9 +37,9 @@ init =
         ( keyboardModel, keyboardCmd ) =
             Keyboard.init
     in
-        ( Model keyboardModel False arr arr []
-        , Cmd.map KeyboardMsg keyboardCmd
-        )
+    ( Model keyboardModel False arr arr []
+    , Cmd.map KeyboardMsg keyboardCmd
+    )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -50,15 +50,15 @@ update msg model =
                 ( keyboardModel, keyboardCmd ) =
                     Keyboard.update keyMsg model.keyboardModel
             in
-                ( { model
-                    | keyboardModel = keyboardModel
-                    , shiftPressed = Keyboard.isPressed Keyboard.Enter keyboardModel && Keyboard.isPressed Keyboard.Shift keyboardModel 
-                    , arrows = Keyboard.arrows keyboardModel
-                    , wasd = Keyboard.wasd keyboardModel
-                    , keyList = Keyboard.pressedDown keyboardModel
-                  }
-                , Cmd.map KeyboardMsg keyboardCmd
-                )
+            ( { model
+                | keyboardModel = keyboardModel
+                , shiftPressed = Keyboard.isPressed Keyboard.Enter keyboardModel && Keyboard.isPressed Keyboard.Shift keyboardModel
+                , arrows = Keyboard.arrows keyboardModel
+                , wasd = Keyboard.wasd keyboardModel
+                , keyList = Keyboard.pressedDown keyboardModel
+              }
+            , Cmd.map KeyboardMsg keyboardCmd
+            )
 
 
 view : Model -> Html msg

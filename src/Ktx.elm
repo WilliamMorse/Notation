@@ -1,4 +1,4 @@
-port module Main exposing (Model, init, main, subscriptions, update, view)
+port module Ktx exposing (Model, init, main, subscriptions, update, view)
 
 import Browser
 import Element exposing (..)
@@ -26,7 +26,7 @@ type alias Model =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( "hi", Cmd.none )
+    ( "\\int_a^b x dx", Cmd.none )
 
 
 type Msg
@@ -39,6 +39,15 @@ subscriptions _ =
     Sub.none
 
 
+sendToKatex : String -> Cmd msg
+sendToKatex s =
+    render <|
+        E.object
+            [ ( "id", E.string "hole" )
+            , ( "eq", E.string s )
+            ]
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -46,7 +55,7 @@ update msg model =
             ( model, Cmd.none )
 
         TextInput t ->
-            ( t, render <| E.string t )
+            ( t, sendToKatex t )
 
 
 modelToString : Model -> String
@@ -64,7 +73,7 @@ view model =
             , centerX
             ]
             [ el
-                [ htmlAttribute <| Html.Attributes.id "eq"
+                [ htmlAttribute <| Html.Attributes.id "hole"
                 , centerX
                 ]
                 (text " ")

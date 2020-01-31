@@ -1,3 +1,17 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Exp</title>
+  <style>body { padding: 0; margin: 0; }</style>
+</head>
+
+<body>
+
+<pre id="elm"></pre>
+
+<script>
+try {
 (function(scope){
 'use strict';
 
@@ -78,190 +92,6 @@ function A9(fun, a, b, c, d, e, f, g, h, i) {
 }
 
 console.warn('Compiled in DEV mode. Follow the advice at https://elm-lang.org/0.19.1/optimize for better performance and smaller assets.');
-
-
-// EQUALITY
-
-function _Utils_eq(x, y)
-{
-	for (
-		var pair, stack = [], isEqual = _Utils_eqHelp(x, y, 0, stack);
-		isEqual && (pair = stack.pop());
-		isEqual = _Utils_eqHelp(pair.a, pair.b, 0, stack)
-		)
-	{}
-
-	return isEqual;
-}
-
-function _Utils_eqHelp(x, y, depth, stack)
-{
-	if (x === y)
-	{
-		return true;
-	}
-
-	if (typeof x !== 'object' || x === null || y === null)
-	{
-		typeof x === 'function' && _Debug_crash(5);
-		return false;
-	}
-
-	if (depth > 100)
-	{
-		stack.push(_Utils_Tuple2(x,y));
-		return true;
-	}
-
-	/**/
-	if (x.$ === 'Set_elm_builtin')
-	{
-		x = $elm$core$Set$toList(x);
-		y = $elm$core$Set$toList(y);
-	}
-	if (x.$ === 'RBNode_elm_builtin' || x.$ === 'RBEmpty_elm_builtin')
-	{
-		x = $elm$core$Dict$toList(x);
-		y = $elm$core$Dict$toList(y);
-	}
-	//*/
-
-	/**_UNUSED/
-	if (x.$ < 0)
-	{
-		x = $elm$core$Dict$toList(x);
-		y = $elm$core$Dict$toList(y);
-	}
-	//*/
-
-	for (var key in x)
-	{
-		if (!_Utils_eqHelp(x[key], y[key], depth + 1, stack))
-		{
-			return false;
-		}
-	}
-	return true;
-}
-
-var _Utils_equal = F2(_Utils_eq);
-var _Utils_notEqual = F2(function(a, b) { return !_Utils_eq(a,b); });
-
-
-
-// COMPARISONS
-
-// Code in Generate/JavaScript.hs, Basics.js, and List.js depends on
-// the particular integer values assigned to LT, EQ, and GT.
-
-function _Utils_cmp(x, y, ord)
-{
-	if (typeof x !== 'object')
-	{
-		return x === y ? /*EQ*/ 0 : x < y ? /*LT*/ -1 : /*GT*/ 1;
-	}
-
-	/**/
-	if (x instanceof String)
-	{
-		var a = x.valueOf();
-		var b = y.valueOf();
-		return a === b ? 0 : a < b ? -1 : 1;
-	}
-	//*/
-
-	/**_UNUSED/
-	if (typeof x.$ === 'undefined')
-	//*/
-	/**/
-	if (x.$[0] === '#')
-	//*/
-	{
-		return (ord = _Utils_cmp(x.a, y.a))
-			? ord
-			: (ord = _Utils_cmp(x.b, y.b))
-				? ord
-				: _Utils_cmp(x.c, y.c);
-	}
-
-	// traverse conses until end of a list or a mismatch
-	for (; x.b && y.b && !(ord = _Utils_cmp(x.a, y.a)); x = x.b, y = y.b) {} // WHILE_CONSES
-	return ord || (x.b ? /*GT*/ 1 : y.b ? /*LT*/ -1 : /*EQ*/ 0);
-}
-
-var _Utils_lt = F2(function(a, b) { return _Utils_cmp(a, b) < 0; });
-var _Utils_le = F2(function(a, b) { return _Utils_cmp(a, b) < 1; });
-var _Utils_gt = F2(function(a, b) { return _Utils_cmp(a, b) > 0; });
-var _Utils_ge = F2(function(a, b) { return _Utils_cmp(a, b) >= 0; });
-
-var _Utils_compare = F2(function(x, y)
-{
-	var n = _Utils_cmp(x, y);
-	return n < 0 ? $elm$core$Basics$LT : n ? $elm$core$Basics$GT : $elm$core$Basics$EQ;
-});
-
-
-// COMMON VALUES
-
-var _Utils_Tuple0_UNUSED = 0;
-var _Utils_Tuple0 = { $: '#0' };
-
-function _Utils_Tuple2_UNUSED(a, b) { return { a: a, b: b }; }
-function _Utils_Tuple2(a, b) { return { $: '#2', a: a, b: b }; }
-
-function _Utils_Tuple3_UNUSED(a, b, c) { return { a: a, b: b, c: c }; }
-function _Utils_Tuple3(a, b, c) { return { $: '#3', a: a, b: b, c: c }; }
-
-function _Utils_chr_UNUSED(c) { return c; }
-function _Utils_chr(c) { return new String(c); }
-
-
-// RECORDS
-
-function _Utils_update(oldRecord, updatedFields)
-{
-	var newRecord = {};
-
-	for (var key in oldRecord)
-	{
-		newRecord[key] = oldRecord[key];
-	}
-
-	for (var key in updatedFields)
-	{
-		newRecord[key] = updatedFields[key];
-	}
-
-	return newRecord;
-}
-
-
-// APPEND
-
-var _Utils_append = F2(_Utils_ap);
-
-function _Utils_ap(xs, ys)
-{
-	// append Strings
-	if (typeof xs === 'string')
-	{
-		return xs + ys;
-	}
-
-	// append Lists
-	if (!xs.b)
-	{
-		return ys;
-	}
-	var root = _List_Cons(xs.a, ys);
-	xs = xs.b
-	for (var curr = root; xs.b; xs = xs.b) // WHILE_CONS
-	{
-		curr = curr.b = _List_Cons(xs.a, ys);
-	}
-	return root;
-}
-
 
 
 var _List_Nil_UNUSED = { $: 0 };
@@ -789,6 +619,190 @@ function _Debug_regionToString(region)
 		return 'on line ' + region.start.line;
 	}
 	return 'on lines ' + region.start.line + ' through ' + region.end.line;
+}
+
+
+
+// EQUALITY
+
+function _Utils_eq(x, y)
+{
+	for (
+		var pair, stack = [], isEqual = _Utils_eqHelp(x, y, 0, stack);
+		isEqual && (pair = stack.pop());
+		isEqual = _Utils_eqHelp(pair.a, pair.b, 0, stack)
+		)
+	{}
+
+	return isEqual;
+}
+
+function _Utils_eqHelp(x, y, depth, stack)
+{
+	if (x === y)
+	{
+		return true;
+	}
+
+	if (typeof x !== 'object' || x === null || y === null)
+	{
+		typeof x === 'function' && _Debug_crash(5);
+		return false;
+	}
+
+	if (depth > 100)
+	{
+		stack.push(_Utils_Tuple2(x,y));
+		return true;
+	}
+
+	/**/
+	if (x.$ === 'Set_elm_builtin')
+	{
+		x = $elm$core$Set$toList(x);
+		y = $elm$core$Set$toList(y);
+	}
+	if (x.$ === 'RBNode_elm_builtin' || x.$ === 'RBEmpty_elm_builtin')
+	{
+		x = $elm$core$Dict$toList(x);
+		y = $elm$core$Dict$toList(y);
+	}
+	//*/
+
+	/**_UNUSED/
+	if (x.$ < 0)
+	{
+		x = $elm$core$Dict$toList(x);
+		y = $elm$core$Dict$toList(y);
+	}
+	//*/
+
+	for (var key in x)
+	{
+		if (!_Utils_eqHelp(x[key], y[key], depth + 1, stack))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+var _Utils_equal = F2(_Utils_eq);
+var _Utils_notEqual = F2(function(a, b) { return !_Utils_eq(a,b); });
+
+
+
+// COMPARISONS
+
+// Code in Generate/JavaScript.hs, Basics.js, and List.js depends on
+// the particular integer values assigned to LT, EQ, and GT.
+
+function _Utils_cmp(x, y, ord)
+{
+	if (typeof x !== 'object')
+	{
+		return x === y ? /*EQ*/ 0 : x < y ? /*LT*/ -1 : /*GT*/ 1;
+	}
+
+	/**/
+	if (x instanceof String)
+	{
+		var a = x.valueOf();
+		var b = y.valueOf();
+		return a === b ? 0 : a < b ? -1 : 1;
+	}
+	//*/
+
+	/**_UNUSED/
+	if (typeof x.$ === 'undefined')
+	//*/
+	/**/
+	if (x.$[0] === '#')
+	//*/
+	{
+		return (ord = _Utils_cmp(x.a, y.a))
+			? ord
+			: (ord = _Utils_cmp(x.b, y.b))
+				? ord
+				: _Utils_cmp(x.c, y.c);
+	}
+
+	// traverse conses until end of a list or a mismatch
+	for (; x.b && y.b && !(ord = _Utils_cmp(x.a, y.a)); x = x.b, y = y.b) {} // WHILE_CONSES
+	return ord || (x.b ? /*GT*/ 1 : y.b ? /*LT*/ -1 : /*EQ*/ 0);
+}
+
+var _Utils_lt = F2(function(a, b) { return _Utils_cmp(a, b) < 0; });
+var _Utils_le = F2(function(a, b) { return _Utils_cmp(a, b) < 1; });
+var _Utils_gt = F2(function(a, b) { return _Utils_cmp(a, b) > 0; });
+var _Utils_ge = F2(function(a, b) { return _Utils_cmp(a, b) >= 0; });
+
+var _Utils_compare = F2(function(x, y)
+{
+	var n = _Utils_cmp(x, y);
+	return n < 0 ? $elm$core$Basics$LT : n ? $elm$core$Basics$GT : $elm$core$Basics$EQ;
+});
+
+
+// COMMON VALUES
+
+var _Utils_Tuple0_UNUSED = 0;
+var _Utils_Tuple0 = { $: '#0' };
+
+function _Utils_Tuple2_UNUSED(a, b) { return { a: a, b: b }; }
+function _Utils_Tuple2(a, b) { return { $: '#2', a: a, b: b }; }
+
+function _Utils_Tuple3_UNUSED(a, b, c) { return { a: a, b: b, c: c }; }
+function _Utils_Tuple3(a, b, c) { return { $: '#3', a: a, b: b, c: c }; }
+
+function _Utils_chr_UNUSED(c) { return c; }
+function _Utils_chr(c) { return new String(c); }
+
+
+// RECORDS
+
+function _Utils_update(oldRecord, updatedFields)
+{
+	var newRecord = {};
+
+	for (var key in oldRecord)
+	{
+		newRecord[key] = oldRecord[key];
+	}
+
+	for (var key in updatedFields)
+	{
+		newRecord[key] = updatedFields[key];
+	}
+
+	return newRecord;
+}
+
+
+// APPEND
+
+var _Utils_append = F2(_Utils_ap);
+
+function _Utils_ap(xs, ys)
+{
+	// append Strings
+	if (typeof xs === 'string')
+	{
+		return xs + ys;
+	}
+
+	// append Lists
+	if (!xs.b)
+	{
+		return ys;
+	}
+	var root = _List_Cons(xs.a, ys);
+	xs = xs.b
+	for (var curr = root; xs.b; xs = xs.b) // WHILE_CONS
+	{
+		curr = curr.b = _List_Cons(xs.a, ys);
+	}
+	return root;
 }
 
 
@@ -4393,9 +4407,32 @@ var _Bitwise_shiftRightZfBy = F2(function(offset, a)
 	return a >>> offset;
 });
 var $elm$core$Basics$EQ = {$: 'EQ'};
-var $elm$core$Basics$GT = {$: 'GT'};
 var $elm$core$Basics$LT = {$: 'LT'};
 var $elm$core$List$cons = _List_cons;
+var $elm$core$Elm$JsArray$foldr = _JsArray_foldr;
+var $elm$core$Array$foldr = F3(
+	function (func, baseCase, _v0) {
+		var tree = _v0.c;
+		var tail = _v0.d;
+		var helper = F2(
+			function (node, acc) {
+				if (node.$ === 'SubTree') {
+					var subTree = node.a;
+					return A3($elm$core$Elm$JsArray$foldr, helper, acc, subTree);
+				} else {
+					var values = node.a;
+					return A3($elm$core$Elm$JsArray$foldr, func, acc, values);
+				}
+			});
+		return A3(
+			$elm$core$Elm$JsArray$foldr,
+			helper,
+			A3($elm$core$Elm$JsArray$foldr, func, baseCase, tail),
+			tree);
+	});
+var $elm$core$Array$toList = function (array) {
+	return A3($elm$core$Array$foldr, $elm$core$List$cons, _List_Nil, array);
+};
 var $elm$core$Dict$foldr = F3(
 	function (func, acc, t) {
 		foldr:
@@ -4448,30 +4485,7 @@ var $elm$core$Set$toList = function (_v0) {
 	var dict = _v0.a;
 	return $elm$core$Dict$keys(dict);
 };
-var $elm$core$Elm$JsArray$foldr = _JsArray_foldr;
-var $elm$core$Array$foldr = F3(
-	function (func, baseCase, _v0) {
-		var tree = _v0.c;
-		var tail = _v0.d;
-		var helper = F2(
-			function (node, acc) {
-				if (node.$ === 'SubTree') {
-					var subTree = node.a;
-					return A3($elm$core$Elm$JsArray$foldr, helper, acc, subTree);
-				} else {
-					var values = node.a;
-					return A3($elm$core$Elm$JsArray$foldr, func, acc, values);
-				}
-			});
-		return A3(
-			$elm$core$Elm$JsArray$foldr,
-			helper,
-			A3($elm$core$Elm$JsArray$foldr, func, baseCase, tail),
-			tree);
-	});
-var $elm$core$Array$toList = function (array) {
-	return A3($elm$core$Array$foldr, $elm$core$List$cons, _List_Nil, array);
-};
+var $elm$core$Basics$GT = {$: 'GT'};
 var $elm$core$Result$Err = function (a) {
 	return {$: 'Err', a: a};
 };
@@ -4867,176 +4881,35 @@ var $elm$core$Result$isOk = function (result) {
 		return false;
 	}
 };
-var $elm$json$Json$Decode$map = _Json_map1;
-var $elm$json$Json$Decode$map2 = _Json_map2;
-var $elm$json$Json$Decode$succeed = _Json_succeed;
-var $elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
-	switch (handler.$) {
-		case 'Normal':
-			return 0;
-		case 'MayStopPropagation':
-			return 1;
-		case 'MayPreventDefault':
-			return 2;
-		default:
-			return 3;
-	}
-};
-var $elm$browser$Browser$External = function (a) {
-	return {$: 'External', a: a};
-};
-var $elm$browser$Browser$Internal = function (a) {
-	return {$: 'Internal', a: a};
-};
-var $elm$core$Basics$identity = function (x) {
-	return x;
-};
-var $elm$browser$Browser$Dom$NotFound = function (a) {
-	return {$: 'NotFound', a: a};
-};
-var $elm$url$Url$Http = {$: 'Http'};
-var $elm$url$Url$Https = {$: 'Https'};
-var $elm$url$Url$Url = F6(
-	function (protocol, host, port_, path, query, fragment) {
-		return {fragment: fragment, host: host, path: path, port_: port_, protocol: protocol, query: query};
+var $elm$core$Platform$Cmd$batch = _Platform_batch;
+var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
+var $elm$json$Json$Encode$null = _Json_encodeNull;
+var $author$project$Exp$render = _Platform_outgoingPort(
+	'render',
+	function ($) {
+		return $elm$json$Json$Encode$null;
 	});
-var $elm$core$String$contains = _String_contains;
-var $elm$core$String$length = _String_length;
-var $elm$core$String$slice = _String_slice;
-var $elm$core$String$dropLeft = F2(
-	function (n, string) {
-		return (n < 1) ? string : A3(
-			$elm$core$String$slice,
-			n,
-			$elm$core$String$length(string),
-			string);
+var $author$project$Exp$Collapsed = {$: 'Collapsed'};
+var $author$project$Exp$Expanded = {$: 'Expanded'};
+var $author$project$Exp$Standalone = {$: 'Standalone'};
+var $author$project$Exp$Step = F6(
+	function (operation, equation, note, id, edit, process) {
+		return {edit: edit, equation: equation, id: id, note: note, operation: operation, process: process};
 	});
-var $elm$core$String$indexes = _String_indexes;
-var $elm$core$String$isEmpty = function (string) {
-	return string === '';
+var $author$project$Exp$blankStep = A6($author$project$Exp$Step, 'Operation', 'Equation', 'Notes', 0, false, $author$project$Exp$Standalone);
+var $elm$core$Basics$composeL = F3(
+	function (g, f, x) {
+		return g(
+			f(x));
+	});
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$descendants = function (_v0) {
+	var d = _v0.b;
+	return d;
 };
-var $elm$core$String$left = F2(
-	function (n, string) {
-		return (n < 1) ? '' : A3($elm$core$String$slice, 0, n, string);
-	});
-var $elm$core$String$toInt = _String_toInt;
-var $elm$url$Url$chompBeforePath = F5(
-	function (protocol, path, params, frag, str) {
-		if ($elm$core$String$isEmpty(str) || A2($elm$core$String$contains, '@', str)) {
-			return $elm$core$Maybe$Nothing;
-		} else {
-			var _v0 = A2($elm$core$String$indexes, ':', str);
-			if (!_v0.b) {
-				return $elm$core$Maybe$Just(
-					A6($elm$url$Url$Url, protocol, str, $elm$core$Maybe$Nothing, path, params, frag));
-			} else {
-				if (!_v0.b.b) {
-					var i = _v0.a;
-					var _v1 = $elm$core$String$toInt(
-						A2($elm$core$String$dropLeft, i + 1, str));
-					if (_v1.$ === 'Nothing') {
-						return $elm$core$Maybe$Nothing;
-					} else {
-						var port_ = _v1;
-						return $elm$core$Maybe$Just(
-							A6(
-								$elm$url$Url$Url,
-								protocol,
-								A2($elm$core$String$left, i, str),
-								port_,
-								path,
-								params,
-								frag));
-					}
-				} else {
-					return $elm$core$Maybe$Nothing;
-				}
-			}
-		}
-	});
-var $elm$url$Url$chompBeforeQuery = F4(
-	function (protocol, params, frag, str) {
-		if ($elm$core$String$isEmpty(str)) {
-			return $elm$core$Maybe$Nothing;
-		} else {
-			var _v0 = A2($elm$core$String$indexes, '/', str);
-			if (!_v0.b) {
-				return A5($elm$url$Url$chompBeforePath, protocol, '/', params, frag, str);
-			} else {
-				var i = _v0.a;
-				return A5(
-					$elm$url$Url$chompBeforePath,
-					protocol,
-					A2($elm$core$String$dropLeft, i, str),
-					params,
-					frag,
-					A2($elm$core$String$left, i, str));
-			}
-		}
-	});
-var $elm$url$Url$chompBeforeFragment = F3(
-	function (protocol, frag, str) {
-		if ($elm$core$String$isEmpty(str)) {
-			return $elm$core$Maybe$Nothing;
-		} else {
-			var _v0 = A2($elm$core$String$indexes, '?', str);
-			if (!_v0.b) {
-				return A4($elm$url$Url$chompBeforeQuery, protocol, $elm$core$Maybe$Nothing, frag, str);
-			} else {
-				var i = _v0.a;
-				return A4(
-					$elm$url$Url$chompBeforeQuery,
-					protocol,
-					$elm$core$Maybe$Just(
-						A2($elm$core$String$dropLeft, i + 1, str)),
-					frag,
-					A2($elm$core$String$left, i, str));
-			}
-		}
-	});
-var $elm$url$Url$chompAfterProtocol = F2(
-	function (protocol, str) {
-		if ($elm$core$String$isEmpty(str)) {
-			return $elm$core$Maybe$Nothing;
-		} else {
-			var _v0 = A2($elm$core$String$indexes, '#', str);
-			if (!_v0.b) {
-				return A3($elm$url$Url$chompBeforeFragment, protocol, $elm$core$Maybe$Nothing, str);
-			} else {
-				var i = _v0.a;
-				return A3(
-					$elm$url$Url$chompBeforeFragment,
-					protocol,
-					$elm$core$Maybe$Just(
-						A2($elm$core$String$dropLeft, i + 1, str)),
-					A2($elm$core$String$left, i, str));
-			}
-		}
-	});
-var $elm$core$String$startsWith = _String_startsWith;
-var $elm$url$Url$fromString = function (str) {
-	return A2($elm$core$String$startsWith, 'http://', str) ? A2(
-		$elm$url$Url$chompAfterProtocol,
-		$elm$url$Url$Http,
-		A2($elm$core$String$dropLeft, 7, str)) : (A2($elm$core$String$startsWith, 'https://', str) ? A2(
-		$elm$url$Url$chompAfterProtocol,
-		$elm$url$Url$Https,
-		A2($elm$core$String$dropLeft, 8, str)) : $elm$core$Maybe$Nothing);
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$item = function (_v0) {
+	var i = _v0.a;
+	return i;
 };
-var $elm$core$Basics$never = function (_v0) {
-	never:
-	while (true) {
-		var nvr = _v0.a;
-		var $temp$_v0 = nvr;
-		_v0 = $temp$_v0;
-		continue never;
-	}
-};
-var $elm$core$Task$Perform = function (a) {
-	return {$: 'Perform', a: a};
-};
-var $elm$core$Task$succeed = _Scheduler_succeed;
-var $elm$core$Task$init = $elm$core$Task$succeed(_Utils_Tuple0);
 var $elm$core$List$foldrHelper = F4(
 	function (fn, acc, ctr, ls) {
 		if (!ls.b) {
@@ -5106,98 +4979,6 @@ var $elm$core$List$map = F2(
 			_List_Nil,
 			xs);
 	});
-var $elm$core$Task$andThen = _Scheduler_andThen;
-var $elm$core$Task$map = F2(
-	function (func, taskA) {
-		return A2(
-			$elm$core$Task$andThen,
-			function (a) {
-				return $elm$core$Task$succeed(
-					func(a));
-			},
-			taskA);
-	});
-var $elm$core$Task$map2 = F3(
-	function (func, taskA, taskB) {
-		return A2(
-			$elm$core$Task$andThen,
-			function (a) {
-				return A2(
-					$elm$core$Task$andThen,
-					function (b) {
-						return $elm$core$Task$succeed(
-							A2(func, a, b));
-					},
-					taskB);
-			},
-			taskA);
-	});
-var $elm$core$Task$sequence = function (tasks) {
-	return A3(
-		$elm$core$List$foldr,
-		$elm$core$Task$map2($elm$core$List$cons),
-		$elm$core$Task$succeed(_List_Nil),
-		tasks);
-};
-var $elm$core$Platform$sendToApp = _Platform_sendToApp;
-var $elm$core$Task$spawnCmd = F2(
-	function (router, _v0) {
-		var task = _v0.a;
-		return _Scheduler_spawn(
-			A2(
-				$elm$core$Task$andThen,
-				$elm$core$Platform$sendToApp(router),
-				task));
-	});
-var $elm$core$Task$onEffects = F3(
-	function (router, commands, state) {
-		return A2(
-			$elm$core$Task$map,
-			function (_v0) {
-				return _Utils_Tuple0;
-			},
-			$elm$core$Task$sequence(
-				A2(
-					$elm$core$List$map,
-					$elm$core$Task$spawnCmd(router),
-					commands)));
-	});
-var $elm$core$Task$onSelfMsg = F3(
-	function (_v0, _v1, _v2) {
-		return $elm$core$Task$succeed(_Utils_Tuple0);
-	});
-var $elm$core$Task$cmdMap = F2(
-	function (tagger, _v0) {
-		var task = _v0.a;
-		return $elm$core$Task$Perform(
-			A2($elm$core$Task$map, tagger, task));
-	});
-_Platform_effectManagers['Task'] = _Platform_createManager($elm$core$Task$init, $elm$core$Task$onEffects, $elm$core$Task$onSelfMsg, $elm$core$Task$cmdMap);
-var $elm$core$Task$command = _Platform_leaf('Task');
-var $elm$core$Task$perform = F2(
-	function (toMessage, task) {
-		return $elm$core$Task$command(
-			$elm$core$Task$Perform(
-				A2($elm$core$Task$map, toMessage, task)));
-	});
-var $elm$browser$Browser$element = _Browser_element;
-var $author$project$Exp$Expanded = {$: 'Expanded'};
-var $author$project$Exp$Standalone = {$: 'Standalone'};
-var $author$project$Exp$Step = F6(
-	function (operation, equation, note, id, edit, process) {
-		return {edit: edit, equation: equation, id: id, note: note, operation: operation, process: process};
-	});
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$Zipper = F2(
-	function (a, b) {
-		return {$: 'Zipper', a: a, b: b};
-	});
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$fromTree = function (tree) {
-	return A2($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$Zipper, tree, _List_Nil);
-};
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Tree = F2(
-	function (a, b) {
-		return {$: 'Tree', a: a, b: b};
-	});
 var $turboMaCk$lazy_tree_with_zipper$Lazy$force = function (piece) {
 	if (piece.$ === 'Evaluated') {
 		var a = piece.a;
@@ -5207,6 +4988,28 @@ var $turboMaCk$lazy_tree_with_zipper$Lazy$force = function (piece) {
 		return thunk(_Utils_Tuple0);
 	}
 };
+var $turboMaCk$lazy_tree_with_zipper$Lazy$LList$toList = $turboMaCk$lazy_tree_with_zipper$Lazy$force;
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$children = A2(
+	$elm$core$Basics$composeL,
+	A2(
+		$elm$core$Basics$composeL,
+		$elm$core$List$map($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$item),
+		$turboMaCk$lazy_tree_with_zipper$Lazy$LList$toList),
+	$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$descendants);
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$getTree = function (_v0) {
+	var tree = _v0.a;
+	return tree;
+};
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$children = A2($elm$core$Basics$composeL, $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$children, $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$getTree);
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current = A2($elm$core$Basics$composeL, $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$item, $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$getTree);
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$Zipper = F2(
+	function (a, b) {
+		return {$: 'Zipper', a: a, b: b};
+	});
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Tree = F2(
+	function (a, b) {
+		return {$: 'Tree', a: a, b: b};
+	});
 var $turboMaCk$lazy_tree_with_zipper$Lazy$Lazy = function (a) {
 	return {$: 'Lazy', a: a};
 };
@@ -5224,6 +5027,9 @@ var $turboMaCk$lazy_tree_with_zipper$Lazy$map2 = F3(
 			});
 	});
 var $turboMaCk$lazy_tree_with_zipper$Lazy$LList$append = $turboMaCk$lazy_tree_with_zipper$Lazy$map2($elm$core$Basics$append);
+var $elm$core$Basics$identity = function (x) {
+	return x;
+};
 var $turboMaCk$lazy_tree_with_zipper$Lazy$LList$llist = F2(
 	function (constructor, arg) {
 		return $turboMaCk$lazy_tree_with_zipper$Lazy$lazy(
@@ -5246,58 +5052,6 @@ var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$insert = F2(
 					_List_fromArray(
 						[t]))));
 	});
-var $elm$core$Basics$negate = function (n) {
-	return -n;
-};
-var $elm$core$Platform$Cmd$batch = _Platform_batch;
-var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
-var $turboMaCk$lazy_tree_with_zipper$Lazy$LList$empty = A2($turboMaCk$lazy_tree_with_zipper$Lazy$LList$llist, $elm$core$Basics$identity, _List_Nil);
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$singleton = function (a) {
-	return A2($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Tree, a, $turboMaCk$lazy_tree_with_zipper$Lazy$LList$empty);
-};
-var $author$project$Exp$init = function (_v0) {
-	var startingStep = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$singleton(
-		A6($author$project$Exp$Step, 'Starting Operation', 'y=mx+b', 'notesnotesnotes', 0, false, $author$project$Exp$Standalone));
-	var root = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$singleton(
-		A6($author$project$Exp$Step, 'On', 'Turtles', 'Turtles All the way', -1, false, $author$project$Exp$Expanded));
-	var zip = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$fromTree(
-		A2($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$insert, startingStep, root));
-	return _Utils_Tuple2(zip, $elm$core$Platform$Cmd$none);
-};
-var $elm$core$Platform$Sub$batch = _Platform_batch;
-var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
-var $author$project$Exp$subscriptions = function (_v0) {
-	return $elm$core$Platform$Sub$none;
-};
-var $author$project$Exp$Collapsed = {$: 'Collapsed'};
-var $author$project$Exp$blankStep = A6($author$project$Exp$Step, 'Operation', 'Equation', 'Notes', 0, false, $author$project$Exp$Standalone);
-var $elm$core$Basics$composeL = F3(
-	function (g, f, x) {
-		return g(
-			f(x));
-	});
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$descendants = function (_v0) {
-	var d = _v0.b;
-	return d;
-};
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$item = function (_v0) {
-	var i = _v0.a;
-	return i;
-};
-var $turboMaCk$lazy_tree_with_zipper$Lazy$LList$toList = $turboMaCk$lazy_tree_with_zipper$Lazy$force;
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$children = A2(
-	$elm$core$Basics$composeL,
-	A2(
-		$elm$core$Basics$composeL,
-		$elm$core$List$map($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$item),
-		$turboMaCk$lazy_tree_with_zipper$Lazy$LList$toList),
-	$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$descendants);
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$getTree = function (_v0) {
-	var tree = _v0.a;
-	return tree;
-};
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$children = A2($elm$core$Basics$composeL, $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$children, $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$getTree);
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current = A2($elm$core$Basics$composeL, $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$item, $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$getTree);
 var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$insert = F2(
 	function (tree, _v0) {
 		var t = _v0.a;
@@ -5307,6 +5061,10 @@ var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$insert = F2(
 			A2($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$insert, tree, t),
 			zipperBreadcrumbs);
 	});
+var $turboMaCk$lazy_tree_with_zipper$Lazy$LList$empty = A2($turboMaCk$lazy_tree_with_zipper$Lazy$LList$llist, $elm$core$Basics$identity, _List_Nil);
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$singleton = function (a) {
+	return A2($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Tree, a, $turboMaCk$lazy_tree_with_zipper$Lazy$LList$empty);
+};
 var $turboMaCk$lazy_tree_with_zipper$Lazy$map = F2(
 	function (f, a) {
 		return $turboMaCk$lazy_tree_with_zipper$Lazy$lazy(
@@ -5484,194 +5242,6 @@ var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$map = F2(
 			A2($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$map, fc, tree),
 			A2($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$breadcrumbsMap, fc, zipperBreadcrumbs));
 	});
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$sliceForest_ = F3(
-	function (acc, left, right) {
-		sliceForest_:
-		while (true) {
-			var _v0 = $turboMaCk$lazy_tree_with_zipper$Lazy$LList$toList(right);
-			if (!_v0.b) {
-				return $elm$core$List$reverse(acc);
-			} else {
-				var head = _v0.a;
-				var tail = _v0.b;
-				var newItem = _Utils_Tuple3(
-					left,
-					head,
-					$turboMaCk$lazy_tree_with_zipper$Lazy$LList$fromList(tail));
-				var $temp$acc = A2($elm$core$List$cons, newItem, acc),
-					$temp$left = A2($turboMaCk$lazy_tree_with_zipper$Lazy$LList$cons, head, left),
-					$temp$right = $turboMaCk$lazy_tree_with_zipper$Lazy$LList$fromList(tail);
-				acc = $temp$acc;
-				left = $temp$left;
-				right = $temp$right;
-				continue sliceForest_;
-			}
-		}
-	});
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$sliceForest = A2($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$sliceForest_, _List_Nil, $turboMaCk$lazy_tree_with_zipper$Lazy$LList$empty);
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$openAll = function (_v0) {
-	var tree = _v0.a;
-	var zipperBreadcrumbs = _v0.b;
-	return A2(
-		$elm$core$List$map,
-		function (_v1) {
-			var left = _v1.a;
-			var parent = _v1.b;
-			var right = _v1.c;
-			return A2(
-				$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$Zipper,
-				parent,
-				A2(
-					$elm$core$List$cons,
-					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$Breadcrumb(
-						{
-							left: left,
-							parent: $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$item(tree),
-							right: right
-						}),
-					zipperBreadcrumbs));
-		},
-		$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$sliceForest(
-			$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$descendants(tree)));
-};
-var $elm$core$List$drop = F2(
-	function (n, list) {
-		drop:
-		while (true) {
-			if (n <= 0) {
-				return list;
-			} else {
-				if (!list.b) {
-					return list;
-				} else {
-					var x = list.a;
-					var xs = list.b;
-					var $temp$n = n - 1,
-						$temp$list = xs;
-					n = $temp$n;
-					list = $temp$list;
-					continue drop;
-				}
-			}
-		}
-	});
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$getPath = F2(
-	function (fc, _v0) {
-		var tree = _v0.a;
-		var zipperBreadcrumbs = _v0.b;
-		return A3(
-			$elm$core$List$foldl,
-			F2(
-				function (_v1, acc) {
-					var parent = _v1.a.parent;
-					return A2(
-						$elm$core$List$cons,
-						fc(parent),
-						acc);
-				}),
-			_List_fromArray(
-				[
-					fc(
-					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$item(tree))
-				]),
-			zipperBreadcrumbs);
-	});
-var $elm$core$List$isEmpty = function (xs) {
-	if (!xs.b) {
-		return true;
-	} else {
-		return false;
-	}
-};
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$isRoot = function (_v0) {
-	var bs = _v0.b;
-	return $elm$core$List$isEmpty(bs);
-};
-var $author$project$Exp$labelEquation = function (zip) {
-	return $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$isRoot(zip) ? A2(
-		$elm$core$String$join,
-		'.',
-		A2(
-			$elm$core$List$map,
-			$elm$core$String$fromInt,
-			A2(
-				$elm$core$List$map,
-				$elm$core$Basics$add(1),
-				A2(
-					$elm$core$List$drop,
-					1,
-					A2(
-						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$getPath,
-						function ($) {
-							return $.id;
-						},
-						zip))))) : A2(
-		$elm$core$String$join,
-		'.',
-		A2(
-			$elm$core$List$map,
-			$elm$core$String$fromInt,
-			A2(
-				$elm$core$List$map,
-				$elm$core$Basics$add(1),
-				A2(
-					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$getPath,
-					function ($) {
-						return $.id;
-					},
-					zip))));
-};
-var $elm$json$Json$Encode$object = function (pairs) {
-	return _Json_wrap(
-		A3(
-			$elm$core$List$foldl,
-			F2(
-				function (_v0, obj) {
-					var k = _v0.a;
-					var v = _v0.b;
-					return A3(_Json_addField, k, v, obj);
-				}),
-			_Json_emptyObject(_Utils_Tuple0),
-			pairs));
-};
-var $author$project$Exp$render = _Platform_outgoingPort('render', $elm$core$Basics$identity);
-var $elm$json$Json$Encode$string = _Json_wrap;
-var $author$project$Exp$sendToKatex = function (zip) {
-	return $author$project$Exp$render(
-		$elm$json$Json$Encode$object(
-			_List_fromArray(
-				[
-					_Utils_Tuple2(
-					'id',
-					$elm$json$Json$Encode$string(
-						$author$project$Exp$labelEquation(zip))),
-					_Utils_Tuple2(
-					'eq',
-					$elm$json$Json$Encode$string(
-						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(zip).equation))
-				])));
-};
-var $author$project$Exp$renderAllOpen = function (zip) {
-	var _v0 = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(zip).process;
-	switch (_v0.$) {
-		case 'Standalone':
-			return $author$project$Exp$sendToKatex(zip);
-		case 'Collapsed':
-			return $author$project$Exp$sendToKatex(zip);
-		default:
-			var _v1 = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$openAll(zip);
-			if (!_v1.b) {
-				return $author$project$Exp$sendToKatex(zip);
-			} else {
-				var z = _v1;
-				return $elm$core$Platform$Cmd$batch(
-					A2(
-						$elm$core$List$cons,
-						$author$project$Exp$sendToKatex(zip),
-						A2($elm$core$List$map, $author$project$Exp$renderAllOpen, z)));
-			}
-	}
-};
 var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem = F2(
 	function (fc, _v0) {
 		var tree = _v0.a;
@@ -5685,198 +5255,428 @@ var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem = F2(
 				$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$descendants(tree)),
 			zipperBreadcrumbs);
 	});
-var $author$project$Exp$update = F2(
-	function (msg, model) {
-		switch (msg.$) {
-			case 'EditStep':
-				var zip = msg.a;
-				return _Utils_Tuple2(
-					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(
+var $author$project$Exp$update = function (msg) {
+	switch (msg.$) {
+		case 'EditStep':
+			var zip = msg.a;
+			return $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(
+				A2(
+					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
+					function (a) {
+						return _Utils_update(
+							a,
+							{edit: true});
+					},
+					A2(
+						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$map,
+						function (a) {
+							return _Utils_update(
+								a,
+								{edit: false});
+						},
+						zip)));
+		case 'RenderStep':
+			var zip = msg.a;
+			return $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(
+				A2(
+					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
+					function (s) {
+						return _Utils_update(
+							s,
+							{edit: false});
+					},
+					zip));
+		case 'OperationText':
+			var zip = msg.a;
+			var newOp = msg.b;
+			return $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(
+				A2(
+					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
+					function (s) {
+						return _Utils_update(
+							s,
+							{operation: newOp});
+					},
+					zip));
+		case 'EquationText':
+			var zip = msg.a;
+			var newEq = msg.b;
+			return $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(
+				A2(
+					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
+					function (s) {
+						return _Utils_update(
+							s,
+							{equation: newEq});
+					},
+					zip));
+		case 'NotesText':
+			var zip = msg.a;
+			var newNote = msg.b;
+			return $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(
+				A2(
+					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
+					function (s) {
+						return _Utils_update(
+							s,
+							{note: newNote});
+					},
+					zip));
+		case 'ConsecutiveStep':
+			var zip = msg.a;
+			return $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(
+				A2(
+					$author$project$Exp$insertBelow,
+					_Utils_update(
+						$author$project$Exp$blankStep,
+						{
+							id: 1 + $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(zip).id
+						}),
+					A2(
+						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$map,
+						function (s) {
+							return _Utils_update(
+								s,
+								{edit: false});
+						},
+						zip)));
+		case 'NewProcessStep':
+			var parent = msg.a;
+			return $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(
+				A2(
+					$author$project$Exp$nest,
+					_Utils_update(
+						$author$project$Exp$blankStep,
+						{
+							id: $elm$core$List$length(
+								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$children(parent))
+						}),
+					A2(
+						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
+						function (s) {
+							return _Utils_update(
+								s,
+								{process: $author$project$Exp$Expanded});
+						},
 						A2(
-							$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
-							function (a) {
-								return _Utils_update(
-									a,
-									{edit: true});
-							},
-							A2(
-								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$map,
-								function (a) {
-									return _Utils_update(
-										a,
-										{edit: false});
-								},
-								zip))),
-					$elm$core$Platform$Cmd$none);
-			case 'RenderStep':
-				var zip = msg.a;
-				return _Utils_Tuple2(
-					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(
-						A2(
-							$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
+							$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$map,
 							function (s) {
 								return _Utils_update(
 									s,
 									{edit: false});
 							},
-							zip)),
-					$elm$core$Platform$Cmd$none);
-			case 'OperationText':
-				var zip = msg.a;
-				var newOp = msg.b;
-				return _Utils_Tuple2(
-					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(
+							parent))));
+		default:
+			var zip = msg.a;
+			var _v1 = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(zip).process;
+			switch (_v1.$) {
+				case 'Standalone':
+					return $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(zip);
+				case 'Expanded':
+					return $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(
 						A2(
 							$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
-							function (s) {
+							function (a) {
 								return _Utils_update(
-									s,
-									{operation: newOp});
+									a,
+									{process: $author$project$Exp$Collapsed});
 							},
-							zip)),
-					$elm$core$Platform$Cmd$none);
-			case 'EquationText':
-				var zip = msg.a;
-				var newEq = msg.b;
-				return _Utils_Tuple2(
-					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(
+							zip));
+				default:
+					return $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(
 						A2(
 							$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
-							function (s) {
+							function (a) {
 								return _Utils_update(
-									s,
-									{equation: newEq});
+									a,
+									{process: $author$project$Exp$Expanded});
 							},
-							zip)),
-					$elm$core$Platform$Cmd$none);
-			case 'NotesText':
-				var zip = msg.a;
-				var newNote = msg.b;
-				return _Utils_Tuple2(
-					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(
-						A2(
-							$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
-							function (s) {
-								return _Utils_update(
-									s,
-									{note: newNote});
-							},
-							zip)),
-					$elm$core$Platform$Cmd$none);
-			case 'ConsecutiveStep':
-				var zip = msg.a;
-				return _Utils_Tuple2(
-					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(
-						A2(
-							$author$project$Exp$insertBelow,
-							_Utils_update(
-								$author$project$Exp$blankStep,
-								{
-									id: 1 + $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(zip).id
-								}),
-							A2(
-								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$map,
-								function (s) {
-									return _Utils_update(
-										s,
-										{edit: false});
-								},
-								zip))),
-					$elm$core$Platform$Cmd$none);
-			case 'NewProcessStep':
-				var parent = msg.a;
-				return _Utils_Tuple2(
-					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(
-						A2(
-							$author$project$Exp$nest,
-							_Utils_update(
-								$author$project$Exp$blankStep,
-								{
-									id: $elm$core$List$length(
-										$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$children(parent))
-								}),
-							A2(
-								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
-								function (s) {
-									return _Utils_update(
-										s,
-										{process: $author$project$Exp$Expanded});
-								},
-								A2(
-									$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$map,
-									function (s) {
-										return _Utils_update(
-											s,
-											{edit: false});
-									},
-									parent)))),
-					$elm$core$Platform$Cmd$none);
-			case 'ToggleProcess':
-				var zip = msg.a;
-				var _v1 = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(zip).process;
-				switch (_v1.$) {
-					case 'Standalone':
-						return _Utils_Tuple2(
-							$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(zip),
-							$elm$core$Platform$Cmd$none);
-					case 'Expanded':
-						return _Utils_Tuple2(
-							$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(
-								A2(
-									$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
-									function (a) {
-										return _Utils_update(
-											a,
-											{process: $author$project$Exp$Collapsed});
-									},
-									zip)),
-							$elm$core$Platform$Cmd$none);
-					default:
-						return _Utils_Tuple2(
-							$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(
-								A2(
-									$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
-									function (a) {
-										return _Utils_update(
-											a,
-											{process: $author$project$Exp$Expanded});
-									},
-									zip)),
-							$author$project$Exp$sendToKatex(zip));
-				}
-			default:
-				return _Utils_Tuple2(
-					model,
-					$elm$core$Platform$Cmd$batch(
-						A2(
-							$elm$core$List$map,
-							$author$project$Exp$renderAllOpen,
-							$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$openAll(model))));
+							zip));
+			}
+	}
+};
+var $author$project$Exp$addCmd = F2(
+	function (msg, model) {
+		if (msg.$ === 'AdjustTree') {
+			var zm = msg.a;
+			return _Utils_Tuple2(
+				$author$project$Exp$update(zm),
+				$elm$core$Platform$Cmd$none);
+		} else {
+			return _Utils_Tuple2(
+				model,
+				$author$project$Exp$render(_Utils_Tuple0));
 		}
 	});
-var $author$project$Exp$RenderAll = {$: 'RenderAll'};
-var $mdgriffith$elm_ui$Internal$Model$Attr = function (a) {
-	return {$: 'Attr', a: a};
+var $elm$json$Json$Decode$map = _Json_map1;
+var $elm$json$Json$Decode$map2 = _Json_map2;
+var $elm$json$Json$Decode$succeed = _Json_succeed;
+var $elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
+	switch (handler.$) {
+		case 'Normal':
+			return 0;
+		case 'MayStopPropagation':
+			return 1;
+		case 'MayPreventDefault':
+			return 2;
+		default:
+			return 3;
+	}
 };
-var $mdgriffith$elm_ui$Internal$Model$Button = {$: 'Button'};
-var $mdgriffith$elm_ui$Internal$Model$Describe = function (a) {
-	return {$: 'Describe', a: a};
+var $elm$browser$Browser$External = function (a) {
+	return {$: 'External', a: a};
+};
+var $elm$browser$Browser$Internal = function (a) {
+	return {$: 'Internal', a: a};
+};
+var $elm$browser$Browser$Dom$NotFound = function (a) {
+	return {$: 'NotFound', a: a};
+};
+var $elm$url$Url$Http = {$: 'Http'};
+var $elm$url$Url$Https = {$: 'Https'};
+var $elm$url$Url$Url = F6(
+	function (protocol, host, port_, path, query, fragment) {
+		return {fragment: fragment, host: host, path: path, port_: port_, protocol: protocol, query: query};
+	});
+var $elm$core$String$contains = _String_contains;
+var $elm$core$String$length = _String_length;
+var $elm$core$String$slice = _String_slice;
+var $elm$core$String$dropLeft = F2(
+	function (n, string) {
+		return (n < 1) ? string : A3(
+			$elm$core$String$slice,
+			n,
+			$elm$core$String$length(string),
+			string);
+	});
+var $elm$core$String$indexes = _String_indexes;
+var $elm$core$String$isEmpty = function (string) {
+	return string === '';
+};
+var $elm$core$String$left = F2(
+	function (n, string) {
+		return (n < 1) ? '' : A3($elm$core$String$slice, 0, n, string);
+	});
+var $elm$core$String$toInt = _String_toInt;
+var $elm$url$Url$chompBeforePath = F5(
+	function (protocol, path, params, frag, str) {
+		if ($elm$core$String$isEmpty(str) || A2($elm$core$String$contains, '@', str)) {
+			return $elm$core$Maybe$Nothing;
+		} else {
+			var _v0 = A2($elm$core$String$indexes, ':', str);
+			if (!_v0.b) {
+				return $elm$core$Maybe$Just(
+					A6($elm$url$Url$Url, protocol, str, $elm$core$Maybe$Nothing, path, params, frag));
+			} else {
+				if (!_v0.b.b) {
+					var i = _v0.a;
+					var _v1 = $elm$core$String$toInt(
+						A2($elm$core$String$dropLeft, i + 1, str));
+					if (_v1.$ === 'Nothing') {
+						return $elm$core$Maybe$Nothing;
+					} else {
+						var port_ = _v1;
+						return $elm$core$Maybe$Just(
+							A6(
+								$elm$url$Url$Url,
+								protocol,
+								A2($elm$core$String$left, i, str),
+								port_,
+								path,
+								params,
+								frag));
+					}
+				} else {
+					return $elm$core$Maybe$Nothing;
+				}
+			}
+		}
+	});
+var $elm$url$Url$chompBeforeQuery = F4(
+	function (protocol, params, frag, str) {
+		if ($elm$core$String$isEmpty(str)) {
+			return $elm$core$Maybe$Nothing;
+		} else {
+			var _v0 = A2($elm$core$String$indexes, '/', str);
+			if (!_v0.b) {
+				return A5($elm$url$Url$chompBeforePath, protocol, '/', params, frag, str);
+			} else {
+				var i = _v0.a;
+				return A5(
+					$elm$url$Url$chompBeforePath,
+					protocol,
+					A2($elm$core$String$dropLeft, i, str),
+					params,
+					frag,
+					A2($elm$core$String$left, i, str));
+			}
+		}
+	});
+var $elm$url$Url$chompBeforeFragment = F3(
+	function (protocol, frag, str) {
+		if ($elm$core$String$isEmpty(str)) {
+			return $elm$core$Maybe$Nothing;
+		} else {
+			var _v0 = A2($elm$core$String$indexes, '?', str);
+			if (!_v0.b) {
+				return A4($elm$url$Url$chompBeforeQuery, protocol, $elm$core$Maybe$Nothing, frag, str);
+			} else {
+				var i = _v0.a;
+				return A4(
+					$elm$url$Url$chompBeforeQuery,
+					protocol,
+					$elm$core$Maybe$Just(
+						A2($elm$core$String$dropLeft, i + 1, str)),
+					frag,
+					A2($elm$core$String$left, i, str));
+			}
+		}
+	});
+var $elm$url$Url$chompAfterProtocol = F2(
+	function (protocol, str) {
+		if ($elm$core$String$isEmpty(str)) {
+			return $elm$core$Maybe$Nothing;
+		} else {
+			var _v0 = A2($elm$core$String$indexes, '#', str);
+			if (!_v0.b) {
+				return A3($elm$url$Url$chompBeforeFragment, protocol, $elm$core$Maybe$Nothing, str);
+			} else {
+				var i = _v0.a;
+				return A3(
+					$elm$url$Url$chompBeforeFragment,
+					protocol,
+					$elm$core$Maybe$Just(
+						A2($elm$core$String$dropLeft, i + 1, str)),
+					A2($elm$core$String$left, i, str));
+			}
+		}
+	});
+var $elm$core$String$startsWith = _String_startsWith;
+var $elm$url$Url$fromString = function (str) {
+	return A2($elm$core$String$startsWith, 'http://', str) ? A2(
+		$elm$url$Url$chompAfterProtocol,
+		$elm$url$Url$Http,
+		A2($elm$core$String$dropLeft, 7, str)) : (A2($elm$core$String$startsWith, 'https://', str) ? A2(
+		$elm$url$Url$chompAfterProtocol,
+		$elm$url$Url$Https,
+		A2($elm$core$String$dropLeft, 8, str)) : $elm$core$Maybe$Nothing);
+};
+var $elm$core$Basics$never = function (_v0) {
+	never:
+	while (true) {
+		var nvr = _v0.a;
+		var $temp$_v0 = nvr;
+		_v0 = $temp$_v0;
+		continue never;
+	}
+};
+var $elm$core$Task$Perform = function (a) {
+	return {$: 'Perform', a: a};
+};
+var $elm$core$Task$succeed = _Scheduler_succeed;
+var $elm$core$Task$init = $elm$core$Task$succeed(_Utils_Tuple0);
+var $elm$core$Task$andThen = _Scheduler_andThen;
+var $elm$core$Task$map = F2(
+	function (func, taskA) {
+		return A2(
+			$elm$core$Task$andThen,
+			function (a) {
+				return $elm$core$Task$succeed(
+					func(a));
+			},
+			taskA);
+	});
+var $elm$core$Task$map2 = F3(
+	function (func, taskA, taskB) {
+		return A2(
+			$elm$core$Task$andThen,
+			function (a) {
+				return A2(
+					$elm$core$Task$andThen,
+					function (b) {
+						return $elm$core$Task$succeed(
+							A2(func, a, b));
+					},
+					taskB);
+			},
+			taskA);
+	});
+var $elm$core$Task$sequence = function (tasks) {
+	return A3(
+		$elm$core$List$foldr,
+		$elm$core$Task$map2($elm$core$List$cons),
+		$elm$core$Task$succeed(_List_Nil),
+		tasks);
+};
+var $elm$core$Platform$sendToApp = _Platform_sendToApp;
+var $elm$core$Task$spawnCmd = F2(
+	function (router, _v0) {
+		var task = _v0.a;
+		return _Scheduler_spawn(
+			A2(
+				$elm$core$Task$andThen,
+				$elm$core$Platform$sendToApp(router),
+				task));
+	});
+var $elm$core$Task$onEffects = F3(
+	function (router, commands, state) {
+		return A2(
+			$elm$core$Task$map,
+			function (_v0) {
+				return _Utils_Tuple0;
+			},
+			$elm$core$Task$sequence(
+				A2(
+					$elm$core$List$map,
+					$elm$core$Task$spawnCmd(router),
+					commands)));
+	});
+var $elm$core$Task$onSelfMsg = F3(
+	function (_v0, _v1, _v2) {
+		return $elm$core$Task$succeed(_Utils_Tuple0);
+	});
+var $elm$core$Task$cmdMap = F2(
+	function (tagger, _v0) {
+		var task = _v0.a;
+		return $elm$core$Task$Perform(
+			A2($elm$core$Task$map, tagger, task));
+	});
+_Platform_effectManagers['Task'] = _Platform_createManager($elm$core$Task$init, $elm$core$Task$onEffects, $elm$core$Task$onSelfMsg, $elm$core$Task$cmdMap);
+var $elm$core$Task$command = _Platform_leaf('Task');
+var $elm$core$Task$perform = F2(
+	function (toMessage, task) {
+		return $elm$core$Task$command(
+			$elm$core$Task$Perform(
+				A2($elm$core$Task$map, toMessage, task)));
+	});
+var $elm$browser$Browser$element = _Browser_element;
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$fromTree = function (tree) {
+	return A2($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$Zipper, tree, _List_Nil);
+};
+var $elm$core$Basics$negate = function (n) {
+	return -n;
+};
+var $author$project$Exp$init = function (_v0) {
+	var startingStep = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$singleton(
+		A6($author$project$Exp$Step, 'Starting Operation', 'y=mx+b', 'notesnotesnotes', 0, false, $author$project$Exp$Standalone));
+	var root = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$singleton(
+		A6($author$project$Exp$Step, 'On', 'Turtles', 'Turtles All the way', -1, false, $author$project$Exp$Expanded));
+	return _Utils_Tuple2(
+		$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$fromTree(
+			A2($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$insert, startingStep, root)),
+		$elm$core$Platform$Cmd$none);
+};
+var $elm$core$Platform$Sub$batch = _Platform_batch;
+var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
+var $author$project$Exp$subscriptions = function (_v0) {
+	return $elm$core$Platform$Sub$none;
 };
 var $mdgriffith$elm_ui$Internal$Model$Unkeyed = function (a) {
 	return {$: 'Unkeyed', a: a};
 };
-var $mdgriffith$elm_ui$Internal$Model$AsEl = {$: 'AsEl'};
-var $mdgriffith$elm_ui$Internal$Model$asEl = $mdgriffith$elm_ui$Internal$Model$AsEl;
+var $mdgriffith$elm_ui$Internal$Model$AsColumn = {$: 'AsColumn'};
+var $mdgriffith$elm_ui$Internal$Model$asColumn = $mdgriffith$elm_ui$Internal$Model$AsColumn;
 var $mdgriffith$elm_ui$Internal$Style$classes = {above: 'a', active: 'atv', alignBottom: 'ab', alignCenterX: 'cx', alignCenterY: 'cy', alignContainerBottom: 'acb', alignContainerCenterX: 'accx', alignContainerCenterY: 'accy', alignContainerRight: 'acr', alignLeft: 'al', alignRight: 'ar', alignTop: 'at', alignedHorizontally: 'ah', alignedVertically: 'av', any: 's', behind: 'bh', below: 'b', bold: 'w7', borderDashed: 'bd', borderDotted: 'bdt', borderNone: 'bn', borderSolid: 'bs', capturePointerEvents: 'cpe', clip: 'cp', clipX: 'cpx', clipY: 'cpy', column: 'c', container: 'ctr', contentBottom: 'cb', contentCenterX: 'ccx', contentCenterY: 'ccy', contentLeft: 'cl', contentRight: 'cr', contentTop: 'ct', cursorPointer: 'cptr', cursorText: 'ctxt', focus: 'fcs', focusedWithin: 'focus-within', fullSize: 'fs', grid: 'g', hasBehind: 'hbh', heightContent: 'hc', heightExact: 'he', heightFill: 'hf', heightFillPortion: 'hfp', hover: 'hv', imageContainer: 'ic', inFront: 'fr', inputMultiline: 'iml', inputMultilineFiller: 'imlf', inputMultilineParent: 'imlp', inputMultilineWrapper: 'implw', inputText: 'it', italic: 'i', link: 'lnk', nearby: 'nb', noTextSelection: 'notxt', onLeft: 'ol', onRight: 'or', opaque: 'oq', overflowHidden: 'oh', page: 'pg', paragraph: 'p', passPointerEvents: 'ppe', root: 'ui', row: 'r', scrollbars: 'sb', scrollbarsX: 'sbx', scrollbarsY: 'sby', seButton: 'sbt', single: 'e', sizeByCapital: 'cap', spaceEvenly: 'sev', strike: 'sk', text: 't', textCenter: 'tc', textExtraBold: 'w8', textExtraLight: 'w2', textHeavy: 'w9', textJustify: 'tj', textJustifyAll: 'tja', textLeft: 'tl', textLight: 'w3', textMedium: 'w5', textNormalWeight: 'w4', textRight: 'tr', textSemiBold: 'w6', textThin: 'w1', textUnitalicized: 'tun', transition: 'ts', transparent: 'clr', underline: 'u', widthContent: 'wc', widthExact: 'we', widthFill: 'wf', widthFillPortion: 'wfp', wrapped: 'wrp'};
-var $elm$json$Json$Encode$bool = _Json_wrap;
-var $elm$html$Html$Attributes$boolProperty = F2(
-	function (key, bool) {
-		return A2(
-			_VirtualDom_property,
-			key,
-			$elm$json$Json$Encode$bool(bool));
-	});
-var $elm$html$Html$Attributes$disabled = $elm$html$Html$Attributes$boolProperty('disabled');
 var $mdgriffith$elm_ui$Internal$Model$Generic = {$: 'Generic'};
 var $mdgriffith$elm_ui$Internal$Model$div = $mdgriffith$elm_ui$Internal$Model$Generic;
 var $mdgriffith$elm_ui$Internal$Model$NoNearbyChildren = {$: 'NoNearbyChildren'};
@@ -5976,6 +5776,8 @@ var $mdgriffith$elm_ui$Internal$Model$addKeyedChildren = F3(
 							inFront)));
 		}
 	});
+var $mdgriffith$elm_ui$Internal$Model$AsEl = {$: 'AsEl'};
+var $mdgriffith$elm_ui$Internal$Model$asEl = $mdgriffith$elm_ui$Internal$Model$AsEl;
 var $mdgriffith$elm_ui$Internal$Model$AsParagraph = {$: 'AsParagraph'};
 var $mdgriffith$elm_ui$Internal$Model$asParagraph = $mdgriffith$elm_ui$Internal$Model$AsParagraph;
 var $mdgriffith$elm_ui$Internal$Flag$Flag = function (a) {
@@ -5992,6 +5794,7 @@ var $mdgriffith$elm_ui$Internal$Flag$alignBottom = $mdgriffith$elm_ui$Internal$F
 var $mdgriffith$elm_ui$Internal$Flag$alignRight = $mdgriffith$elm_ui$Internal$Flag$flag(40);
 var $mdgriffith$elm_ui$Internal$Flag$centerX = $mdgriffith$elm_ui$Internal$Flag$flag(42);
 var $mdgriffith$elm_ui$Internal$Flag$centerY = $mdgriffith$elm_ui$Internal$Flag$flag(43);
+var $elm$json$Json$Encode$string = _Json_wrap;
 var $elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
 		return A2(
@@ -8540,6 +8343,19 @@ var $elm$json$Json$Encode$list = F2(
 				_Json_emptyArray(_Utils_Tuple0),
 				entries));
 	});
+var $elm$json$Json$Encode$object = function (pairs) {
+	return _Json_wrap(
+		A3(
+			$elm$core$List$foldl,
+			F2(
+				function (_v0, obj) {
+					var k = _v0.a;
+					var v = _v0.b;
+					return A3(_Json_addField, k, v, obj);
+				}),
+			_Json_emptyObject(_Utils_Tuple0),
+			pairs));
+};
 var $elm$core$List$any = F2(
 	function (isOkay, list) {
 		any:
@@ -9758,6 +9574,13 @@ var $mdgriffith$elm_ui$Internal$Model$finalizeNode = F6(
 				return html;
 		}
 	});
+var $elm$core$List$isEmpty = function (xs) {
+	if (!xs.b) {
+		return true;
+	} else {
+		return false;
+	}
+};
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $mdgriffith$elm_ui$Internal$Model$textElementClasses = $mdgriffith$elm_ui$Internal$Style$classes.any + (' ' + ($mdgriffith$elm_ui$Internal$Style$classes.text + (' ' + ($mdgriffith$elm_ui$Internal$Style$classes.widthContent + (' ' + $mdgriffith$elm_ui$Internal$Style$classes.heightContent)))));
 var $mdgriffith$elm_ui$Internal$Model$textElement = function (str) {
@@ -11379,155 +11202,23 @@ var $mdgriffith$elm_ui$Internal$Model$element = F4(
 				$mdgriffith$elm_ui$Internal$Model$NoNearbyChildren,
 				$elm$core$List$reverse(attributes)));
 	});
-var $mdgriffith$elm_ui$Internal$Model$NoAttribute = {$: 'NoAttribute'};
-var $mdgriffith$elm_ui$Element$Input$hasFocusStyle = function (attr) {
-	if (((attr.$ === 'StyleClass') && (attr.b.$ === 'PseudoSelector')) && (attr.b.a.$ === 'Focus')) {
-		var _v1 = attr.b;
-		var _v2 = _v1.a;
-		return true;
-	} else {
-		return false;
-	}
+var $mdgriffith$elm_ui$Internal$Model$Height = function (a) {
+	return {$: 'Height', a: a};
+};
+var $mdgriffith$elm_ui$Element$height = $mdgriffith$elm_ui$Internal$Model$Height;
+var $mdgriffith$elm_ui$Internal$Model$Attr = function (a) {
+	return {$: 'Attr', a: a};
 };
 var $mdgriffith$elm_ui$Internal$Model$htmlClass = function (cls) {
 	return $mdgriffith$elm_ui$Internal$Model$Attr(
 		$elm$html$Html$Attributes$class(cls));
 };
-var $mdgriffith$elm_ui$Element$Input$focusDefault = function (attrs) {
-	return A2($elm$core$List$any, $mdgriffith$elm_ui$Element$Input$hasFocusStyle, attrs) ? $mdgriffith$elm_ui$Internal$Model$NoAttribute : $mdgriffith$elm_ui$Internal$Model$htmlClass('focusable');
-};
-var $mdgriffith$elm_ui$Internal$Model$Height = function (a) {
-	return {$: 'Height', a: a};
-};
-var $mdgriffith$elm_ui$Element$height = $mdgriffith$elm_ui$Internal$Model$Height;
-var $elm$virtual_dom$VirtualDom$Normal = function (a) {
-	return {$: 'Normal', a: a};
-};
-var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
-var $elm$html$Html$Events$on = F2(
-	function (event, decoder) {
-		return A2(
-			$elm$virtual_dom$VirtualDom$on,
-			event,
-			$elm$virtual_dom$VirtualDom$Normal(decoder));
-	});
-var $elm$html$Html$Events$onClick = function (msg) {
-	return A2(
-		$elm$html$Html$Events$on,
-		'click',
-		$elm$json$Json$Decode$succeed(msg));
-};
-var $mdgriffith$elm_ui$Element$Events$onClick = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Attr, $elm$html$Html$Events$onClick);
-var $mdgriffith$elm_ui$Element$Input$enter = 'Enter';
-var $elm$json$Json$Decode$andThen = _Json_andThen;
-var $elm$json$Json$Decode$fail = _Json_fail;
-var $elm$json$Json$Decode$field = _Json_decodeField;
-var $elm$virtual_dom$VirtualDom$MayPreventDefault = function (a) {
-	return {$: 'MayPreventDefault', a: a};
-};
-var $elm$html$Html$Events$preventDefaultOn = F2(
-	function (event, decoder) {
-		return A2(
-			$elm$virtual_dom$VirtualDom$on,
-			event,
-			$elm$virtual_dom$VirtualDom$MayPreventDefault(decoder));
-	});
-var $elm$json$Json$Decode$string = _Json_decodeString;
-var $mdgriffith$elm_ui$Element$Input$onKey = F2(
-	function (desiredCode, msg) {
-		var decode = function (code) {
-			return _Utils_eq(code, desiredCode) ? $elm$json$Json$Decode$succeed(msg) : $elm$json$Json$Decode$fail('Not the enter key');
-		};
-		var isKey = A2(
-			$elm$json$Json$Decode$andThen,
-			decode,
-			A2($elm$json$Json$Decode$field, 'key', $elm$json$Json$Decode$string));
-		return $mdgriffith$elm_ui$Internal$Model$Attr(
-			A2(
-				$elm$html$Html$Events$preventDefaultOn,
-				'keyup',
-				A2(
-					$elm$json$Json$Decode$map,
-					function (fired) {
-						return _Utils_Tuple2(fired, true);
-					},
-					isKey)));
-	});
-var $mdgriffith$elm_ui$Element$Input$onEnter = function (msg) {
-	return A2($mdgriffith$elm_ui$Element$Input$onKey, $mdgriffith$elm_ui$Element$Input$enter, msg);
-};
-var $mdgriffith$elm_ui$Internal$Model$Class = F2(
-	function (a, b) {
-		return {$: 'Class', a: a, b: b};
-	});
-var $mdgriffith$elm_ui$Internal$Flag$cursor = $mdgriffith$elm_ui$Internal$Flag$flag(21);
-var $mdgriffith$elm_ui$Element$pointer = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$cursor, $mdgriffith$elm_ui$Internal$Style$classes.cursorPointer);
 var $mdgriffith$elm_ui$Internal$Model$Content = {$: 'Content'};
 var $mdgriffith$elm_ui$Element$shrink = $mdgriffith$elm_ui$Internal$Model$Content;
-var $elm$html$Html$Attributes$tabindex = function (n) {
-	return A2(
-		_VirtualDom_attribute,
-		'tabIndex',
-		$elm$core$String$fromInt(n));
-};
 var $mdgriffith$elm_ui$Internal$Model$Width = function (a) {
 	return {$: 'Width', a: a};
 };
 var $mdgriffith$elm_ui$Element$width = $mdgriffith$elm_ui$Internal$Model$Width;
-var $mdgriffith$elm_ui$Element$Input$button = F2(
-	function (attrs, _v0) {
-		var onPress = _v0.onPress;
-		var label = _v0.label;
-		return A4(
-			$mdgriffith$elm_ui$Internal$Model$element,
-			$mdgriffith$elm_ui$Internal$Model$asEl,
-			$mdgriffith$elm_ui$Internal$Model$div,
-			A2(
-				$elm$core$List$cons,
-				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
-				A2(
-					$elm$core$List$cons,
-					$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
-					A2(
-						$elm$core$List$cons,
-						$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.contentCenterX + (' ' + ($mdgriffith$elm_ui$Internal$Style$classes.contentCenterY + (' ' + ($mdgriffith$elm_ui$Internal$Style$classes.seButton + (' ' + $mdgriffith$elm_ui$Internal$Style$classes.noTextSelection)))))),
-						A2(
-							$elm$core$List$cons,
-							$mdgriffith$elm_ui$Element$pointer,
-							A2(
-								$elm$core$List$cons,
-								$mdgriffith$elm_ui$Element$Input$focusDefault(attrs),
-								A2(
-									$elm$core$List$cons,
-									$mdgriffith$elm_ui$Internal$Model$Describe($mdgriffith$elm_ui$Internal$Model$Button),
-									A2(
-										$elm$core$List$cons,
-										$mdgriffith$elm_ui$Internal$Model$Attr(
-											$elm$html$Html$Attributes$tabindex(0)),
-										function () {
-											if (onPress.$ === 'Nothing') {
-												return A2(
-													$elm$core$List$cons,
-													$mdgriffith$elm_ui$Internal$Model$Attr(
-														$elm$html$Html$Attributes$disabled(true)),
-													attrs);
-											} else {
-												var msg = onPress.a;
-												return A2(
-													$elm$core$List$cons,
-													$mdgriffith$elm_ui$Element$Events$onClick(msg),
-													A2(
-														$elm$core$List$cons,
-														$mdgriffith$elm_ui$Element$Input$onEnter(msg),
-														attrs));
-											}
-										}()))))))),
-			$mdgriffith$elm_ui$Internal$Model$Unkeyed(
-				_List_fromArray(
-					[label])));
-	});
-var $mdgriffith$elm_ui$Internal$Model$AsColumn = {$: 'AsColumn'};
-var $mdgriffith$elm_ui$Internal$Model$asColumn = $mdgriffith$elm_ui$Internal$Model$AsColumn;
 var $mdgriffith$elm_ui$Element$column = F2(
 	function (attrs, children) {
 		return A4(
@@ -11863,11 +11554,8 @@ var $mdgriffith$elm_ui$Element$spacing = function (x) {
 			x,
 			x));
 };
-var $mdgriffith$elm_ui$Internal$Model$Text = function (a) {
-	return {$: 'Text', a: a};
-};
-var $mdgriffith$elm_ui$Element$text = function (content) {
-	return $mdgriffith$elm_ui$Internal$Model$Text(content);
+var $author$project$Exp$AdjustTree = function (a) {
+	return {$: 'AdjustTree', a: a};
 };
 var $author$project$Exp$EditStep = function (a) {
 	return {$: 'EditStep', a: a};
@@ -11875,8 +11563,154 @@ var $author$project$Exp$EditStep = function (a) {
 var $author$project$Exp$ToggleProcess = function (a) {
 	return {$: 'ToggleProcess', a: a};
 };
+var $mdgriffith$elm_ui$Internal$Model$Class = F2(
+	function (a, b) {
+		return {$: 'Class', a: a, b: b};
+	});
 var $mdgriffith$elm_ui$Internal$Flag$fontWeight = $mdgriffith$elm_ui$Internal$Flag$flag(13);
 var $mdgriffith$elm_ui$Element$Font$bold = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$fontWeight, $mdgriffith$elm_ui$Internal$Style$classes.bold);
+var $mdgriffith$elm_ui$Internal$Model$Button = {$: 'Button'};
+var $mdgriffith$elm_ui$Internal$Model$Describe = function (a) {
+	return {$: 'Describe', a: a};
+};
+var $elm$json$Json$Encode$bool = _Json_wrap;
+var $elm$html$Html$Attributes$boolProperty = F2(
+	function (key, bool) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			$elm$json$Json$Encode$bool(bool));
+	});
+var $elm$html$Html$Attributes$disabled = $elm$html$Html$Attributes$boolProperty('disabled');
+var $mdgriffith$elm_ui$Internal$Model$NoAttribute = {$: 'NoAttribute'};
+var $mdgriffith$elm_ui$Element$Input$hasFocusStyle = function (attr) {
+	if (((attr.$ === 'StyleClass') && (attr.b.$ === 'PseudoSelector')) && (attr.b.a.$ === 'Focus')) {
+		var _v1 = attr.b;
+		var _v2 = _v1.a;
+		return true;
+	} else {
+		return false;
+	}
+};
+var $mdgriffith$elm_ui$Element$Input$focusDefault = function (attrs) {
+	return A2($elm$core$List$any, $mdgriffith$elm_ui$Element$Input$hasFocusStyle, attrs) ? $mdgriffith$elm_ui$Internal$Model$NoAttribute : $mdgriffith$elm_ui$Internal$Model$htmlClass('focusable');
+};
+var $elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var $elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var $elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'click',
+		$elm$json$Json$Decode$succeed(msg));
+};
+var $mdgriffith$elm_ui$Element$Events$onClick = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Attr, $elm$html$Html$Events$onClick);
+var $mdgriffith$elm_ui$Element$Input$enter = 'Enter';
+var $elm$json$Json$Decode$andThen = _Json_andThen;
+var $elm$json$Json$Decode$fail = _Json_fail;
+var $elm$json$Json$Decode$field = _Json_decodeField;
+var $elm$virtual_dom$VirtualDom$MayPreventDefault = function (a) {
+	return {$: 'MayPreventDefault', a: a};
+};
+var $elm$html$Html$Events$preventDefaultOn = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$MayPreventDefault(decoder));
+	});
+var $elm$json$Json$Decode$string = _Json_decodeString;
+var $mdgriffith$elm_ui$Element$Input$onKey = F2(
+	function (desiredCode, msg) {
+		var decode = function (code) {
+			return _Utils_eq(code, desiredCode) ? $elm$json$Json$Decode$succeed(msg) : $elm$json$Json$Decode$fail('Not the enter key');
+		};
+		var isKey = A2(
+			$elm$json$Json$Decode$andThen,
+			decode,
+			A2($elm$json$Json$Decode$field, 'key', $elm$json$Json$Decode$string));
+		return $mdgriffith$elm_ui$Internal$Model$Attr(
+			A2(
+				$elm$html$Html$Events$preventDefaultOn,
+				'keyup',
+				A2(
+					$elm$json$Json$Decode$map,
+					function (fired) {
+						return _Utils_Tuple2(fired, true);
+					},
+					isKey)));
+	});
+var $mdgriffith$elm_ui$Element$Input$onEnter = function (msg) {
+	return A2($mdgriffith$elm_ui$Element$Input$onKey, $mdgriffith$elm_ui$Element$Input$enter, msg);
+};
+var $mdgriffith$elm_ui$Internal$Flag$cursor = $mdgriffith$elm_ui$Internal$Flag$flag(21);
+var $mdgriffith$elm_ui$Element$pointer = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$cursor, $mdgriffith$elm_ui$Internal$Style$classes.cursorPointer);
+var $elm$html$Html$Attributes$tabindex = function (n) {
+	return A2(
+		_VirtualDom_attribute,
+		'tabIndex',
+		$elm$core$String$fromInt(n));
+};
+var $mdgriffith$elm_ui$Element$Input$button = F2(
+	function (attrs, _v0) {
+		var onPress = _v0.onPress;
+		var label = _v0.label;
+		return A4(
+			$mdgriffith$elm_ui$Internal$Model$element,
+			$mdgriffith$elm_ui$Internal$Model$asEl,
+			$mdgriffith$elm_ui$Internal$Model$div,
+			A2(
+				$elm$core$List$cons,
+				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
+				A2(
+					$elm$core$List$cons,
+					$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
+					A2(
+						$elm$core$List$cons,
+						$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.contentCenterX + (' ' + ($mdgriffith$elm_ui$Internal$Style$classes.contentCenterY + (' ' + ($mdgriffith$elm_ui$Internal$Style$classes.seButton + (' ' + $mdgriffith$elm_ui$Internal$Style$classes.noTextSelection)))))),
+						A2(
+							$elm$core$List$cons,
+							$mdgriffith$elm_ui$Element$pointer,
+							A2(
+								$elm$core$List$cons,
+								$mdgriffith$elm_ui$Element$Input$focusDefault(attrs),
+								A2(
+									$elm$core$List$cons,
+									$mdgriffith$elm_ui$Internal$Model$Describe($mdgriffith$elm_ui$Internal$Model$Button),
+									A2(
+										$elm$core$List$cons,
+										$mdgriffith$elm_ui$Internal$Model$Attr(
+											$elm$html$Html$Attributes$tabindex(0)),
+										function () {
+											if (onPress.$ === 'Nothing') {
+												return A2(
+													$elm$core$List$cons,
+													$mdgriffith$elm_ui$Internal$Model$Attr(
+														$elm$html$Html$Attributes$disabled(true)),
+													attrs);
+											} else {
+												var msg = onPress.a;
+												return A2(
+													$elm$core$List$cons,
+													$mdgriffith$elm_ui$Element$Events$onClick(msg),
+													A2(
+														$elm$core$List$cons,
+														$mdgriffith$elm_ui$Element$Input$onEnter(msg),
+														attrs));
+											}
+										}()))))))),
+			$mdgriffith$elm_ui$Internal$Model$Unkeyed(
+				_List_fromArray(
+					[label])));
+	});
 var $author$project$Exp$edges = {bottom: 0, left: 0, right: 0, top: 0};
 var $mdgriffith$elm_ui$Element$el = F2(
 	function (attrs, child) {
@@ -11913,6 +11747,56 @@ var $elm$html$Html$Events$onDoubleClick = function (msg) {
 		$elm$json$Json$Decode$succeed(msg));
 };
 var $mdgriffith$elm_ui$Element$Events$onDoubleClick = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Attr, $elm$html$Html$Events$onDoubleClick);
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$sliceForest_ = F3(
+	function (acc, left, right) {
+		sliceForest_:
+		while (true) {
+			var _v0 = $turboMaCk$lazy_tree_with_zipper$Lazy$LList$toList(right);
+			if (!_v0.b) {
+				return $elm$core$List$reverse(acc);
+			} else {
+				var head = _v0.a;
+				var tail = _v0.b;
+				var newItem = _Utils_Tuple3(
+					left,
+					head,
+					$turboMaCk$lazy_tree_with_zipper$Lazy$LList$fromList(tail));
+				var $temp$acc = A2($elm$core$List$cons, newItem, acc),
+					$temp$left = A2($turboMaCk$lazy_tree_with_zipper$Lazy$LList$cons, head, left),
+					$temp$right = $turboMaCk$lazy_tree_with_zipper$Lazy$LList$fromList(tail);
+				acc = $temp$acc;
+				left = $temp$left;
+				right = $temp$right;
+				continue sliceForest_;
+			}
+		}
+	});
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$sliceForest = A2($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$sliceForest_, _List_Nil, $turboMaCk$lazy_tree_with_zipper$Lazy$LList$empty);
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$openAll = function (_v0) {
+	var tree = _v0.a;
+	var zipperBreadcrumbs = _v0.b;
+	return A2(
+		$elm$core$List$map,
+		function (_v1) {
+			var left = _v1.a;
+			var parent = _v1.b;
+			var right = _v1.c;
+			return A2(
+				$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$Zipper,
+				parent,
+				A2(
+					$elm$core$List$cons,
+					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$Breadcrumb(
+						{
+							left: left,
+							parent: $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$item(tree),
+							right: right
+						}),
+					zipperBreadcrumbs));
+		},
+		$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$sliceForest(
+			$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$descendants(tree)));
+};
 var $mdgriffith$elm_ui$Internal$Model$paddingName = F4(
 	function (top, right, bottom, left) {
 		return 'pad-' + ($elm$core$String$fromInt(top) + ('-' + ($elm$core$String$fromInt(right) + ('-' + ($elm$core$String$fromInt(bottom) + ('-' + $elm$core$String$fromInt(left)))))));
@@ -11962,6 +11846,12 @@ var $mdgriffith$elm_ui$Element$row = F2(
 						attrs))),
 			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
 	});
+var $mdgriffith$elm_ui$Internal$Model$Text = function (a) {
+	return {$: 'Text', a: a};
+};
+var $mdgriffith$elm_ui$Element$text = function (content) {
+	return $mdgriffith$elm_ui$Internal$Model$Text(content);
+};
 var $mdgriffith$elm_ui$Internal$Model$AlignX = function (a) {
 	return {$: 'AlignX', a: a};
 };
@@ -11971,6 +11861,68 @@ var $mdgriffith$elm_ui$Internal$Model$Right = {$: 'Right'};
 var $mdgriffith$elm_ui$Element$alignRight = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$Right);
 var $mdgriffith$elm_ui$Element$htmlAttribute = $mdgriffith$elm_ui$Internal$Model$Attr;
 var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
+var $elm$core$List$drop = F2(
+	function (n, list) {
+		drop:
+		while (true) {
+			if (n <= 0) {
+				return list;
+			} else {
+				if (!list.b) {
+					return list;
+				} else {
+					var x = list.a;
+					var xs = list.b;
+					var $temp$n = n - 1,
+						$temp$list = xs;
+					n = $temp$n;
+					list = $temp$list;
+					continue drop;
+				}
+			}
+		}
+	});
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$getPath = F2(
+	function (fc, _v0) {
+		var tree = _v0.a;
+		var zipperBreadcrumbs = _v0.b;
+		return A3(
+			$elm$core$List$foldl,
+			F2(
+				function (_v1, acc) {
+					var parent = _v1.a.parent;
+					return A2(
+						$elm$core$List$cons,
+						fc(parent),
+						acc);
+				}),
+			_List_fromArray(
+				[
+					fc(
+					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$item(tree))
+				]),
+			zipperBreadcrumbs);
+	});
+var $author$project$Exp$labelEquation = function (zip) {
+	return A2(
+		$elm$core$String$join,
+		'.',
+		A2(
+			$elm$core$List$map,
+			$elm$core$String$fromInt,
+			A2(
+				$elm$core$List$map,
+				$elm$core$Basics$add(1),
+				A2(
+					$elm$core$List$drop,
+					1,
+					A2(
+						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$getPath,
+						function ($) {
+							return $.id;
+						},
+						zip)))));
+};
 var $mdgriffith$elm_ui$Internal$Model$Px = function (a) {
 	return {$: 'Px', a: a};
 };
@@ -11992,10 +11944,8 @@ var $author$project$Exp$viewKatexEquation = function (zip) {
 						$elm$html$Html$Attributes$id(
 							$author$project$Exp$labelEquation(zip)))
 					]),
-				A2(
-					$mdgriffith$elm_ui$Element$el,
-					_List_Nil,
-					$mdgriffith$elm_ui$Element$text('placeholder'))),
+				$mdgriffith$elm_ui$Element$text(
+					'$$ ' + ($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(zip).equation + ' $$'))),
 				A2(
 				$mdgriffith$elm_ui$Element$el,
 				_List_fromArray(
@@ -12034,7 +11984,8 @@ var $author$project$Exp$viewProcessIcon = function (zip) {
 				{
 					label: $mdgriffith$elm_ui$Element$text('[^]'),
 					onPress: $elm$core$Maybe$Just(
-						$author$project$Exp$NewProcessStep(zip))
+						$author$project$Exp$AdjustTree(
+							$author$project$Exp$NewProcessStep(zip)))
 				});
 		case 'Expanded':
 			return A2(
@@ -12044,7 +11995,8 @@ var $author$project$Exp$viewProcessIcon = function (zip) {
 				{
 					label: $mdgriffith$elm_ui$Element$text('[^]'),
 					onPress: $elm$core$Maybe$Just(
-						$author$project$Exp$NewProcessStep(zip))
+						$author$project$Exp$AdjustTree(
+							$author$project$Exp$NewProcessStep(zip)))
 				});
 		default:
 			return A2(
@@ -12054,7 +12006,8 @@ var $author$project$Exp$viewProcessIcon = function (zip) {
 				{
 					label: $mdgriffith$elm_ui$Element$text('[+]'),
 					onPress: $elm$core$Maybe$Just(
-						$author$project$Exp$ToggleProcess(zip))
+						$author$project$Exp$AdjustTree(
+							$author$project$Exp$ToggleProcess(zip)))
 				});
 	}
 };
@@ -12078,11 +12031,7 @@ var $author$project$Exp$viewOperation = function (zip) {
 							A2(
 							$mdgriffith$elm_ui$Element$el,
 							_List_fromArray(
-								[
-									$mdgriffith$elm_ui$Element$Font$bold,
-									$mdgriffith$elm_ui$Element$Events$onDoubleClick(
-									$author$project$Exp$EditStep(zip))
-								]),
+								[$mdgriffith$elm_ui$Element$Font$bold]),
 							$mdgriffith$elm_ui$Element$text(
 								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(zip).operation)),
 							A2(
@@ -12096,7 +12045,8 @@ var $author$project$Exp$viewOperation = function (zip) {
 							{
 								label: $mdgriffith$elm_ui$Element$text('[-]'),
 								onPress: $elm$core$Maybe$Just(
-									$author$project$Exp$ToggleProcess(zip))
+									$author$project$Exp$AdjustTree(
+										$author$project$Exp$ToggleProcess(zip)))
 							})
 						])),
 				$author$project$Exp$viewProcess(zip)) : _List_Nil,
@@ -12117,7 +12067,8 @@ var $author$project$Exp$viewOperation = function (zip) {
 								[
 									$mdgriffith$elm_ui$Element$Font$bold,
 									$mdgriffith$elm_ui$Element$Events$onDoubleClick(
-									$author$project$Exp$EditStep(zip))
+									$author$project$Exp$AdjustTree(
+										$author$project$Exp$EditStep(zip)))
 								]),
 							$mdgriffith$elm_ui$Element$text(
 								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(zip).operation)),
@@ -12161,22 +12112,6 @@ var $author$project$Exp$viewStep = function (zip) {
 					])
 				])));
 };
-var $mdgriffith$elm_ui$Internal$Model$BorderWidth = F5(
-	function (a, b, c, d, e) {
-		return {$: 'BorderWidth', a: a, b: b, c: c, d: d, e: e};
-	});
-var $mdgriffith$elm_ui$Element$Border$width = function (v) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$borderWidth,
-		A5(
-			$mdgriffith$elm_ui$Internal$Model$BorderWidth,
-			'b-' + $elm$core$String$fromInt(v),
-			v,
-			v,
-			v,
-			v));
-};
 var $author$project$Exp$view = function (model) {
 	return A2(
 		$mdgriffith$elm_ui$Element$layout,
@@ -12189,26 +12124,27 @@ var $author$project$Exp$view = function (model) {
 					$mdgriffith$elm_ui$Element$padding(30),
 					$mdgriffith$elm_ui$Element$spacing(20)
 				]),
-			$elm$core$List$concat(
-				_List_fromArray(
-					[
-						$author$project$Exp$viewProcess(model),
-						_List_fromArray(
-						[
-							A2(
-							$mdgriffith$elm_ui$Element$Input$button,
-							_List_fromArray(
-								[
-									$mdgriffith$elm_ui$Element$Border$width(4)
-								]),
-							{
-								label: $mdgriffith$elm_ui$Element$text('Render'),
-								onPress: $elm$core$Maybe$Just($author$project$Exp$RenderAll)
-							})
-						])
-					]))));
+			$author$project$Exp$viewProcess(model)));
 };
 var $author$project$Exp$main = $elm$browser$Browser$element(
-	{init: $author$project$Exp$init, subscriptions: $author$project$Exp$subscriptions, update: $author$project$Exp$update, view: $author$project$Exp$view});
+	{init: $author$project$Exp$init, subscriptions: $author$project$Exp$subscriptions, update: $author$project$Exp$addCmd, view: $author$project$Exp$view});
 _Platform_export({'Exp':{'init':$author$project$Exp$main(
 	$elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}});}(this));
+
+  var app = Elm.Exp.init({ node: document.getElementById("elm") });
+}
+catch (e)
+{
+  // display initialization errors (e.g. bad flags, infinite recursion)
+  var header = document.createElement("h1");
+  header.style.fontFamily = "monospace";
+  header.innerText = "Initialization Error";
+  var pre = document.getElementById("elm");
+  document.body.insertBefore(header, pre);
+  pre.innerText = e;
+  throw e;
+}
+</script>
+
+</body>
+</html>

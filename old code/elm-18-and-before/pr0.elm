@@ -18,7 +18,10 @@ main =
 --}
 --}
 
-import Html exposing (li, text, ol)
+
+module Main exposing (main) 
+
+import Html exposing (li, ol, text)
 import Html.Attributes exposing (class)
 
 
@@ -29,15 +32,16 @@ attributes, and the second list is all the HTML nodes inside the
 tag.
 
 Et maintenant le voyage au supermarché!
+
 -}
 main =
-  ol [class "grocery-list"]
-    [ li [] [text "Pamplemousse"]
-    , li [] [text "Ananas"]
-    , li [] [text "Jus d'orange"]
-    , li [] [text "Boeuf"]
-    , li [] [text "Soupe du jour"]
-    , li [] [text "Camembert"]
-    , li [] [text "Jacques Cousteau"]
-    , li [] [text "Baguette"]
-    ]
+    ol [ class "grocery-list" ]
+        [ li [] [ text "Pamplemousse" ]
+        , li [] [ text "Ananas" ]
+        , li [] [ text "Jus d'orange" ]
+        , li [] [ text "Boeuf" ]
+        , li [] [ text "Soupe du jour" ]
+        , li [] [ text "Camembert" ]
+        , li [] [ text "Jacques Cousteau" ]
+        , li [] [ text "Baguette" ]
+        ]

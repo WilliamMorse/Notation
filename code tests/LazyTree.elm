@@ -11,7 +11,7 @@ type alias Path =
 
 type alias Step =
     { operation : String
-    , equation : String
+    , equation : String 
     , note : String
     , ref : Path
     }

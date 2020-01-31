@@ -16,21 +16,19 @@
     <body>
         <div id="elm"> </div>
         <script>
-             var app = Elm.Ktx.init({
+             var app = Elm.Exp.init({
                    node: document.getElementById('elm')
             }); 
             document.addEventListener("DOMContentLoaded", function () {
                 app.ports.render.subscribe(function (data) {
-                        //console.log(data.eq)
+                        console.log(data.eq)
                         katex.render(data.eq
-                            , document.getElementById('hole')
+                            , document.getElementById(data.id)
                             , {
                                 throwOnError: false
                         });
                 });
             });
-			
-	  	    console.log("oh") 
         </script>
     </body>
 </html>

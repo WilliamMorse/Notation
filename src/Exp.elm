@@ -1,36 +1,13 @@
-port module Main exposing
-    ( Model
-    , Msg(..)
-    , Process(..)
-    , Step
-    , blankStep
-    , edges
-    , editStep
-    , fromBool
-    , init
-    , insertBelow
-    , labelEquation 
-    , main
-    , nest
-    , render
-    , subscriptions
-    , upOrRoot
-    , update
-    , view
-    , viewKatexEquation
-    , viewNote
-    , viewOperation
-    , viewProcess
-    , viewProcessIcon
-    , viewStep
-    )
-
 --import Element.Background as Background
 --import Element.Border as Border
 --import Katex as KaTex
 
+
+port module Exp exposing (Model, Msg(..), Process(..), Step, blankStep, edges, editStep, init, insertBelow, labelEquation, main, nest, render, subscriptions, upOrRoot, update, view, viewKatexEquation, viewNote, viewOperation, viewProcess, viewProcessIcon, viewStep)
+
 import Browser
 import Element exposing (..)
+import Element.Border as Border
 import Element.Events as Event
 import Element.Font as Font
 import Element.Input as Input
@@ -49,7 +26,7 @@ main =
     Browser.element
         { init = init
         , subscriptions = subscriptions
-        , update = addCmd
+        , update = update
         , view = view
         }
 
@@ -63,7 +40,7 @@ type Process
 type alias Step =
     { operation : String
     , equation : String
-    , note : String 
+    , note : String
     , id : Int
     , edit : Bool
     , process : Process
@@ -91,12 +68,13 @@ init _ =
         startingStep =
             Tree.singleton
                 (Step "Starting Operation" "y=mx+b" "notesnotesnotes" 0 False Standalone)
+
+        zip =
+            root
+                |> Tree.insert startingStep
+                |> Zipper.fromTree
     in
-    ( root
-        |> Tree.insert startingStep
-        |> Zipper.fromTree
-    , Cmd.none
-    )
+    ( zip, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg
@@ -106,13 +84,14 @@ subscriptions _ =
 
 type Msg
     = EditStep (Zipper Step)
-    | RenderStep (Zipper Step) 
+    | RenderStep (Zipper Step)
     | OperationText (Zipper Step) String
     | EquationText (Zipper Step) String
     | NotesText (Zipper Step) String
     | ConsecutiveStep (Zipper Step)
     | NewProcessStep (Zipper Step)
     | ToggleProcess (Zipper Step)
+    | RenderAll
 
 
 blankStep : Step
@@ -141,73 +120,83 @@ nest step zip =
         |> Zipper.update (Tree.sortBy .id)
 
 
-addCmd : Msg -> (Msg -> Model) -> () Model Cmd Msg
-addCmd msg up = 
-    case msg of 
-        RenderStep _ ->
-            (up msg, render)
-        _ _ ->
-        
-                
-                
-                (up msg, cmd.none) 
-
-update : Msg -> Model
-update msg =
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
     case msg of
         EditStep zip ->
-            zip
+            ( zip
                 |> Zipper.map (\a -> { a | edit = False })
                 |> Zipper.updateItem (\a -> { a | edit = True })
                 |> Zipper.root
+            , Cmd.none
+            )
 
         RenderStep zip ->
-            zip
+            ( zip
                 |> Zipper.updateItem (\s -> { s | edit = False })
                 |> Zipper.root
+            , Cmd.none
+            )
 
         OperationText zip newOp ->
-            zip
+            ( zip
                 |> Zipper.updateItem (\s -> { s | operation = newOp })
                 |> Zipper.root
+            , Cmd.none
+            )
 
         EquationText zip newEq ->
-            zip
+            ( zip
                 |> Zipper.updateItem (\s -> { s | equation = newEq })
                 |> Zipper.root
+            , Cmd.none
+            )
 
         NotesText zip newNote ->
-            zip
+            ( zip
                 |> Zipper.updateItem (\s -> { s | note = newNote })
                 |> Zipper.root
+            , Cmd.none
+            )
 
         ConsecutiveStep zip ->
-            zip
+            ( zip
                 |> Zipper.map (\s -> { s | edit = False })
                 |> insertBelow { blankStep | id = 1 + (Zipper.current zip).id }
                 |> Zipper.root
+            , Cmd.none
+            )
 
         NewProcessStep parent ->
-            parent
+            ( parent
                 |> Zipper.map (\s -> { s | edit = False })
                 |> Zipper.updateItem (\s -> { s | process = Expanded })
                 |> nest { blankStep | id = List.length <| Zipper.children parent }
                 |> Zipper.root
+            , Cmd.none
+            )
 
         ToggleProcess zip ->
             case (Zipper.current zip).process of
                 Standalone ->
-                    zip |> Zipper.root
+                    ( zip |> Zipper.root, Cmd.none )
 
                 Expanded ->
-                    zip
+                    ( zip
                         |> Zipper.updateItem (\a -> { a | process = Collapsed })
                         |> Zipper.root
+                    , Cmd.none
+                    )
 
                 Collapsed ->
-                    zip
+                    ( zip
                         |> Zipper.updateItem (\a -> { a | process = Expanded })
                         |> Zipper.root
+                    , sendToKatex zip
+                    )
+
+        RenderAll ->
+            ( model, Cmd.batch <| List.map renderAllOpen (Zipper.openAll model) )
 
 
 viewProcess : Zipper Step -> List (Element Msg)
@@ -264,7 +253,12 @@ viewOperation zip =
     List.concat
         [ if (Zipper.current zip).process == Expanded then
             row [ width fill, spacing 10 ]
-                [ el [ Font.bold ] <| text (Zipper.current zip).operation
+                [ el
+                    [ Font.bold
+                    , Event.onDoubleClick <| EditStep zip
+                    ]
+                  <|
+                    text (Zipper.current zip).operation
                 , Input.button [ Font.family [ Font.monospace ] ]
                     { onPress = Just <| ToggleProcess zip
                     , label = text "[-]"
@@ -296,11 +290,7 @@ viewKatexEquation zip =
                 |> htmlAttribute
             ]
             -- leave empty so that KaTex can fill in (perhaps it would be better to use the autorender extension?)
-            (text <|
-                "$$ "
-                    ++ (Zipper.current zip).equation
-                    ++ " $$"
-            )
+            (el [] (text "placeholder"))
 
         -- equation label
         , el [ alignRight ] (el [ width <| px 100, alignLeft ] <| text <| labelEquation zip)
@@ -369,34 +359,27 @@ editStep zip =
             , label = Input.labelAbove [] <| text "notes"
             , spellcheck = True
             }
-        , Input.button
-            []
-            { onPress = Just <| RenderStep zip
-            , label = text "[X]"
-            }
         ]
-
-
-fromBool : Bool -> String
-fromBool bool =
-    if bool then
-        "True"
-
-    else
-        "False"
 
 
 labelEquation : Zipper Step -> String
 labelEquation zip =
-    zip
-        -- follow the path from the root node to the current location picking up the ids allong the way
-        |> Zipper.getPath .id
+    if Zipper.isRoot zip then
         --gets rid of the root node id
-        |> List.drop 1
-        -- convert from computer indexing to one that starts at 1
-        |> List.map ((+) 1)
-        |> List.map String.fromInt
-        |> String.join "."
+        zip
+            -- follow the path from the root node to the current location picking up the ids allong the way
+            |> Zipper.getPath .id
+            |> List.drop 1
+            |> List.map ((+) 1)
+            |> List.map String.fromInt
+            |> String.join "."
+
+    else
+        zip
+            |> Zipper.getPath .id
+            |> List.map ((+) 1)
+            |> List.map String.fromInt
+            |> String.join "."
 
 
 view : Model -> Html Msg
@@ -407,7 +390,41 @@ view model =
             , padding 30
             , spacing 20
             ]
-            (model
-                |> viewProcess
+            (List.concat
+                [ model
+                    |> viewProcess
+                , [ Input.button [ Border.width 4 ]
+                        { label = text "Render"
+                        , onPress = Just <| RenderAll
+                        }
+                  ]
+                ]
             )
         )
+
+
+sendToKatex : Zipper Step -> Cmd msg
+sendToKatex zip =
+    render <|
+        E.object
+            [ ( "id", E.string (zip |> labelEquation) )
+            , ( "eq", E.string (zip |> Zipper.current |> .equation) )
+            ]
+
+
+renderAllOpen : Zipper Step -> Cmd msg
+renderAllOpen zip =
+    case (Zipper.current zip).process of
+        Standalone ->
+            sendToKatex zip
+
+        Collapsed ->
+            sendToKatex zip
+
+        Expanded ->
+            case Zipper.openAll zip of
+                [] ->
+                    sendToKatex zip
+
+                z ->
+                    Cmd.batch (sendToKatex zip :: List.map renderAllOpen z)
