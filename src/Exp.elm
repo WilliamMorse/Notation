@@ -149,7 +149,7 @@ update msg model =
             ( zip
                 |> Zipper.updateItem (\s -> { s | equation = newEq })
                 |> Zipper.root
-            , Cmd.none
+            , renderStep zip
             )
 
         NotesText zip newNote ->
@@ -185,14 +185,15 @@ update msg model =
                     ( zip
                         |> Zipper.updateItem (\a -> { a | process = Collapsed })
                         |> Zipper.root
-                    , Cmd.none
+                    , renderStep zip
                     )
 
                 Collapsed ->
                     ( zip
                         |> Zipper.updateItem (\a -> { a | process = Expanded })
                         |> Zipper.root
-                    , Cmd.none
+                    , Cmd.batch
+                        [ renderStep zip, renderProcess zip ]
                     )
 
         RenderAll ->
@@ -427,3 +428,17 @@ renderAllOpen zip =
 
                 z ->
                     Cmd.batch (sendToKatex zip :: List.map renderAllOpen z)
+
+
+renderStep : Zipper Step -> Cmd msg
+renderStep zip =
+    render <|
+        E.object
+            [ ( "id", E.string (zip |> labelEquation) )
+            , ( "eq", E.string (zip |> Zipper.current |> .equation) )
+            ]
+
+
+renderProcess : Zipper Step -> Cmd msg
+renderProcess zip =
+    Cmd.batch (Cmd.none :: List.map sendToKatex (Zipper.openAll zip))
