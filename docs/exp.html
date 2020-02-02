@@ -20,13 +20,16 @@
         });
         document.addEventListener("DOMContentLoaded", function () {
             app.ports.render.subscribe(function (data) {
-                process.nextTick(() => {
-                    console.log(data.eq)
-                    katex.render(data.eq
-                        , document.getElementById(data.id)
-                        , {
-                            throwOnError: false
-                        });
+                setTimeout(() => {
+                    {
+                        console.log(data.eq)
+                        katex.render(data.eq
+                            , document.getElementById(data.id)
+                            , {
+                                throwOnError: false
+                            });
+                    }
+                    0
                 });
             });
         });
