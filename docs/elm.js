@@ -5831,7 +5831,7 @@ var $author$project$Exp$update = F2(
 						return function (z) {
 							return _Utils_Tuple2(
 								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z),
-								$elm$core$Platform$Cmd$none);
+								$author$project$Exp$katexStep(z));
 						}(
 							A2(
 								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
