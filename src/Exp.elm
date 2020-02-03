@@ -178,7 +178,7 @@ update msg model =
                 Expanded ->
                     zip
                         |> Zipper.updateItem (\a -> { a | process = Collapsed })
-                        |> (\z -> ( Zipper.root z, Cmd.none ))
+                        |> (\z -> ( Zipper.root z, katexStep z ))
 
                 Collapsed ->
                     zip
