@@ -5483,7 +5483,7 @@ var $author$project$Exp$subscriptions = function (_v0) {
 	return $elm$core$Platform$Sub$none;
 };
 var $author$project$Exp$Collapsed = {$: 'Collapsed'};
-var $author$project$Exp$blankStep = A6($author$project$Exp$Step, 'o', 'e', 'n', 0, false, $author$project$Exp$Standalone);
+var $author$project$Exp$blankStep = A6($author$project$Exp$Step, 'operation', 'equation', 'notes notes notes', 0, false, $author$project$Exp$Standalone);
 var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$children = A2(
 	$elm$core$Basics$composeL,
 	A2(
@@ -5707,17 +5707,16 @@ var $author$project$Exp$update = F2(
 				return function (z) {
 					return _Utils_Tuple2(
 						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z),
-						$elm$core$Platform$Cmd$none);
+						$author$project$Exp$katexStep(z));
 				}(
-					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(
-						A2(
-							$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
-							function (s) {
-								return _Utils_update(
-									s,
-									{edit: false});
-							},
-							zip)));
+					A2(
+						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
+						function (s) {
+							return _Utils_update(
+								s,
+								{edit: false});
+						},
+						zip));
 			case 'OperationText':
 				var zip = msg.a;
 				var newOp = msg.b;
@@ -11902,11 +11901,23 @@ var $author$project$Exp$OperationText = F2(
 	function (a, b) {
 		return {$: 'OperationText', a: a, b: b};
 	});
+var $author$project$Exp$RenderStep = function (a) {
+	return {$: 'RenderStep', a: a};
+};
 var $mdgriffith$elm_ui$Internal$Model$AlignY = function (a) {
 	return {$: 'AlignY', a: a};
 };
 var $mdgriffith$elm_ui$Internal$Model$CenterY = {$: 'CenterY'};
 var $mdgriffith$elm_ui$Element$centerY = $mdgriffith$elm_ui$Internal$Model$AlignY($mdgriffith$elm_ui$Internal$Model$CenterY);
+var $mdgriffith$elm_ui$Element$Font$family = function (families) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$fontFamily,
+		A2(
+			$mdgriffith$elm_ui$Internal$Model$FontFamily,
+			A3($elm$core$List$foldl, $mdgriffith$elm_ui$Internal$Model$renderFontClassName, 'ff-', families),
+			families));
+};
 var $elm$core$Basics$always = F2(
 	function (a, _v0) {
 		return a;
@@ -11934,6 +11945,8 @@ var $mdgriffith$elm_ui$Element$Input$Label = F3(
 var $mdgriffith$elm_ui$Element$Input$labelAbove = $mdgriffith$elm_ui$Element$Input$Label($mdgriffith$elm_ui$Element$Input$Above);
 var $mdgriffith$elm_ui$Element$Input$OnRight = {$: 'OnRight'};
 var $mdgriffith$elm_ui$Element$Input$labelRight = $mdgriffith$elm_ui$Element$Input$Label($mdgriffith$elm_ui$Element$Input$OnRight);
+var $mdgriffith$elm_ui$Internal$Model$Monospace = {$: 'Monospace'};
+var $mdgriffith$elm_ui$Element$Font$monospace = $mdgriffith$elm_ui$Internal$Model$Monospace;
 var $mdgriffith$elm_ui$Element$Input$TextArea = {$: 'TextArea'};
 var $mdgriffith$elm_ui$Internal$Model$LivePolite = {$: 'LivePolite'};
 var $mdgriffith$elm_ui$Element$Region$announce = $mdgriffith$elm_ui$Internal$Model$Describe($mdgriffith$elm_ui$Internal$Model$LivePolite);
@@ -12904,6 +12917,19 @@ var $author$project$Exp$editStep = function (zip) {
 			[
 				_Utils_eq(step.process, $author$project$Exp$Expanded) ? $mdgriffith$elm_ui$Element$none : $mdgriffith$elm_ui$Element$none,
 				A2(
+				$mdgriffith$elm_ui$Element$Input$button,
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$Font$family(
+						_List_fromArray(
+							[$mdgriffith$elm_ui$Element$Font$monospace]))
+					]),
+				{
+					label: $mdgriffith$elm_ui$Element$text('[x]'),
+					onPress: $elm$core$Maybe$Just(
+						$author$project$Exp$RenderStep(zip))
+				}),
+				A2(
 				$mdgriffith$elm_ui$Element$Input$multiline,
 				_List_Nil,
 				{
@@ -12951,17 +12977,6 @@ var $author$project$Exp$editStep = function (zip) {
 				})
 			]));
 };
-var $mdgriffith$elm_ui$Element$Font$family = function (families) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$fontFamily,
-		A2(
-			$mdgriffith$elm_ui$Internal$Model$FontFamily,
-			A3($elm$core$List$foldl, $mdgriffith$elm_ui$Internal$Model$renderFontClassName, 'ff-', families),
-			families));
-};
-var $mdgriffith$elm_ui$Internal$Model$Monospace = {$: 'Monospace'};
-var $mdgriffith$elm_ui$Element$Font$monospace = $mdgriffith$elm_ui$Internal$Model$Monospace;
 var $elm$html$Html$Events$onDoubleClick = function (msg) {
 	return A2(
 		$elm$html$Html$Events$on,

@@ -102,7 +102,7 @@ type Msg
 
 blankStep : Step
 blankStep =
-    Step "o" "e" "n" 0 False Standalone
+    Step "operation" "equation" "notes notes notes" 0 False Standalone
 
 
 upOrRoot : Zipper a -> Zipper a
@@ -138,8 +138,7 @@ update msg model =
         RenderStep zip ->
             zip
                 |> Zipper.updateItem (\s -> { s | edit = False })
-                |> Zipper.root
-                |> (\z -> ( Zipper.root z, Cmd.none ))
+                |> (\z -> ( Zipper.root z, katexStep z ))
 
         OperationText zip newOp ->
             zip
@@ -337,6 +336,10 @@ editStep zip =
 
           else
             none
+        , Input.button [ Font.family [ Font.monospace ] ]
+            { onPress = Just <| RenderStep zip
+            , label = text "[x]"
+            }
         , Input.multiline []
             { onChange = OperationText zip
             , text = step.operation
