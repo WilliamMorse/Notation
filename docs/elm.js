@@ -5187,6 +5187,7 @@ var $author$project$Exp$Step = F6(
 	function (operation, equation, note, id, edit, process) {
 		return {edit: edit, equation: equation, id: id, note: note, operation: operation, process: process};
 	});
+var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$Zipper = F2(
 	function (a, b) {
 		return {$: 'Zipper', a: a, b: b};
@@ -5246,294 +5247,20 @@ var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$insert = F2(
 					_List_fromArray(
 						[t]))));
 	});
-var $elm$core$Basics$negate = function (n) {
-	return -n;
-};
-var $elm$core$Platform$Cmd$batch = _Platform_batch;
-var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
-var $turboMaCk$lazy_tree_with_zipper$Lazy$LList$empty = A2($turboMaCk$lazy_tree_with_zipper$Lazy$LList$llist, $elm$core$Basics$identity, _List_Nil);
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$singleton = function (a) {
-	return A2($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Tree, a, $turboMaCk$lazy_tree_with_zipper$Lazy$LList$empty);
-};
-var $author$project$Exp$init = function (_v0) {
-	var startingStep = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$singleton(
-		A6($author$project$Exp$Step, 'Starting Operation', 'y=mx+b', 'notesnotesnotes', 0, false, $author$project$Exp$Standalone));
-	var root = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$singleton(
-		A6($author$project$Exp$Step, 'On', 'Turtles', 'Turtles All the way', -1, false, $author$project$Exp$Expanded));
-	var zip = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$fromTree(
-		A2($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$insert, startingStep, root));
-	return _Utils_Tuple2(zip, $elm$core$Platform$Cmd$none);
-};
-var $elm$core$Platform$Sub$batch = _Platform_batch;
-var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
-var $author$project$Exp$subscriptions = function (_v0) {
-	return $elm$core$Platform$Sub$none;
-};
-var $author$project$Exp$Collapsed = {$: 'Collapsed'};
-var $author$project$Exp$blankStep = A6($author$project$Exp$Step, 'Operation', 'Equation', 'Notes', 0, false, $author$project$Exp$Standalone);
 var $elm$core$Basics$composeL = F3(
 	function (g, f, x) {
 		return g(
 			f(x));
 	});
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$descendants = function (_v0) {
-	var d = _v0.b;
-	return d;
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$getTree = function (_v0) {
+	var tree = _v0.a;
+	return tree;
 };
 var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$item = function (_v0) {
 	var i = _v0.a;
 	return i;
 };
-var $turboMaCk$lazy_tree_with_zipper$Lazy$LList$toList = $turboMaCk$lazy_tree_with_zipper$Lazy$force;
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$children = A2(
-	$elm$core$Basics$composeL,
-	A2(
-		$elm$core$Basics$composeL,
-		$elm$core$List$map($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$item),
-		$turboMaCk$lazy_tree_with_zipper$Lazy$LList$toList),
-	$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$descendants);
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$getTree = function (_v0) {
-	var tree = _v0.a;
-	return tree;
-};
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$children = A2($elm$core$Basics$composeL, $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$children, $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$getTree);
 var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current = A2($elm$core$Basics$composeL, $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$item, $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$getTree);
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$insert = F2(
-	function (tree, _v0) {
-		var t = _v0.a;
-		var zipperBreadcrumbs = _v0.b;
-		return A2(
-			$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$Zipper,
-			A2($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$insert, tree, t),
-			zipperBreadcrumbs);
-	});
-var $turboMaCk$lazy_tree_with_zipper$Lazy$map = F2(
-	function (f, a) {
-		return $turboMaCk$lazy_tree_with_zipper$Lazy$lazy(
-			function (_v0) {
-				return f(
-					$turboMaCk$lazy_tree_with_zipper$Lazy$force(a));
-			});
-	});
-var $turboMaCk$lazy_tree_with_zipper$Lazy$LList$map = function (f) {
-	return $turboMaCk$lazy_tree_with_zipper$Lazy$map(
-		$elm$core$List$map(f));
-};
-var $elm$core$List$sortBy = _List_sortBy;
-var $turboMaCk$lazy_tree_with_zipper$Lazy$LList$sortBy = function (predicate) {
-	return $turboMaCk$lazy_tree_with_zipper$Lazy$map(
-		$elm$core$List$sortBy(predicate));
-};
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$sortBy = F2(
-	function (predicate, _v0) {
-		var a = _v0.a;
-		var f = _v0.b;
-		return A2(
-			$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Tree,
-			a,
-			A2(
-				$turboMaCk$lazy_tree_with_zipper$Lazy$LList$map,
-				$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$sortBy(predicate),
-				A2(
-					$turboMaCk$lazy_tree_with_zipper$Lazy$LList$sortBy,
-					A2($elm$core$Basics$composeL, predicate, $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$item),
-					f)));
-	});
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$update = F2(
-	function (f, _v0) {
-		var t = _v0.a;
-		var bs = _v0.b;
-		return A2(
-			$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$Zipper,
-			f(t),
-			bs);
-	});
-var $author$project$Exp$nest = F2(
-	function (step, zip) {
-		return A2(
-			$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$update,
-			$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$sortBy(
-				function ($) {
-					return $.id;
-				}),
-			A2(
-				$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$insert,
-				$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$singleton(step),
-				zip));
-	});
-var $elm$core$Maybe$withDefault = F2(
-	function (_default, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return value;
-		} else {
-			return _default;
-		}
-	});
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$attempt = F2(
-	function (action, zipper) {
-		return A2(
-			$elm$core$Maybe$withDefault,
-			zipper,
-			action(zipper));
-	});
-var $elm$core$Maybe$andThen = F2(
-	function (callback, maybeValue) {
-		if (maybeValue.$ === 'Just') {
-			var value = maybeValue.a;
-			return callback(value);
-		} else {
-			return $elm$core$Maybe$Nothing;
-		}
-	});
-var $turboMaCk$lazy_tree_with_zipper$Lazy$LList$cons = function (a) {
-	return $turboMaCk$lazy_tree_with_zipper$Lazy$map(
-		$elm$core$List$cons(a));
-};
-var $turboMaCk$lazy_tree_with_zipper$Lazy$LList$reverse = $turboMaCk$lazy_tree_with_zipper$Lazy$map($elm$core$List$reverse);
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$up = function (_v0) {
-	var tree = _v0.a;
-	var zipperBreadcrumbs = _v0.b;
-	if (!zipperBreadcrumbs.b) {
-		return $elm$core$Maybe$Nothing;
-	} else {
-		var left = zipperBreadcrumbs.a.a.left;
-		var parent = zipperBreadcrumbs.a.a.parent;
-		var right = zipperBreadcrumbs.a.a.right;
-		var tail = zipperBreadcrumbs.b;
-		return $elm$core$Maybe$Just(
-			A2(
-				$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$Zipper,
-				A2(
-					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Tree,
-					parent,
-					A2(
-						$turboMaCk$lazy_tree_with_zipper$Lazy$LList$append,
-						$turboMaCk$lazy_tree_with_zipper$Lazy$LList$reverse(left),
-						A2($turboMaCk$lazy_tree_with_zipper$Lazy$LList$cons, tree, right))),
-				tail));
-	}
-};
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$upwards = F2(
-	function (n, zipper) {
-		return (n < 0) ? $elm$core$Maybe$Nothing : ((!n) ? $elm$core$Maybe$Just(zipper) : A2(
-			$elm$core$Maybe$andThen,
-			$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$upwards(n - 1),
-			$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$up(zipper)));
-	});
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root = function (zipper) {
-	var zipperBreadcrumbs = zipper.b;
-	return A2(
-		$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$attempt,
-		$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$upwards(
-			$elm$core$List$length(zipperBreadcrumbs)),
-		zipper);
-};
-var $author$project$Exp$upOrRoot = function (z) {
-	var _v0 = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$up(z);
-	if (_v0.$ === 'Just') {
-		var zip = _v0.a;
-		return zip;
-	} else {
-		return $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z);
-	}
-};
-var $author$project$Exp$insertBelow = F2(
-	function (step, zip) {
-		return A2(
-			$author$project$Exp$nest,
-			step,
-			$author$project$Exp$upOrRoot(zip));
-	});
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$Breadcrumb = function (a) {
-	return {$: 'Breadcrumb', a: a};
-};
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$forestMap = function (fc) {
-	return $turboMaCk$lazy_tree_with_zipper$Lazy$LList$map(
-		$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$map(fc));
-};
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$map = F2(
-	function (fc, _v0) {
-		var a = _v0.a;
-		var forest = _v0.b;
-		return A2(
-			$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Tree,
-			fc(a),
-			A2($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$forestMap, fc, forest));
-	});
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$breadcrumbsMap = function (predicate) {
-	return $elm$core$List$map(
-		function (_v0) {
-			var left = _v0.a.left;
-			var parent = _v0.a.parent;
-			var right = _v0.a.right;
-			return $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$Breadcrumb(
-				{
-					left: A2($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$forestMap, predicate, left),
-					parent: predicate(parent),
-					right: A2($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$forestMap, predicate, right)
-				});
-		});
-};
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$map = F2(
-	function (fc, _v0) {
-		var tree = _v0.a;
-		var zipperBreadcrumbs = _v0.b;
-		return A2(
-			$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$Zipper,
-			A2($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$map, fc, tree),
-			A2($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$breadcrumbsMap, fc, zipperBreadcrumbs));
-	});
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$sliceForest_ = F3(
-	function (acc, left, right) {
-		sliceForest_:
-		while (true) {
-			var _v0 = $turboMaCk$lazy_tree_with_zipper$Lazy$LList$toList(right);
-			if (!_v0.b) {
-				return $elm$core$List$reverse(acc);
-			} else {
-				var head = _v0.a;
-				var tail = _v0.b;
-				var newItem = _Utils_Tuple3(
-					left,
-					head,
-					$turboMaCk$lazy_tree_with_zipper$Lazy$LList$fromList(tail));
-				var $temp$acc = A2($elm$core$List$cons, newItem, acc),
-					$temp$left = A2($turboMaCk$lazy_tree_with_zipper$Lazy$LList$cons, head, left),
-					$temp$right = $turboMaCk$lazy_tree_with_zipper$Lazy$LList$fromList(tail);
-				acc = $temp$acc;
-				left = $temp$left;
-				right = $temp$right;
-				continue sliceForest_;
-			}
-		}
-	});
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$sliceForest = A2($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$sliceForest_, _List_Nil, $turboMaCk$lazy_tree_with_zipper$Lazy$LList$empty);
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$openAll = function (_v0) {
-	var tree = _v0.a;
-	var zipperBreadcrumbs = _v0.b;
-	return A2(
-		$elm$core$List$map,
-		function (_v1) {
-			var left = _v1.a;
-			var parent = _v1.b;
-			var right = _v1.c;
-			return A2(
-				$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$Zipper,
-				parent,
-				A2(
-					$elm$core$List$cons,
-					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$Breadcrumb(
-						{
-							left: left,
-							parent: $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$item(tree),
-							right: right
-						}),
-					zipperBreadcrumbs));
-		},
-		$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$sliceForest(
-			$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$descendants(tree)));
-};
 var $elm$core$List$drop = F2(
 	function (n, list) {
 		drop:
@@ -5622,7 +5349,7 @@ var $elm$json$Json$Encode$object = function (pairs) {
 };
 var $author$project$Exp$render = _Platform_outgoingPort('render', $elm$core$Basics$identity);
 var $elm$json$Json$Encode$string = _Json_wrap;
-var $author$project$Exp$sendToKatex = function (zip) {
+var $author$project$Exp$katexRenderEquation = function (zip) {
 	return $author$project$Exp$render(
 		$elm$json$Json$Encode$object(
 			_List_fromArray(
@@ -5637,27 +5364,306 @@ var $author$project$Exp$sendToKatex = function (zip) {
 						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(zip).equation))
 				])));
 };
-var $author$project$Exp$renderAllOpen = function (zip) {
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$Breadcrumb = function (a) {
+	return {$: 'Breadcrumb', a: a};
+};
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$descendants = function (_v0) {
+	var d = _v0.b;
+	return d;
+};
+var $turboMaCk$lazy_tree_with_zipper$Lazy$LList$empty = A2($turboMaCk$lazy_tree_with_zipper$Lazy$LList$llist, $elm$core$Basics$identity, _List_Nil);
+var $turboMaCk$lazy_tree_with_zipper$Lazy$map = F2(
+	function (f, a) {
+		return $turboMaCk$lazy_tree_with_zipper$Lazy$lazy(
+			function (_v0) {
+				return f(
+					$turboMaCk$lazy_tree_with_zipper$Lazy$force(a));
+			});
+	});
+var $turboMaCk$lazy_tree_with_zipper$Lazy$LList$cons = function (a) {
+	return $turboMaCk$lazy_tree_with_zipper$Lazy$map(
+		$elm$core$List$cons(a));
+};
+var $turboMaCk$lazy_tree_with_zipper$Lazy$LList$toList = $turboMaCk$lazy_tree_with_zipper$Lazy$force;
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$sliceForest_ = F3(
+	function (acc, left, right) {
+		sliceForest_:
+		while (true) {
+			var _v0 = $turboMaCk$lazy_tree_with_zipper$Lazy$LList$toList(right);
+			if (!_v0.b) {
+				return $elm$core$List$reverse(acc);
+			} else {
+				var head = _v0.a;
+				var tail = _v0.b;
+				var newItem = _Utils_Tuple3(
+					left,
+					head,
+					$turboMaCk$lazy_tree_with_zipper$Lazy$LList$fromList(tail));
+				var $temp$acc = A2($elm$core$List$cons, newItem, acc),
+					$temp$left = A2($turboMaCk$lazy_tree_with_zipper$Lazy$LList$cons, head, left),
+					$temp$right = $turboMaCk$lazy_tree_with_zipper$Lazy$LList$fromList(tail);
+				acc = $temp$acc;
+				left = $temp$left;
+				right = $temp$right;
+				continue sliceForest_;
+			}
+		}
+	});
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$sliceForest = A2($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$sliceForest_, _List_Nil, $turboMaCk$lazy_tree_with_zipper$Lazy$LList$empty);
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$openAll = function (_v0) {
+	var tree = _v0.a;
+	var zipperBreadcrumbs = _v0.b;
+	return A2(
+		$elm$core$List$map,
+		function (_v1) {
+			var left = _v1.a;
+			var parent = _v1.b;
+			var right = _v1.c;
+			return A2(
+				$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$Zipper,
+				parent,
+				A2(
+					$elm$core$List$cons,
+					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$Breadcrumb(
+						{
+							left: left,
+							parent: $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$item(tree),
+							right: right
+						}),
+					zipperBreadcrumbs));
+		},
+		$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$sliceForest(
+			$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$descendants(tree)));
+};
+var $author$project$Exp$katexStep = function (zip) {
 	var _v0 = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(zip).process;
 	switch (_v0.$) {
 		case 'Standalone':
-			return $author$project$Exp$sendToKatex(zip);
+			return $author$project$Exp$katexRenderEquation(zip);
 		case 'Collapsed':
-			return $author$project$Exp$sendToKatex(zip);
+			return $author$project$Exp$katexRenderEquation(zip);
 		default:
 			var _v1 = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$openAll(zip);
 			if (!_v1.b) {
-				return $author$project$Exp$sendToKatex(zip);
+				return $author$project$Exp$katexRenderEquation(zip);
 			} else {
 				var z = _v1;
 				return $elm$core$Platform$Cmd$batch(
 					A2(
 						$elm$core$List$cons,
-						$author$project$Exp$sendToKatex(zip),
-						A2($elm$core$List$map, $author$project$Exp$renderAllOpen, z)));
+						$author$project$Exp$katexRenderEquation(zip),
+						A2($elm$core$List$map, $author$project$Exp$katexStep, z)));
 			}
 	}
 };
+var $elm$core$Basics$negate = function (n) {
+	return -n;
+};
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$singleton = function (a) {
+	return A2($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Tree, a, $turboMaCk$lazy_tree_with_zipper$Lazy$LList$empty);
+};
+var $author$project$Exp$init = function (_v0) {
+	var startingStep = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$singleton(
+		A6($author$project$Exp$Step, 'Starting Operation', 'y=mx+b', 'notesnotesnotes', 0, false, $author$project$Exp$Standalone));
+	var root = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$singleton(
+		A6($author$project$Exp$Step, 'On', 'Turtles', 'Turtles All the way', -1, false, $author$project$Exp$Expanded));
+	var zip = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$fromTree(
+		A2($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$insert, startingStep, root));
+	return _Utils_Tuple2(
+		zip,
+		$elm$core$Platform$Cmd$batch(
+			A2(
+				$elm$core$List$map,
+				$author$project$Exp$katexStep,
+				$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$openAll(zip))));
+};
+var $elm$core$Platform$Sub$batch = _Platform_batch;
+var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
+var $author$project$Exp$subscriptions = function (_v0) {
+	return $elm$core$Platform$Sub$none;
+};
+var $author$project$Exp$Collapsed = {$: 'Collapsed'};
+var $author$project$Exp$blankStep = A6($author$project$Exp$Step, 'o', 'e', 'n', 0, false, $author$project$Exp$Standalone);
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$children = A2(
+	$elm$core$Basics$composeL,
+	A2(
+		$elm$core$Basics$composeL,
+		$elm$core$List$map($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$item),
+		$turboMaCk$lazy_tree_with_zipper$Lazy$LList$toList),
+	$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$descendants);
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$children = A2($elm$core$Basics$composeL, $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$children, $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$getTree);
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$insert = F2(
+	function (tree, _v0) {
+		var t = _v0.a;
+		var zipperBreadcrumbs = _v0.b;
+		return A2(
+			$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$Zipper,
+			A2($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$insert, tree, t),
+			zipperBreadcrumbs);
+	});
+var $turboMaCk$lazy_tree_with_zipper$Lazy$LList$map = function (f) {
+	return $turboMaCk$lazy_tree_with_zipper$Lazy$map(
+		$elm$core$List$map(f));
+};
+var $elm$core$List$sortBy = _List_sortBy;
+var $turboMaCk$lazy_tree_with_zipper$Lazy$LList$sortBy = function (predicate) {
+	return $turboMaCk$lazy_tree_with_zipper$Lazy$map(
+		$elm$core$List$sortBy(predicate));
+};
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$sortBy = F2(
+	function (predicate, _v0) {
+		var a = _v0.a;
+		var f = _v0.b;
+		return A2(
+			$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Tree,
+			a,
+			A2(
+				$turboMaCk$lazy_tree_with_zipper$Lazy$LList$map,
+				$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$sortBy(predicate),
+				A2(
+					$turboMaCk$lazy_tree_with_zipper$Lazy$LList$sortBy,
+					A2($elm$core$Basics$composeL, predicate, $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$item),
+					f)));
+	});
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$update = F2(
+	function (f, _v0) {
+		var t = _v0.a;
+		var bs = _v0.b;
+		return A2(
+			$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$Zipper,
+			f(t),
+			bs);
+	});
+var $author$project$Exp$nest = F2(
+	function (step, zip) {
+		return A2(
+			$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$update,
+			$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$sortBy(
+				function ($) {
+					return $.id;
+				}),
+			A2(
+				$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$insert,
+				$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$singleton(step),
+				zip));
+	});
+var $elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$attempt = F2(
+	function (action, zipper) {
+		return A2(
+			$elm$core$Maybe$withDefault,
+			zipper,
+			action(zipper));
+	});
+var $elm$core$Maybe$andThen = F2(
+	function (callback, maybeValue) {
+		if (maybeValue.$ === 'Just') {
+			var value = maybeValue.a;
+			return callback(value);
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
+var $turboMaCk$lazy_tree_with_zipper$Lazy$LList$reverse = $turboMaCk$lazy_tree_with_zipper$Lazy$map($elm$core$List$reverse);
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$up = function (_v0) {
+	var tree = _v0.a;
+	var zipperBreadcrumbs = _v0.b;
+	if (!zipperBreadcrumbs.b) {
+		return $elm$core$Maybe$Nothing;
+	} else {
+		var left = zipperBreadcrumbs.a.a.left;
+		var parent = zipperBreadcrumbs.a.a.parent;
+		var right = zipperBreadcrumbs.a.a.right;
+		var tail = zipperBreadcrumbs.b;
+		return $elm$core$Maybe$Just(
+			A2(
+				$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$Zipper,
+				A2(
+					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Tree,
+					parent,
+					A2(
+						$turboMaCk$lazy_tree_with_zipper$Lazy$LList$append,
+						$turboMaCk$lazy_tree_with_zipper$Lazy$LList$reverse(left),
+						A2($turboMaCk$lazy_tree_with_zipper$Lazy$LList$cons, tree, right))),
+				tail));
+	}
+};
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$upwards = F2(
+	function (n, zipper) {
+		return (n < 0) ? $elm$core$Maybe$Nothing : ((!n) ? $elm$core$Maybe$Just(zipper) : A2(
+			$elm$core$Maybe$andThen,
+			$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$upwards(n - 1),
+			$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$up(zipper)));
+	});
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root = function (zipper) {
+	var zipperBreadcrumbs = zipper.b;
+	return A2(
+		$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$attempt,
+		$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$upwards(
+			$elm$core$List$length(zipperBreadcrumbs)),
+		zipper);
+};
+var $author$project$Exp$upOrRoot = function (z) {
+	var _v0 = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$up(z);
+	if (_v0.$ === 'Just') {
+		var zip = _v0.a;
+		return zip;
+	} else {
+		return $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z);
+	}
+};
+var $author$project$Exp$insertBelow = F2(
+	function (step, zip) {
+		return A2(
+			$author$project$Exp$nest,
+			step,
+			$author$project$Exp$upOrRoot(zip));
+	});
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$forestMap = function (fc) {
+	return $turboMaCk$lazy_tree_with_zipper$Lazy$LList$map(
+		$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$map(fc));
+};
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$map = F2(
+	function (fc, _v0) {
+		var a = _v0.a;
+		var forest = _v0.b;
+		return A2(
+			$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Tree,
+			fc(a),
+			A2($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$forestMap, fc, forest));
+	});
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$breadcrumbsMap = function (predicate) {
+	return $elm$core$List$map(
+		function (_v0) {
+			var left = _v0.a.left;
+			var parent = _v0.a.parent;
+			var right = _v0.a.right;
+			return $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$Breadcrumb(
+				{
+					left: A2($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$forestMap, predicate, left),
+					parent: predicate(parent),
+					right: A2($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$forestMap, predicate, right)
+				});
+		});
+};
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$map = F2(
+	function (fc, _v0) {
+		var tree = _v0.a;
+		var zipperBreadcrumbs = _v0.b;
+		return A2(
+			$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$Zipper,
+			A2($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$map, fc, tree),
+			A2($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$breadcrumbsMap, fc, zipperBreadcrumbs));
+	});
+var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem = F2(
 	function (fc, _v0) {
 		var tree = _v0.a;
@@ -5676,27 +5682,33 @@ var $author$project$Exp$update = F2(
 		switch (msg.$) {
 			case 'EditStep':
 				var zip = msg.a;
-				return _Utils_Tuple2(
-					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(
+				return function (z) {
+					return _Utils_Tuple2(
+						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z),
+						$elm$core$Platform$Cmd$none);
+				}(
+					A2(
+						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
+						function (a) {
+							return _Utils_update(
+								a,
+								{edit: true});
+						},
 						A2(
-							$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
+							$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$map,
 							function (a) {
 								return _Utils_update(
 									a,
-									{edit: true});
+									{edit: false});
 							},
-							A2(
-								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$map,
-								function (a) {
-									return _Utils_update(
-										a,
-										{edit: false});
-								},
-								zip))),
-					$elm$core$Platform$Cmd$none);
+							zip)));
 			case 'RenderStep':
 				var zip = msg.a;
-				return _Utils_Tuple2(
+				return function (z) {
+					return _Utils_Tuple2(
+						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z),
+						$elm$core$Platform$Cmd$none);
+				}(
 					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(
 						A2(
 							$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
@@ -5705,61 +5717,99 @@ var $author$project$Exp$update = F2(
 									s,
 									{edit: false});
 							},
-							zip)),
-					$elm$core$Platform$Cmd$none);
+							zip)));
 			case 'OperationText':
 				var zip = msg.a;
 				var newOp = msg.b;
-				return _Utils_Tuple2(
-					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(
-						A2(
-							$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
-							function (s) {
-								return _Utils_update(
-									s,
-									{operation: newOp});
-							},
-							zip)),
-					$elm$core$Platform$Cmd$none);
+				return function (z) {
+					return _Utils_Tuple2(
+						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z),
+						$elm$core$Platform$Cmd$none);
+				}(
+					A2(
+						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
+						function (s) {
+							return _Utils_update(
+								s,
+								{operation: newOp});
+						},
+						zip));
 			case 'EquationText':
 				var zip = msg.a;
 				var newEq = msg.b;
-				return _Utils_Tuple2(
-					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(
-						A2(
-							$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
-							function (s) {
-								return _Utils_update(
-									s,
-									{equation: newEq});
-							},
-							zip)),
-					$elm$core$Platform$Cmd$none);
+				return function (z) {
+					return _Utils_Tuple2(
+						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z),
+						$author$project$Exp$katexStep(z));
+				}(
+					A2(
+						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
+						function (s) {
+							return _Utils_update(
+								s,
+								{equation: newEq});
+						},
+						zip));
 			case 'NotesText':
 				var zip = msg.a;
 				var newNote = msg.b;
-				return _Utils_Tuple2(
-					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(
+				return function (z) {
+					return _Utils_Tuple2(
+						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z),
+						$elm$core$Platform$Cmd$none);
+				}(
+					A2(
+						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
+						function (s) {
+							return _Utils_update(
+								s,
+								{note: newNote});
+						},
+						zip));
+			case 'ConsecutiveStep':
+				var zip = msg.a;
+				return function (z) {
+					return _Utils_Tuple2(
+						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z),
+						$elm$core$Platform$Cmd$none);
+				}(
+					A2(
+						$author$project$Exp$insertBelow,
+						_Utils_update(
+							$author$project$Exp$blankStep,
+							{
+								id: 1 + $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(zip).id
+							}),
+						A2(
+							$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$map,
+							function (s) {
+								return _Utils_update(
+									s,
+									{edit: false});
+							},
+							zip)));
+			case 'NewProcessStep':
+				var parent = msg.a;
+				return function (z) {
+					return _Utils_Tuple2(
+						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z),
+						$author$project$Exp$katexStep(z));
+				}(
+					A2(
+						$author$project$Exp$nest,
+						_Utils_update(
+							$author$project$Exp$blankStep,
+							{
+								id: $elm$core$List$length(
+									$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$children(parent))
+							}),
 						A2(
 							$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
 							function (s) {
 								return _Utils_update(
 									s,
-									{note: newNote});
+									{process: $author$project$Exp$Expanded});
 							},
-							zip)),
-					$elm$core$Platform$Cmd$none);
-			case 'ConsecutiveStep':
-				var zip = msg.a;
-				return _Utils_Tuple2(
-					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(
-						A2(
-							$author$project$Exp$insertBelow,
-							_Utils_update(
-								$author$project$Exp$blankStep,
-								{
-									id: 1 + $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(zip).id
-								}),
 							A2(
 								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$map,
 								function (s) {
@@ -5767,68 +5817,45 @@ var $author$project$Exp$update = F2(
 										s,
 										{edit: false});
 								},
-								zip))),
-					$elm$core$Platform$Cmd$none);
-			case 'NewProcessStep':
-				var parent = msg.a;
-				return _Utils_Tuple2(
-					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(
-						A2(
-							$author$project$Exp$nest,
-							_Utils_update(
-								$author$project$Exp$blankStep,
-								{
-									id: $elm$core$List$length(
-										$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$children(parent))
-								}),
-							A2(
-								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
-								function (s) {
-									return _Utils_update(
-										s,
-										{process: $author$project$Exp$Expanded});
-								},
-								A2(
-									$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$map,
-									function (s) {
-										return _Utils_update(
-											s,
-											{edit: false});
-									},
-									parent)))),
-					$elm$core$Platform$Cmd$none);
+								parent))));
 			case 'ToggleProcess':
 				var zip = msg.a;
 				var _v1 = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(zip).process;
 				switch (_v1.$) {
 					case 'Standalone':
-						return _Utils_Tuple2(
-							$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(zip),
-							$elm$core$Platform$Cmd$none);
+						return function (z) {
+							return _Utils_Tuple2(
+								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z),
+								$elm$core$Platform$Cmd$none);
+						}(zip);
 					case 'Expanded':
-						return _Utils_Tuple2(
-							$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(
-								A2(
-									$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
-									function (a) {
-										return _Utils_update(
-											a,
-											{process: $author$project$Exp$Collapsed});
-									},
-									zip)),
-							$elm$core$Platform$Cmd$none);
+						return function (z) {
+							return _Utils_Tuple2(
+								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z),
+								$elm$core$Platform$Cmd$none);
+						}(
+							A2(
+								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
+								function (a) {
+									return _Utils_update(
+										a,
+										{process: $author$project$Exp$Collapsed});
+								},
+								zip));
 					default:
-						return _Utils_Tuple2(
-							$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(
-								A2(
-									$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
-									function (a) {
-										return _Utils_update(
-											a,
-											{process: $author$project$Exp$Expanded});
-									},
-									zip)),
-							$elm$core$Platform$Cmd$none);
+						return function (z) {
+							return _Utils_Tuple2(
+								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z),
+								$author$project$Exp$katexStep(z));
+						}(
+							A2(
+								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
+								function (a) {
+									return _Utils_update(
+										a,
+										{process: $author$project$Exp$Expanded});
+								},
+								zip));
 				}
 			default:
 				return _Utils_Tuple2(
@@ -5836,7 +5863,7 @@ var $author$project$Exp$update = F2(
 					$elm$core$Platform$Cmd$batch(
 						A2(
 							$elm$core$List$map,
-							$author$project$Exp$renderAllOpen,
+							$author$project$Exp$katexStep,
 							$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$openAll(model))));
 		}
 	});
@@ -11863,42 +11890,381 @@ var $author$project$Exp$ToggleProcess = function (a) {
 };
 var $mdgriffith$elm_ui$Internal$Flag$fontWeight = $mdgriffith$elm_ui$Internal$Flag$flag(13);
 var $mdgriffith$elm_ui$Element$Font$bold = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$fontWeight, $mdgriffith$elm_ui$Internal$Style$classes.bold);
-var $author$project$Exp$edges = {bottom: 0, left: 0, right: 0, top: 0};
-var $mdgriffith$elm_ui$Element$el = F2(
-	function (attrs, child) {
-		return A4(
-			$mdgriffith$elm_ui$Internal$Model$element,
-			$mdgriffith$elm_ui$Internal$Model$asEl,
-			$mdgriffith$elm_ui$Internal$Model$div,
-			A2(
-				$elm$core$List$cons,
-				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
-				A2(
-					$elm$core$List$cons,
-					$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
-					attrs)),
-			$mdgriffith$elm_ui$Internal$Model$Unkeyed(
-				_List_fromArray(
-					[child])));
+var $author$project$Exp$EquationText = F2(
+	function (a, b) {
+		return {$: 'EquationText', a: a, b: b};
 	});
-var $mdgriffith$elm_ui$Element$Font$family = function (families) {
+var $author$project$Exp$NotesText = F2(
+	function (a, b) {
+		return {$: 'NotesText', a: a, b: b};
+	});
+var $author$project$Exp$OperationText = F2(
+	function (a, b) {
+		return {$: 'OperationText', a: a, b: b};
+	});
+var $mdgriffith$elm_ui$Internal$Model$AlignY = function (a) {
+	return {$: 'AlignY', a: a};
+};
+var $mdgriffith$elm_ui$Internal$Model$CenterY = {$: 'CenterY'};
+var $mdgriffith$elm_ui$Element$centerY = $mdgriffith$elm_ui$Internal$Model$AlignY($mdgriffith$elm_ui$Internal$Model$CenterY);
+var $elm$core$Basics$always = F2(
+	function (a, _v0) {
+		return a;
+	});
+var $mdgriffith$elm_ui$Internal$Model$unstyled = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Unstyled, $elm$core$Basics$always);
+var $mdgriffith$elm_ui$Element$html = $mdgriffith$elm_ui$Internal$Model$unstyled;
+var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
+var $elm$html$Html$span = _VirtualDom_node('span');
+var $author$project$Exp$katexPlaceholder = function (zip) {
+	return $mdgriffith$elm_ui$Element$html(
+		A2(
+			$elm$html$Html$span,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$id(
+					$author$project$Exp$labelEquation(zip))
+				]),
+			_List_Nil));
+};
+var $mdgriffith$elm_ui$Element$Input$Above = {$: 'Above'};
+var $mdgriffith$elm_ui$Element$Input$Label = F3(
+	function (a, b, c) {
+		return {$: 'Label', a: a, b: b, c: c};
+	});
+var $mdgriffith$elm_ui$Element$Input$labelAbove = $mdgriffith$elm_ui$Element$Input$Label($mdgriffith$elm_ui$Element$Input$Above);
+var $mdgriffith$elm_ui$Element$Input$OnRight = {$: 'OnRight'};
+var $mdgriffith$elm_ui$Element$Input$labelRight = $mdgriffith$elm_ui$Element$Input$Label($mdgriffith$elm_ui$Element$Input$OnRight);
+var $mdgriffith$elm_ui$Element$Input$TextArea = {$: 'TextArea'};
+var $mdgriffith$elm_ui$Internal$Model$LivePolite = {$: 'LivePolite'};
+var $mdgriffith$elm_ui$Element$Region$announce = $mdgriffith$elm_ui$Internal$Model$Describe($mdgriffith$elm_ui$Internal$Model$LivePolite);
+var $mdgriffith$elm_ui$Internal$Model$AsRow = {$: 'AsRow'};
+var $mdgriffith$elm_ui$Internal$Model$asRow = $mdgriffith$elm_ui$Internal$Model$AsRow;
+var $mdgriffith$elm_ui$Element$Input$applyLabel = F3(
+	function (attrs, label, input) {
+		if (label.$ === 'HiddenLabel') {
+			var labelText = label.a;
+			return A4(
+				$mdgriffith$elm_ui$Internal$Model$element,
+				$mdgriffith$elm_ui$Internal$Model$asColumn,
+				$mdgriffith$elm_ui$Internal$Model$NodeName('label'),
+				attrs,
+				$mdgriffith$elm_ui$Internal$Model$Unkeyed(
+					_List_fromArray(
+						[input])));
+		} else {
+			var position = label.a;
+			var labelAttrs = label.b;
+			var labelChild = label.c;
+			var labelElement = A4(
+				$mdgriffith$elm_ui$Internal$Model$element,
+				$mdgriffith$elm_ui$Internal$Model$asEl,
+				$mdgriffith$elm_ui$Internal$Model$div,
+				labelAttrs,
+				$mdgriffith$elm_ui$Internal$Model$Unkeyed(
+					_List_fromArray(
+						[labelChild])));
+			switch (position.$) {
+				case 'Above':
+					return A4(
+						$mdgriffith$elm_ui$Internal$Model$element,
+						$mdgriffith$elm_ui$Internal$Model$asColumn,
+						$mdgriffith$elm_ui$Internal$Model$NodeName('label'),
+						attrs,
+						$mdgriffith$elm_ui$Internal$Model$Unkeyed(
+							_List_fromArray(
+								[labelElement, input])));
+				case 'Below':
+					return A4(
+						$mdgriffith$elm_ui$Internal$Model$element,
+						$mdgriffith$elm_ui$Internal$Model$asColumn,
+						$mdgriffith$elm_ui$Internal$Model$NodeName('label'),
+						attrs,
+						$mdgriffith$elm_ui$Internal$Model$Unkeyed(
+							_List_fromArray(
+								[input, labelElement])));
+				case 'OnRight':
+					return A4(
+						$mdgriffith$elm_ui$Internal$Model$element,
+						$mdgriffith$elm_ui$Internal$Model$asRow,
+						$mdgriffith$elm_ui$Internal$Model$NodeName('label'),
+						attrs,
+						$mdgriffith$elm_ui$Internal$Model$Unkeyed(
+							_List_fromArray(
+								[input, labelElement])));
+				default:
+					return A4(
+						$mdgriffith$elm_ui$Internal$Model$element,
+						$mdgriffith$elm_ui$Internal$Model$asRow,
+						$mdgriffith$elm_ui$Internal$Model$NodeName('label'),
+						attrs,
+						$mdgriffith$elm_ui$Internal$Model$Unkeyed(
+							_List_fromArray(
+								[labelElement, input])));
+			}
+		}
+	});
+var $elm$html$Html$Attributes$attribute = $elm$virtual_dom$VirtualDom$attribute;
+var $mdgriffith$elm_ui$Element$Input$autofill = A2(
+	$elm$core$Basics$composeL,
+	$mdgriffith$elm_ui$Internal$Model$Attr,
+	$elm$html$Html$Attributes$attribute('autocomplete'));
+var $mdgriffith$elm_ui$Internal$Model$Behind = {$: 'Behind'};
+var $mdgriffith$elm_ui$Internal$Model$Nearby = F2(
+	function (a, b) {
+		return {$: 'Nearby', a: a, b: b};
+	});
+var $mdgriffith$elm_ui$Element$createNearby = F2(
+	function (loc, element) {
+		if (element.$ === 'Empty') {
+			return $mdgriffith$elm_ui$Internal$Model$NoAttribute;
+		} else {
+			return A2($mdgriffith$elm_ui$Internal$Model$Nearby, loc, element);
+		}
+	});
+var $mdgriffith$elm_ui$Element$behindContent = function (element) {
+	return A2($mdgriffith$elm_ui$Element$createNearby, $mdgriffith$elm_ui$Internal$Model$Behind, element);
+};
+var $mdgriffith$elm_ui$Internal$Model$MoveY = function (a) {
+	return {$: 'MoveY', a: a};
+};
+var $mdgriffith$elm_ui$Internal$Model$TransformComponent = F2(
+	function (a, b) {
+		return {$: 'TransformComponent', a: a, b: b};
+	});
+var $mdgriffith$elm_ui$Internal$Flag$moveY = $mdgriffith$elm_ui$Internal$Flag$flag(26);
+var $mdgriffith$elm_ui$Element$moveUp = function (y) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$TransformComponent,
+		$mdgriffith$elm_ui$Internal$Flag$moveY,
+		$mdgriffith$elm_ui$Internal$Model$MoveY(-y));
+};
+var $mdgriffith$elm_ui$Element$Input$calcMoveToCompensateForPadding = function (attrs) {
+	var gatherSpacing = F2(
+		function (attr, found) {
+			if ((attr.$ === 'StyleClass') && (attr.b.$ === 'SpacingStyle')) {
+				var _v2 = attr.b;
+				var x = _v2.b;
+				var y = _v2.c;
+				if (found.$ === 'Nothing') {
+					return $elm$core$Maybe$Just(y);
+				} else {
+					return found;
+				}
+			} else {
+				return found;
+			}
+		});
+	var _v0 = A3($elm$core$List$foldr, gatherSpacing, $elm$core$Maybe$Nothing, attrs);
+	if (_v0.$ === 'Nothing') {
+		return $mdgriffith$elm_ui$Internal$Model$NoAttribute;
+	} else {
+		var vSpace = _v0.a;
+		return $mdgriffith$elm_ui$Element$moveUp(
+			$elm$core$Basics$floor(vSpace / 2));
+	}
+};
+var $mdgriffith$elm_ui$Internal$Flag$overflow = $mdgriffith$elm_ui$Internal$Flag$flag(20);
+var $mdgriffith$elm_ui$Element$clip = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$overflow, $mdgriffith$elm_ui$Internal$Style$classes.clip);
+var $mdgriffith$elm_ui$Element$Background$color = function (clr) {
 	return A2(
 		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$fontFamily,
-		A2(
-			$mdgriffith$elm_ui$Internal$Model$FontFamily,
-			A3($elm$core$List$foldl, $mdgriffith$elm_ui$Internal$Model$renderFontClassName, 'ff-', families),
-			families));
+		$mdgriffith$elm_ui$Internal$Flag$bgColor,
+		A3(
+			$mdgriffith$elm_ui$Internal$Model$Colored,
+			'bg-' + $mdgriffith$elm_ui$Internal$Model$formatColorClass(clr),
+			'background-color',
+			clr));
 };
-var $mdgriffith$elm_ui$Internal$Model$Monospace = {$: 'Monospace'};
-var $mdgriffith$elm_ui$Element$Font$monospace = $mdgriffith$elm_ui$Internal$Model$Monospace;
-var $elm$html$Html$Events$onDoubleClick = function (msg) {
+var $mdgriffith$elm_ui$Internal$Flag$borderColor = $mdgriffith$elm_ui$Internal$Flag$flag(28);
+var $mdgriffith$elm_ui$Element$Border$color = function (clr) {
 	return A2(
-		$elm$html$Html$Events$on,
-		'dblclick',
-		$elm$json$Json$Decode$succeed(msg));
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$borderColor,
+		A3(
+			$mdgriffith$elm_ui$Internal$Model$Colored,
+			'bc-' + $mdgriffith$elm_ui$Internal$Model$formatColorClass(clr),
+			'border-color',
+			clr));
 };
-var $mdgriffith$elm_ui$Element$Events$onDoubleClick = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Attr, $elm$html$Html$Events$onDoubleClick);
+var $mdgriffith$elm_ui$Element$rgb = F3(
+	function (r, g, b) {
+		return A4($mdgriffith$elm_ui$Internal$Model$Rgba, r, g, b, 1);
+	});
+var $mdgriffith$elm_ui$Element$Input$darkGrey = A3($mdgriffith$elm_ui$Element$rgb, 186 / 255, 189 / 255, 182 / 255);
+var $mdgriffith$elm_ui$Element$paddingXY = F2(
+	function (x, y) {
+		return _Utils_eq(x, y) ? A2(
+			$mdgriffith$elm_ui$Internal$Model$StyleClass,
+			$mdgriffith$elm_ui$Internal$Flag$padding,
+			A5(
+				$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
+				'p-' + $elm$core$String$fromInt(x),
+				x,
+				x,
+				x,
+				x)) : A2(
+			$mdgriffith$elm_ui$Internal$Model$StyleClass,
+			$mdgriffith$elm_ui$Internal$Flag$padding,
+			A5(
+				$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
+				'p-' + ($elm$core$String$fromInt(x) + ('-' + $elm$core$String$fromInt(y))),
+				y,
+				x,
+				y,
+				x));
+	});
+var $mdgriffith$elm_ui$Element$Input$defaultTextPadding = A2($mdgriffith$elm_ui$Element$paddingXY, 12, 12);
+var $mdgriffith$elm_ui$Internal$Flag$borderRound = $mdgriffith$elm_ui$Internal$Flag$flag(17);
+var $mdgriffith$elm_ui$Element$Border$rounded = function (radius) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$borderRound,
+		A3(
+			$mdgriffith$elm_ui$Internal$Model$Single,
+			'br-' + $elm$core$String$fromInt(radius),
+			'border-radius',
+			$elm$core$String$fromInt(radius) + 'px'));
+};
+var $mdgriffith$elm_ui$Element$Input$white = A3($mdgriffith$elm_ui$Element$rgb, 1, 1, 1);
+var $mdgriffith$elm_ui$Internal$Model$BorderWidth = F5(
+	function (a, b, c, d, e) {
+		return {$: 'BorderWidth', a: a, b: b, c: c, d: d, e: e};
+	});
+var $mdgriffith$elm_ui$Element$Border$width = function (v) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$borderWidth,
+		A5(
+			$mdgriffith$elm_ui$Internal$Model$BorderWidth,
+			'b-' + $elm$core$String$fromInt(v),
+			v,
+			v,
+			v,
+			v));
+};
+var $mdgriffith$elm_ui$Element$Input$defaultTextBoxStyle = _List_fromArray(
+	[
+		$mdgriffith$elm_ui$Element$Input$defaultTextPadding,
+		$mdgriffith$elm_ui$Element$Border$rounded(3),
+		$mdgriffith$elm_ui$Element$Border$color($mdgriffith$elm_ui$Element$Input$darkGrey),
+		$mdgriffith$elm_ui$Element$Background$color($mdgriffith$elm_ui$Element$Input$white),
+		$mdgriffith$elm_ui$Element$Border$width(1),
+		$mdgriffith$elm_ui$Element$spacing(5),
+		$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+		$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink)
+	]);
+var $mdgriffith$elm_ui$Element$Input$getHeight = function (attr) {
+	if (attr.$ === 'Height') {
+		var h = attr.a;
+		return $elm$core$Maybe$Just(h);
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $elm$core$List$head = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return $elm$core$Maybe$Just(x);
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $mdgriffith$elm_ui$Internal$Model$Label = function (a) {
+	return {$: 'Label', a: a};
+};
+var $mdgriffith$elm_ui$Element$Input$hiddenLabelAttribute = function (label) {
+	if (label.$ === 'HiddenLabel') {
+		var textLabel = label.a;
+		return $mdgriffith$elm_ui$Internal$Model$Describe(
+			$mdgriffith$elm_ui$Internal$Model$Label(textLabel));
+	} else {
+		return $mdgriffith$elm_ui$Internal$Model$NoAttribute;
+	}
+};
+var $mdgriffith$elm_ui$Internal$Model$InFront = {$: 'InFront'};
+var $mdgriffith$elm_ui$Element$inFront = function (element) {
+	return A2($mdgriffith$elm_ui$Element$createNearby, $mdgriffith$elm_ui$Internal$Model$InFront, element);
+};
+var $mdgriffith$elm_ui$Element$Input$isConstrained = function (len) {
+	isConstrained:
+	while (true) {
+		switch (len.$) {
+			case 'Content':
+				return false;
+			case 'Px':
+				return true;
+			case 'Fill':
+				return true;
+			case 'Min':
+				var l = len.b;
+				var $temp$len = l;
+				len = $temp$len;
+				continue isConstrained;
+			default:
+				var l = len.b;
+				return true;
+		}
+	}
+};
+var $mdgriffith$elm_ui$Element$Input$isHiddenLabel = function (label) {
+	if (label.$ === 'HiddenLabel') {
+		return true;
+	} else {
+		return false;
+	}
+};
+var $mdgriffith$elm_ui$Element$Input$isStacked = function (label) {
+	if (label.$ === 'Label') {
+		var loc = label.a;
+		switch (loc.$) {
+			case 'OnRight':
+				return false;
+			case 'OnLeft':
+				return false;
+			case 'Above':
+				return true;
+			default:
+				return true;
+		}
+	} else {
+		return true;
+	}
+};
+var $mdgriffith$elm_ui$Element$Input$negateBox = function (box) {
+	return {bottom: -box.bottom, left: -box.left, right: -box.right, top: -box.top};
+};
+var $elm$html$Html$Events$alwaysStop = function (x) {
+	return _Utils_Tuple2(x, true);
+};
+var $elm$virtual_dom$VirtualDom$MayStopPropagation = function (a) {
+	return {$: 'MayStopPropagation', a: a};
+};
+var $elm$html$Html$Events$stopPropagationOn = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$MayStopPropagation(decoder));
+	});
+var $elm$json$Json$Decode$at = F2(
+	function (fields, decoder) {
+		return A3($elm$core$List$foldr, $elm$json$Json$Decode$field, decoder, fields);
+	});
+var $elm$html$Html$Events$targetValue = A2(
+	$elm$json$Json$Decode$at,
+	_List_fromArray(
+		['target', 'value']),
+	$elm$json$Json$Decode$string);
+var $elm$html$Html$Events$onInput = function (tagger) {
+	return A2(
+		$elm$html$Html$Events$stopPropagationOn,
+		'input',
+		A2(
+			$elm$json$Json$Decode$map,
+			$elm$html$Html$Events$alwaysStop,
+			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
+};
 var $mdgriffith$elm_ui$Internal$Model$paddingName = F4(
 	function (top, right, bottom, left) {
 		return 'pad-' + ($elm$core$String$fromInt(top) + ('-' + ($elm$core$String$fromInt(right) + ('-' + ($elm$core$String$fromInt(bottom) + ('-' + $elm$core$String$fromInt(left)))))));
@@ -11928,8 +12294,681 @@ var $mdgriffith$elm_ui$Element$paddingEach = function (_v0) {
 			bottom,
 			left));
 };
-var $mdgriffith$elm_ui$Internal$Model$AsRow = {$: 'AsRow'};
-var $mdgriffith$elm_ui$Internal$Model$asRow = $mdgriffith$elm_ui$Internal$Model$AsRow;
+var $mdgriffith$elm_ui$Element$htmlAttribute = $mdgriffith$elm_ui$Internal$Model$Attr;
+var $mdgriffith$elm_ui$Element$Input$isFill = function (len) {
+	isFill:
+	while (true) {
+		switch (len.$) {
+			case 'Fill':
+				return true;
+			case 'Content':
+				return false;
+			case 'Px':
+				return false;
+			case 'Min':
+				var l = len.b;
+				var $temp$len = l;
+				len = $temp$len;
+				continue isFill;
+			default:
+				var l = len.b;
+				var $temp$len = l;
+				len = $temp$len;
+				continue isFill;
+		}
+	}
+};
+var $mdgriffith$elm_ui$Element$Input$isPixel = function (len) {
+	isPixel:
+	while (true) {
+		switch (len.$) {
+			case 'Content':
+				return false;
+			case 'Px':
+				return true;
+			case 'Fill':
+				return false;
+			case 'Min':
+				var l = len.b;
+				var $temp$len = l;
+				len = $temp$len;
+				continue isPixel;
+			default:
+				var l = len.b;
+				var $temp$len = l;
+				len = $temp$len;
+				continue isPixel;
+		}
+	}
+};
+var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
+var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
+var $mdgriffith$elm_ui$Element$Input$redistributeOver = F4(
+	function (isMultiline, stacked, attr, els) {
+		switch (attr.$) {
+			case 'Nearby':
+				return _Utils_update(
+					els,
+					{
+						parent: A2($elm$core$List$cons, attr, els.parent)
+					});
+			case 'Width':
+				var width = attr.a;
+				return $mdgriffith$elm_ui$Element$Input$isFill(width) ? _Utils_update(
+					els,
+					{
+						fullParent: A2($elm$core$List$cons, attr, els.fullParent),
+						input: A2($elm$core$List$cons, attr, els.input),
+						parent: A2($elm$core$List$cons, attr, els.parent)
+					}) : (stacked ? _Utils_update(
+					els,
+					{
+						fullParent: A2($elm$core$List$cons, attr, els.fullParent)
+					}) : _Utils_update(
+					els,
+					{
+						parent: A2($elm$core$List$cons, attr, els.parent)
+					}));
+			case 'Height':
+				var height = attr.a;
+				return (!stacked) ? _Utils_update(
+					els,
+					{
+						fullParent: A2($elm$core$List$cons, attr, els.fullParent),
+						parent: A2($elm$core$List$cons, attr, els.parent)
+					}) : ($mdgriffith$elm_ui$Element$Input$isFill(height) ? _Utils_update(
+					els,
+					{
+						fullParent: A2($elm$core$List$cons, attr, els.fullParent),
+						parent: A2($elm$core$List$cons, attr, els.parent)
+					}) : ($mdgriffith$elm_ui$Element$Input$isPixel(height) ? _Utils_update(
+					els,
+					{
+						parent: A2($elm$core$List$cons, attr, els.parent)
+					}) : _Utils_update(
+					els,
+					{
+						parent: A2($elm$core$List$cons, attr, els.parent)
+					})));
+			case 'AlignX':
+				return _Utils_update(
+					els,
+					{
+						fullParent: A2($elm$core$List$cons, attr, els.fullParent)
+					});
+			case 'AlignY':
+				return _Utils_update(
+					els,
+					{
+						fullParent: A2($elm$core$List$cons, attr, els.fullParent)
+					});
+			case 'StyleClass':
+				switch (attr.b.$) {
+					case 'SpacingStyle':
+						var _v1 = attr.b;
+						return _Utils_update(
+							els,
+							{
+								fullParent: A2($elm$core$List$cons, attr, els.fullParent),
+								input: A2($elm$core$List$cons, attr, els.input),
+								parent: A2($elm$core$List$cons, attr, els.parent),
+								wrapper: A2($elm$core$List$cons, attr, els.wrapper)
+							});
+					case 'PaddingStyle':
+						var cls = attr.a;
+						var _v2 = attr.b;
+						var pad = _v2.a;
+						var t = _v2.b;
+						var r = _v2.c;
+						var b = _v2.d;
+						var l = _v2.e;
+						if (isMultiline) {
+							return _Utils_update(
+								els,
+								{
+									cover: A2($elm$core$List$cons, attr, els.cover),
+									parent: A2($elm$core$List$cons, attr, els.parent)
+								});
+						} else {
+							var reducedVerticalPadding = $mdgriffith$elm_ui$Element$paddingEach(
+								{
+									bottom: b - A2($elm$core$Basics$min, t, b),
+									left: l,
+									right: r,
+									top: t - A2($elm$core$Basics$min, t, b)
+								});
+							var newLineHeight = $mdgriffith$elm_ui$Element$htmlAttribute(
+								A2(
+									$elm$html$Html$Attributes$style,
+									'line-height',
+									'calc(1.0em + ' + ($elm$core$String$fromInt(
+										2 * A2($elm$core$Basics$min, t, b)) + 'px)')));
+							var newHeight = $mdgriffith$elm_ui$Element$htmlAttribute(
+								A2(
+									$elm$html$Html$Attributes$style,
+									'height',
+									'calc(1.0em + ' + ($elm$core$String$fromInt(
+										2 * A2($elm$core$Basics$min, t, b)) + 'px)')));
+							return _Utils_update(
+								els,
+								{
+									cover: A2($elm$core$List$cons, attr, els.cover),
+									input: A2(
+										$elm$core$List$cons,
+										newHeight,
+										A2($elm$core$List$cons, newLineHeight, els.input)),
+									parent: A2($elm$core$List$cons, reducedVerticalPadding, els.parent)
+								});
+						}
+					case 'BorderWidth':
+						var _v3 = attr.b;
+						return _Utils_update(
+							els,
+							{
+								cover: A2($elm$core$List$cons, attr, els.cover),
+								parent: A2($elm$core$List$cons, attr, els.parent)
+							});
+					case 'Transform':
+						return _Utils_update(
+							els,
+							{
+								cover: A2($elm$core$List$cons, attr, els.cover),
+								parent: A2($elm$core$List$cons, attr, els.parent)
+							});
+					case 'FontSize':
+						return _Utils_update(
+							els,
+							{
+								fullParent: A2($elm$core$List$cons, attr, els.fullParent)
+							});
+					case 'FontFamily':
+						var _v4 = attr.b;
+						return _Utils_update(
+							els,
+							{
+								fullParent: A2($elm$core$List$cons, attr, els.fullParent)
+							});
+					default:
+						var flag = attr.a;
+						var cls = attr.b;
+						return _Utils_update(
+							els,
+							{
+								parent: A2($elm$core$List$cons, attr, els.parent)
+							});
+				}
+			case 'NoAttribute':
+				return els;
+			case 'Attr':
+				var a = attr.a;
+				return _Utils_update(
+					els,
+					{
+						input: A2($elm$core$List$cons, attr, els.input)
+					});
+			case 'Describe':
+				return _Utils_update(
+					els,
+					{
+						input: A2($elm$core$List$cons, attr, els.input)
+					});
+			case 'Class':
+				return _Utils_update(
+					els,
+					{
+						parent: A2($elm$core$List$cons, attr, els.parent)
+					});
+			default:
+				return _Utils_update(
+					els,
+					{
+						input: A2($elm$core$List$cons, attr, els.input)
+					});
+		}
+	});
+var $mdgriffith$elm_ui$Element$Input$redistribute = F3(
+	function (isMultiline, stacked, attrs) {
+		return function (redist) {
+			return {
+				cover: $elm$core$List$reverse(redist.cover),
+				fullParent: $elm$core$List$reverse(redist.fullParent),
+				input: $elm$core$List$reverse(redist.input),
+				parent: $elm$core$List$reverse(redist.parent),
+				wrapper: $elm$core$List$reverse(redist.wrapper)
+			};
+		}(
+			A3(
+				$elm$core$List$foldl,
+				A2($mdgriffith$elm_ui$Element$Input$redistributeOver, isMultiline, stacked),
+				{cover: _List_Nil, fullParent: _List_Nil, input: _List_Nil, parent: _List_Nil, wrapper: _List_Nil},
+				attrs));
+	});
+var $mdgriffith$elm_ui$Element$Input$renderBox = function (_v0) {
+	var top = _v0.top;
+	var right = _v0.right;
+	var bottom = _v0.bottom;
+	var left = _v0.left;
+	return $elm$core$String$fromInt(top) + ('px ' + ($elm$core$String$fromInt(right) + ('px ' + ($elm$core$String$fromInt(bottom) + ('px ' + ($elm$core$String$fromInt(left) + 'px'))))));
+};
+var $mdgriffith$elm_ui$Internal$Model$Transparency = F2(
+	function (a, b) {
+		return {$: 'Transparency', a: a, b: b};
+	});
+var $mdgriffith$elm_ui$Internal$Flag$transparency = $mdgriffith$elm_ui$Internal$Flag$flag(0);
+var $mdgriffith$elm_ui$Element$alpha = function (o) {
+	var transparency = function (x) {
+		return 1 - x;
+	}(
+		A2(
+			$elm$core$Basics$min,
+			1.0,
+			A2($elm$core$Basics$max, 0.0, o)));
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$transparency,
+		A2(
+			$mdgriffith$elm_ui$Internal$Model$Transparency,
+			'transparency-' + $mdgriffith$elm_ui$Internal$Model$floatClass(transparency),
+			transparency));
+};
+var $mdgriffith$elm_ui$Element$Input$charcoal = A3($mdgriffith$elm_ui$Element$rgb, 136 / 255, 138 / 255, 133 / 255);
+var $mdgriffith$elm_ui$Element$Font$color = function (fontColor) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$fontColor,
+		A3(
+			$mdgriffith$elm_ui$Internal$Model$Colored,
+			'fc-' + $mdgriffith$elm_ui$Internal$Model$formatColorClass(fontColor),
+			'color',
+			fontColor));
+};
+var $mdgriffith$elm_ui$Element$el = F2(
+	function (attrs, child) {
+		return A4(
+			$mdgriffith$elm_ui$Internal$Model$element,
+			$mdgriffith$elm_ui$Internal$Model$asEl,
+			$mdgriffith$elm_ui$Internal$Model$div,
+			A2(
+				$elm$core$List$cons,
+				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
+				A2(
+					$elm$core$List$cons,
+					$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
+					attrs)),
+			$mdgriffith$elm_ui$Internal$Model$Unkeyed(
+				_List_fromArray(
+					[child])));
+	});
+var $mdgriffith$elm_ui$Element$rgba = $mdgriffith$elm_ui$Internal$Model$Rgba;
+var $mdgriffith$elm_ui$Element$Input$renderPlaceholder = F3(
+	function (_v0, forPlaceholder, on) {
+		var placeholderAttrs = _v0.a;
+		var placeholderEl = _v0.b;
+		return A2(
+			$mdgriffith$elm_ui$Element$el,
+			_Utils_ap(
+				forPlaceholder,
+				_Utils_ap(
+					_List_fromArray(
+						[
+							$mdgriffith$elm_ui$Element$Font$color($mdgriffith$elm_ui$Element$Input$charcoal),
+							$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.noTextSelection + (' ' + $mdgriffith$elm_ui$Internal$Style$classes.passPointerEvents)),
+							$mdgriffith$elm_ui$Element$clip,
+							$mdgriffith$elm_ui$Element$Border$color(
+							A4($mdgriffith$elm_ui$Element$rgba, 0, 0, 0, 0)),
+							$mdgriffith$elm_ui$Element$Background$color(
+							A4($mdgriffith$elm_ui$Element$rgba, 0, 0, 0, 0)),
+							$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
+							$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+							$mdgriffith$elm_ui$Element$alpha(
+							on ? 1 : 0)
+						]),
+					placeholderAttrs)),
+			placeholderEl);
+	});
+var $mdgriffith$elm_ui$Element$scrollbarY = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$overflow, $mdgriffith$elm_ui$Internal$Style$classes.scrollbarsY);
+var $elm$html$Html$Attributes$spellcheck = $elm$html$Html$Attributes$boolProperty('spellcheck');
+var $mdgriffith$elm_ui$Element$Input$spellcheck = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Attr, $elm$html$Html$Attributes$spellcheck);
+var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
+var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
+var $mdgriffith$elm_ui$Element$Input$value = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Attr, $elm$html$Html$Attributes$value);
+var $mdgriffith$elm_ui$Element$Input$textHelper = F3(
+	function (textInput, attrs, textOptions) {
+		var withDefaults = _Utils_ap($mdgriffith$elm_ui$Element$Input$defaultTextBoxStyle, attrs);
+		var redistributed = A3(
+			$mdgriffith$elm_ui$Element$Input$redistribute,
+			_Utils_eq(textInput.type_, $mdgriffith$elm_ui$Element$Input$TextArea),
+			$mdgriffith$elm_ui$Element$Input$isStacked(textOptions.label),
+			withDefaults);
+		var onlySpacing = function (attr) {
+			if ((attr.$ === 'StyleClass') && (attr.b.$ === 'SpacingStyle')) {
+				var _v9 = attr.b;
+				return true;
+			} else {
+				return false;
+			}
+		};
+		var heightConstrained = function () {
+			var _v7 = textInput.type_;
+			if (_v7.$ === 'TextInputNode') {
+				var inputType = _v7.a;
+				return false;
+			} else {
+				return A2(
+					$elm$core$Maybe$withDefault,
+					false,
+					A2(
+						$elm$core$Maybe$map,
+						$mdgriffith$elm_ui$Element$Input$isConstrained,
+						$elm$core$List$head(
+							$elm$core$List$reverse(
+								A2($elm$core$List$filterMap, $mdgriffith$elm_ui$Element$Input$getHeight, withDefaults)))));
+			}
+		}();
+		var getPadding = function (attr) {
+			if ((attr.$ === 'StyleClass') && (attr.b.$ === 'PaddingStyle')) {
+				var cls = attr.a;
+				var _v6 = attr.b;
+				var pad = _v6.a;
+				var t = _v6.b;
+				var r = _v6.c;
+				var b = _v6.d;
+				var l = _v6.e;
+				return $elm$core$Maybe$Just(
+					{
+						bottom: A2(
+							$elm$core$Basics$max,
+							0,
+							$elm$core$Basics$floor(b - 3)),
+						left: A2(
+							$elm$core$Basics$max,
+							0,
+							$elm$core$Basics$floor(l - 3)),
+						right: A2(
+							$elm$core$Basics$max,
+							0,
+							$elm$core$Basics$floor(r - 3)),
+						top: A2(
+							$elm$core$Basics$max,
+							0,
+							$elm$core$Basics$floor(t - 3))
+					});
+			} else {
+				return $elm$core$Maybe$Nothing;
+			}
+		};
+		var parentPadding = A2(
+			$elm$core$Maybe$withDefault,
+			{bottom: 0, left: 0, right: 0, top: 0},
+			$elm$core$List$head(
+				$elm$core$List$reverse(
+					A2($elm$core$List$filterMap, getPadding, withDefaults))));
+		var inputElement = A4(
+			$mdgriffith$elm_ui$Internal$Model$element,
+			$mdgriffith$elm_ui$Internal$Model$asEl,
+			function () {
+				var _v3 = textInput.type_;
+				if (_v3.$ === 'TextInputNode') {
+					var inputType = _v3.a;
+					return $mdgriffith$elm_ui$Internal$Model$NodeName('input');
+				} else {
+					return $mdgriffith$elm_ui$Internal$Model$NodeName('textarea');
+				}
+			}(),
+			_Utils_ap(
+				function () {
+					var _v4 = textInput.type_;
+					if (_v4.$ === 'TextInputNode') {
+						var inputType = _v4.a;
+						return _List_fromArray(
+							[
+								$mdgriffith$elm_ui$Internal$Model$Attr(
+								$elm$html$Html$Attributes$type_(inputType)),
+								$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.inputText)
+							]);
+					} else {
+						return _List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$clip,
+								$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
+								$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.inputMultiline),
+								$mdgriffith$elm_ui$Element$Input$calcMoveToCompensateForPadding(withDefaults),
+								$mdgriffith$elm_ui$Element$paddingEach(parentPadding),
+								$mdgriffith$elm_ui$Internal$Model$Attr(
+								A2(
+									$elm$html$Html$Attributes$style,
+									'margin',
+									$mdgriffith$elm_ui$Element$Input$renderBox(
+										$mdgriffith$elm_ui$Element$Input$negateBox(parentPadding)))),
+								$mdgriffith$elm_ui$Internal$Model$Attr(
+								A2($elm$html$Html$Attributes$style, 'box-sizing', 'content-box'))
+							]);
+					}
+				}(),
+				_Utils_ap(
+					_List_fromArray(
+						[
+							$mdgriffith$elm_ui$Element$Input$value(textOptions.text),
+							$mdgriffith$elm_ui$Internal$Model$Attr(
+							$elm$html$Html$Events$onInput(textOptions.onChange)),
+							$mdgriffith$elm_ui$Element$Input$hiddenLabelAttribute(textOptions.label),
+							$mdgriffith$elm_ui$Element$Input$spellcheck(textInput.spellchecked),
+							A2(
+							$elm$core$Maybe$withDefault,
+							$mdgriffith$elm_ui$Internal$Model$NoAttribute,
+							A2($elm$core$Maybe$map, $mdgriffith$elm_ui$Element$Input$autofill, textInput.autofill))
+						]),
+					redistributed.input)),
+			$mdgriffith$elm_ui$Internal$Model$Unkeyed(_List_Nil));
+		var wrappedInput = function () {
+			var _v0 = textInput.type_;
+			if (_v0.$ === 'TextArea') {
+				return A4(
+					$mdgriffith$elm_ui$Internal$Model$element,
+					$mdgriffith$elm_ui$Internal$Model$asEl,
+					$mdgriffith$elm_ui$Internal$Model$div,
+					_Utils_ap(
+						(heightConstrained ? $elm$core$List$cons($mdgriffith$elm_ui$Element$scrollbarY) : $elm$core$Basics$identity)(
+							_List_fromArray(
+								[
+									$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+									A2($elm$core$List$any, $mdgriffith$elm_ui$Element$Input$hasFocusStyle, withDefaults) ? $mdgriffith$elm_ui$Internal$Model$NoAttribute : $mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.focusedWithin),
+									$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.inputMultilineWrapper)
+								])),
+						redistributed.parent),
+					$mdgriffith$elm_ui$Internal$Model$Unkeyed(
+						_List_fromArray(
+							[
+								A4(
+								$mdgriffith$elm_ui$Internal$Model$element,
+								$mdgriffith$elm_ui$Internal$Model$asParagraph,
+								$mdgriffith$elm_ui$Internal$Model$div,
+								A2(
+									$elm$core$List$cons,
+									$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+									A2(
+										$elm$core$List$cons,
+										$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
+										A2(
+											$elm$core$List$cons,
+											$mdgriffith$elm_ui$Element$inFront(inputElement),
+											A2(
+												$elm$core$List$cons,
+												$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.inputMultilineParent),
+												redistributed.wrapper)))),
+								$mdgriffith$elm_ui$Internal$Model$Unkeyed(
+									function () {
+										if (textOptions.text === '') {
+											var _v1 = textOptions.placeholder;
+											if (_v1.$ === 'Nothing') {
+												return _List_fromArray(
+													[
+														$mdgriffith$elm_ui$Element$text('\u00A0')
+													]);
+											} else {
+												var place = _v1.a;
+												return _List_fromArray(
+													[
+														A3($mdgriffith$elm_ui$Element$Input$renderPlaceholder, place, _List_Nil, textOptions.text === '')
+													]);
+											}
+										} else {
+											return _List_fromArray(
+												[
+													$mdgriffith$elm_ui$Internal$Model$unstyled(
+													A2(
+														$elm$html$Html$span,
+														_List_fromArray(
+															[
+																$elm$html$Html$Attributes$class($mdgriffith$elm_ui$Internal$Style$classes.inputMultilineFiller)
+															]),
+														_List_fromArray(
+															[
+																$elm$html$Html$text(textOptions.text + '\u00A0')
+															])))
+												]);
+										}
+									}()))
+							])));
+			} else {
+				var inputType = _v0.a;
+				return A4(
+					$mdgriffith$elm_ui$Internal$Model$element,
+					$mdgriffith$elm_ui$Internal$Model$asEl,
+					$mdgriffith$elm_ui$Internal$Model$div,
+					A2(
+						$elm$core$List$cons,
+						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+						A2(
+							$elm$core$List$cons,
+							A2($elm$core$List$any, $mdgriffith$elm_ui$Element$Input$hasFocusStyle, withDefaults) ? $mdgriffith$elm_ui$Internal$Model$NoAttribute : $mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.focusedWithin),
+							$elm$core$List$concat(
+								_List_fromArray(
+									[
+										redistributed.parent,
+										function () {
+										var _v2 = textOptions.placeholder;
+										if (_v2.$ === 'Nothing') {
+											return _List_Nil;
+										} else {
+											var place = _v2.a;
+											return _List_fromArray(
+												[
+													$mdgriffith$elm_ui$Element$behindContent(
+													A3($mdgriffith$elm_ui$Element$Input$renderPlaceholder, place, redistributed.cover, textOptions.text === ''))
+												]);
+										}
+									}()
+									])))),
+					$mdgriffith$elm_ui$Internal$Model$Unkeyed(
+						_List_fromArray(
+							[inputElement])));
+			}
+		}();
+		return A3(
+			$mdgriffith$elm_ui$Element$Input$applyLabel,
+			A2(
+				$elm$core$List$cons,
+				A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$cursor, $mdgriffith$elm_ui$Internal$Style$classes.cursorText),
+				A2(
+					$elm$core$List$cons,
+					$mdgriffith$elm_ui$Element$Input$isHiddenLabel(textOptions.label) ? $mdgriffith$elm_ui$Internal$Model$NoAttribute : $mdgriffith$elm_ui$Element$spacing(5),
+					A2($elm$core$List$cons, $mdgriffith$elm_ui$Element$Region$announce, redistributed.fullParent))),
+			textOptions.label,
+			wrappedInput);
+	});
+var $mdgriffith$elm_ui$Element$Input$multiline = F2(
+	function (attrs, multi) {
+		return A3(
+			$mdgriffith$elm_ui$Element$Input$textHelper,
+			{autofill: $elm$core$Maybe$Nothing, spellchecked: multi.spellcheck, type_: $mdgriffith$elm_ui$Element$Input$TextArea},
+			attrs,
+			{label: multi.label, onChange: multi.onChange, placeholder: multi.placeholder, text: multi.text});
+	});
+var $mdgriffith$elm_ui$Internal$Model$Empty = {$: 'Empty'};
+var $mdgriffith$elm_ui$Element$none = $mdgriffith$elm_ui$Internal$Model$Empty;
+var $mdgriffith$elm_ui$Element$Input$Placeholder = F2(
+	function (a, b) {
+		return {$: 'Placeholder', a: a, b: b};
+	});
+var $mdgriffith$elm_ui$Element$Input$placeholder = $mdgriffith$elm_ui$Element$Input$Placeholder;
+var $author$project$Exp$editStep = function (zip) {
+	var step = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(zip);
+	return A2(
+		$mdgriffith$elm_ui$Element$column,
+		_List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+			]),
+		_List_fromArray(
+			[
+				_Utils_eq(step.process, $author$project$Exp$Expanded) ? $mdgriffith$elm_ui$Element$none : $mdgriffith$elm_ui$Element$none,
+				A2(
+				$mdgriffith$elm_ui$Element$Input$multiline,
+				_List_Nil,
+				{
+					label: A2(
+						$mdgriffith$elm_ui$Element$Input$labelAbove,
+						_List_Nil,
+						$mdgriffith$elm_ui$Element$text('Operation')),
+					onChange: $author$project$Exp$OperationText(zip),
+					placeholder: $elm$core$Maybe$Nothing,
+					spellcheck: true,
+					text: step.operation
+				}),
+				$author$project$Exp$katexPlaceholder(zip),
+				A2(
+				$mdgriffith$elm_ui$Element$Input$multiline,
+				_List_Nil,
+				{
+					label: A2(
+						$mdgriffith$elm_ui$Element$Input$labelRight,
+						_List_fromArray(
+							[$mdgriffith$elm_ui$Element$centerY]),
+						$mdgriffith$elm_ui$Element$text(
+							'Equation ' + $author$project$Exp$labelEquation(zip))),
+					onChange: $author$project$Exp$EquationText(zip),
+					placeholder: $elm$core$Maybe$Just(
+						A2(
+							$mdgriffith$elm_ui$Element$Input$placeholder,
+							_List_Nil,
+							$mdgriffith$elm_ui$Element$text('Equation'))),
+					spellcheck: false,
+					text: step.equation
+				}),
+				A2(
+				$mdgriffith$elm_ui$Element$Input$multiline,
+				_List_Nil,
+				{
+					label: A2(
+						$mdgriffith$elm_ui$Element$Input$labelAbove,
+						_List_Nil,
+						$mdgriffith$elm_ui$Element$text('notes')),
+					onChange: $author$project$Exp$NotesText(zip),
+					placeholder: $elm$core$Maybe$Nothing,
+					spellcheck: true,
+					text: step.note
+				})
+			]));
+};
+var $mdgriffith$elm_ui$Element$Font$family = function (families) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$fontFamily,
+		A2(
+			$mdgriffith$elm_ui$Internal$Model$FontFamily,
+			A3($elm$core$List$foldl, $mdgriffith$elm_ui$Internal$Model$renderFontClassName, 'ff-', families),
+			families));
+};
+var $mdgriffith$elm_ui$Internal$Model$Monospace = {$: 'Monospace'};
+var $mdgriffith$elm_ui$Element$Font$monospace = $mdgriffith$elm_ui$Internal$Model$Monospace;
+var $elm$html$Html$Events$onDoubleClick = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'dblclick',
+		$elm$json$Json$Decode$succeed(msg));
+};
+var $mdgriffith$elm_ui$Element$Events$onDoubleClick = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Attr, $elm$html$Html$Events$onDoubleClick);
 var $mdgriffith$elm_ui$Element$row = F2(
 	function (attrs, children) {
 		return A4(
@@ -11957,18 +12996,10 @@ var $mdgriffith$elm_ui$Internal$Model$Right = {$: 'Right'};
 var $mdgriffith$elm_ui$Element$alignRight = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$Right);
 var $mdgriffith$elm_ui$Internal$Model$CenterX = {$: 'CenterX'};
 var $mdgriffith$elm_ui$Element$centerX = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$CenterX);
-var $elm$core$Basics$always = F2(
-	function (a, _v0) {
-		return a;
-	});
-var $mdgriffith$elm_ui$Internal$Model$unstyled = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Unstyled, $elm$core$Basics$always);
-var $mdgriffith$elm_ui$Element$html = $mdgriffith$elm_ui$Internal$Model$unstyled;
-var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
 var $mdgriffith$elm_ui$Internal$Model$Px = function (a) {
 	return {$: 'Px', a: a};
 };
 var $mdgriffith$elm_ui$Element$px = $mdgriffith$elm_ui$Internal$Model$Px;
-var $elm$html$Html$span = _VirtualDom_node('span');
 var $author$project$Exp$viewKatexEquation = function (zip) {
 	return A2(
 		$mdgriffith$elm_ui$Element$row,
@@ -11982,15 +13013,7 @@ var $author$project$Exp$viewKatexEquation = function (zip) {
 				$mdgriffith$elm_ui$Element$el,
 				_List_fromArray(
 					[$mdgriffith$elm_ui$Element$centerX]),
-				$mdgriffith$elm_ui$Element$html(
-					A2(
-						$elm$html$Html$span,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$id(
-								$author$project$Exp$labelEquation(zip))
-							]),
-						_List_Nil))),
+				$author$project$Exp$katexPlaceholder(zip)),
 				A2(
 				$mdgriffith$elm_ui$Element$el,
 				_List_fromArray(
@@ -12131,16 +13154,12 @@ var $author$project$Exp$viewProcess = function (zip) {
 };
 var $author$project$Exp$viewStep = function (zip) {
 	var step = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(zip);
-	return A2(
+	return step.edit ? $author$project$Exp$editStep(zip) : A2(
 		$mdgriffith$elm_ui$Element$column,
 		_List_fromArray(
 			[
 				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-				$mdgriffith$elm_ui$Element$spacing(20),
-				$mdgriffith$elm_ui$Element$paddingEach(
-				_Utils_update(
-					$author$project$Exp$edges,
-					{left: 10}))
+				$mdgriffith$elm_ui$Element$spacing(20)
 			]),
 		$elm$core$List$concat(
 			_List_fromArray(
@@ -12155,22 +13174,6 @@ var $author$project$Exp$viewStep = function (zip) {
 						$author$project$Exp$viewNote(zip)
 					])
 				])));
-};
-var $mdgriffith$elm_ui$Internal$Model$BorderWidth = F5(
-	function (a, b, c, d, e) {
-		return {$: 'BorderWidth', a: a, b: b, c: c, d: d, e: e};
-	});
-var $mdgriffith$elm_ui$Element$Border$width = function (v) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$borderWidth,
-		A5(
-			$mdgriffith$elm_ui$Internal$Model$BorderWidth,
-			'b-' + $elm$core$String$fromInt(v),
-			v,
-			v,
-			v,
-			v));
 };
 var $author$project$Exp$view = function (model) {
 	return A2(

@@ -74,7 +74,13 @@ init _ =
                 |> Tree.insert startingStep
                 |> Zipper.fromTree
     in
-    ( zip, Cmd.none )
+    ( zip
+    , Cmd.batch <| List.map katexStep (Zipper.openAll zip)
+    )
+
+
+
+--
 
 
 subscriptions : Model -> Sub Msg
@@ -96,7 +102,7 @@ type Msg
 
 blankStep : Step
 blankStep =
-    Step "Operation" "Equation" "Notes" 0 False Standalone
+    Step "o" "e" "n" 0 False Standalone
 
 
 upOrRoot : Zipper a -> Zipper a
@@ -109,95 +115,79 @@ upOrRoot z =
             Zipper.root z
 
 
-insertBelow : Step -> Zipper Step -> Zipper Step
-insertBelow step zip =
-    nest step (upOrRoot zip)
-
-
 nest : Step -> Zipper Step -> Zipper Step
 nest step zip =
     Zipper.insert (Tree.singleton step) zip
         |> Zipper.update (Tree.sortBy .id)
 
 
+insertBelow : Step -> Zipper Step -> Zipper Step
+insertBelow step zip =
+    nest step (upOrRoot zip)
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         EditStep zip ->
-            ( zip
+            zip
                 |> Zipper.map (\a -> { a | edit = False })
                 |> Zipper.updateItem (\a -> { a | edit = True })
-                |> Zipper.root
-            , Cmd.none
-            )
+                |> (\z -> ( Zipper.root z, Cmd.none ))
 
         RenderStep zip ->
-            ( zip
+            zip
                 |> Zipper.updateItem (\s -> { s | edit = False })
                 |> Zipper.root
-            , Cmd.none
-            )
+                |> (\z -> ( Zipper.root z, Cmd.none ))
 
         OperationText zip newOp ->
-            ( zip
+            zip
                 |> Zipper.updateItem (\s -> { s | operation = newOp })
-                |> Zipper.root
-            , Cmd.none
-            )
+                |> (\z -> ( Zipper.root z, Cmd.none ))
 
         EquationText zip newEq ->
-            ( zip
+            zip
                 |> Zipper.updateItem (\s -> { s | equation = newEq })
-                |> Zipper.root
-            , renderStep zip
-            )
+                |> (\z -> ( Zipper.root z, katexStep z ))
 
         NotesText zip newNote ->
-            ( zip
+            zip
                 |> Zipper.updateItem (\s -> { s | note = newNote })
-                |> Zipper.root
-            , Cmd.none
-            )
+                |> (\z -> ( Zipper.root z, Cmd.none ))
 
         ConsecutiveStep zip ->
-            ( zip
+            -- Danger Will Robinson. Needs Id management when enabled
+            zip
                 |> Zipper.map (\s -> { s | edit = False })
                 |> insertBelow { blankStep | id = 1 + (Zipper.current zip).id }
-                |> Zipper.root
-            , Cmd.none
-            )
+                |> (\z -> ( Zipper.root z, Cmd.none ))
 
         NewProcessStep parent ->
-            ( parent
+            parent
                 |> Zipper.map (\s -> { s | edit = False })
                 |> Zipper.updateItem (\s -> { s | process = Expanded })
                 |> nest { blankStep | id = List.length <| Zipper.children parent }
-                |> Zipper.root
-            , Cmd.none
-            )
+                |> (\z -> ( Zipper.root z, katexStep z ))
 
         ToggleProcess zip ->
             case (Zipper.current zip).process of
                 Standalone ->
-                    ( zip |> Zipper.root, Cmd.none )
+                    zip
+                        |> (\z -> ( Zipper.root z, Cmd.none ))
 
                 Expanded ->
-                    ( zip
+                    zip
                         |> Zipper.updateItem (\a -> { a | process = Collapsed })
-                        |> Zipper.root
-                    , renderStep zip
-                    )
+                        |> (\z -> ( Zipper.root z, Cmd.none ))
 
                 Collapsed ->
-                    ( zip
+                    zip
                         |> Zipper.updateItem (\a -> { a | process = Expanded })
-                        |> Zipper.root
-                    , Cmd.batch
-                        [ renderStep zip, renderProcess zip ]
-                    )
+                        |> (\z -> ( Zipper.root z, katexStep z ))
 
         RenderAll ->
-            ( model, Cmd.batch <| List.map renderAllOpen (Zipper.openAll model) )
+            ( model, Cmd.batch <| List.map katexStep (Zipper.openAll model) )
 
 
 viewProcess : Zipper Step -> List (Element Msg)
@@ -281,6 +271,12 @@ viewOperation zip =
         ]
 
 
+katexPlaceholder : Zipper Step -> Element Msg
+katexPlaceholder zip =
+    html <|
+        Html.span [ Html.Attributes.id <| labelEquation zip ] []
+
+
 viewKatexEquation : Zipper Step -> Element Msg
 viewKatexEquation zip =
     row [ width fill ]
@@ -288,9 +284,7 @@ viewKatexEquation zip =
         [ -- leave empty so that KaTex can fill in (perhaps it would be better to use the autorender extension?)
           el
             [ centerX ]
-            (html <|
-                Html.span [ Html.Attributes.id <| labelEquation zip ] []
-            )
+            (katexPlaceholder zip)
 
         -- equation label
         , el [ alignRight ] (el [ width <| px 100, alignLeft ] <| text <| labelEquation zip)
@@ -308,22 +302,27 @@ viewStep zip =
         step =
             Zipper.current zip
     in
-    column
-        [ width fill
-        , spacing 20
-        , paddingEach { edges | left = 10 }
-        ]
-    <|
-        List.concat
-            -- operation
-            [ viewOperation zip
+    if step.edit then
+        editStep zip
 
-            -- equation
-            , [ viewKatexEquation zip ]
+    else
+        column
+            [ width fill
+            , spacing 20
 
-            -- Notes
-            , [ viewNote zip ]
+            --   , paddingEach { edges | left = 10 }
             ]
+        <|
+            List.concat
+                -- operation
+                [ viewOperation zip
+
+                -- equation
+                , [ viewKatexEquation zip ]
+
+                -- Notes
+                , [ viewNote zip ]
+                ]
 
 
 editStep : Zipper Step -> Element Msg
@@ -345,12 +344,13 @@ editStep zip =
             , label = Input.labelAbove [] <| text "Operation"
             , spellcheck = True
             }
+        , katexPlaceholder zip
         , Input.multiline []
             { onChange = EquationText zip
             , text = step.equation
             , placeholder = Just <| Input.placeholder [] <| text "Equation"
-            , label = Input.labelAbove [] <| text <| "Equation " ++ labelEquation zip
-            , spellcheck = True
+            , label = Input.labelRight [ centerY ] <| text <| "Equation " ++ labelEquation zip
+            , spellcheck = False
             }
         , Input.multiline []
             { onChange = NotesText zip
@@ -403,42 +403,28 @@ view model =
         )
 
 
-sendToKatex : Zipper Step -> Cmd msg
-sendToKatex zip =
-    render <|
-        E.object
-            [ ( "id", E.string (zip |> labelEquation) )
-            , ( "eq", E.string (zip |> Zipper.current |> .equation) )
-            ]
-
-
-renderAllOpen : Zipper Step -> Cmd msg
-renderAllOpen zip =
+katexStep : Zipper Step -> Cmd msg
+katexStep zip =
     case (Zipper.current zip).process of
         Standalone ->
-            sendToKatex zip
+            katexRenderEquation zip
 
         Collapsed ->
-            sendToKatex zip
+            katexRenderEquation zip
 
         Expanded ->
             case Zipper.openAll zip of
                 [] ->
-                    sendToKatex zip
+                    katexRenderEquation zip
 
                 z ->
-                    Cmd.batch (sendToKatex zip :: List.map renderAllOpen z)
+                    Cmd.batch (katexRenderEquation zip :: List.map katexStep z)
 
 
-renderStep : Zipper Step -> Cmd msg
-renderStep zip =
+katexRenderEquation : Zipper Step -> Cmd msg
+katexRenderEquation zip =
     render <|
         E.object
             [ ( "id", E.string (zip |> labelEquation) )
             , ( "eq", E.string (zip |> Zipper.current |> .equation) )
             ]
-
-
-renderProcess : Zipper Step -> Cmd msg
-renderProcess zip =
-    Cmd.batch (Cmd.none :: List.map sendToKatex (Zipper.openAll zip))
