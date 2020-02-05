@@ -14,6 +14,7 @@ import Element.Input as Input
 import Html exposing (Html)
 import Html.Attributes
 import Json.Encode as E
+import Lazy.LList as LList
 import Lazy.Tree as Tree exposing (Forest, Tree(..))
 import Lazy.Tree.Zipper as Zipper exposing (Zipper)
 
@@ -115,9 +116,41 @@ upOrRoot z =
             Zipper.root z
 
 
+deleteChildren : Zipper a -> Zipper a
+deleteChildren zip =
+    Zipper.setTree
+        (zip
+            |> Zipper.current
+            |> Tree.singleton
+        )
+        zip
+
+
+updateChildren : (a -> a) -> Zipper a -> Zipper a
+updateChildren f zip =
+    Zipper.openAll zip
+        |> List.map (Zipper.updateItem f)
+        |> List.map Zipper.getTree
+        |> List.foldl Zipper.insert (deleteChildren zip)
+
+
+incrementGreater : Int -> Step -> Step
+incrementGreater i step =
+    if i < step.id then
+        { step | id = step.id + 1 }
+
+    else
+        step
+
+
 nest : Step -> Zipper Step -> Zipper Step
 nest step zip =
-    Zipper.insert (Tree.singleton step) zip
+    let
+        id =
+            step.id
+    in
+    updateChildren (incrementGreater step.id) zip
+        |> Zipper.insert (Tree.singleton step)
         |> Zipper.update (Tree.sortBy .id)
 
 
@@ -156,7 +189,7 @@ update msg model =
                 |> (\z -> ( Zipper.root z, Cmd.none ))
 
         ConsecutiveStep zip ->
-            -- Danger Will Robinson. Needs Id management when enabled
+            -- Danger Will Robinson. Needs Id management when enabled (id managment sorted (but do test))
             zip
                 |> Zipper.map (\s -> { s | edit = False })
                 |> insertBelow { blankStep | id = 1 + (Zipper.current zip).id }
@@ -375,7 +408,7 @@ labelEquation zip =
         zip
             -- get id path to current node
             |> Zipper.getPath .id
-            -- drop off the root node (it is never renderd)
+            -- drop off the root node (it is never rendered)
             |> List.drop 1
             -- start counting at 1 instead of 0
             |> List.map ((+) 1)
@@ -420,8 +453,8 @@ katexStep zip =
                 [] ->
                     katexRenderEquation zip
 
-                z ->
-                    Cmd.batch (katexRenderEquation zip :: List.map katexStep z)
+                children ->
+                    Cmd.batch (katexRenderEquation zip :: List.map katexStep children)
 
 
 katexRenderEquation : Zipper Step -> Cmd msg

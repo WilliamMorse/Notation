@@ -25,7 +25,7 @@
             app.ports.render.subscribe(function (data) {
                 setTimeout(() => {
                     {
-                        //console.log(data.eq)
+                        console.log(data.eq, data.id)
                         katex.render(data.eq
                             , document.getElementById(data.id)
                             , {
