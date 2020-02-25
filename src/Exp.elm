@@ -7,6 +7,7 @@ port module Exp exposing (Model, Msg(..), Process(..), Step, blankStep, edges, e
 
 import Browser
 import Element exposing (..)
+import Element.Background as Backround
 import Element.Border as Border
 import Element.Events as Event
 import Element.Font as Font
@@ -14,8 +15,7 @@ import Element.Input as Input
 import Html exposing (Html)
 import Html.Attributes
 import Json.Encode as E
-import Lazy.LList as LList
-import Lazy.Tree as Tree exposing (Forest, Tree(..))
+import Lazy.Tree as Tree exposing (Tree(..))
 import Lazy.Tree.Zipper as Zipper exposing (Zipper)
 
 
@@ -108,12 +108,7 @@ blankStep =
 
 upOrRoot : Zipper a -> Zipper a
 upOrRoot z =
-    case Zipper.up z of
-        Just zip ->
-            zip
-
-        Nothing ->
-            Zipper.root z
+    Maybe.withDefault (Zipper.root z) (Zipper.up z)
 
 
 deleteChildren : Zipper a -> Zipper a
@@ -126,30 +121,26 @@ deleteChildren zip =
         zip
 
 
-updateChildren : (a -> a) -> Zipper a -> Zipper a
-updateChildren f zip =
+mapChildren : (a -> a) -> Zipper a -> Zipper a
+mapChildren f zip =
     Zipper.openAll zip
         |> List.map (Zipper.updateItem f)
         |> List.map Zipper.getTree
         |> List.foldl Zipper.insert (deleteChildren zip)
 
 
-incrementGreater : Int -> Step -> Step
-incrementGreater i step =
-    if i < step.id then
-        { step | id = step.id + 1 }
+incrementGreater : Int -> { a | id : Int } -> { a | id : Int }
+incrementGreater start a =
+    if start <= a.id then
+        { a | id = a.id + 1 }
 
     else
-        step
+        a
 
 
 nest : Step -> Zipper Step -> Zipper Step
 nest step zip =
-    let
-        id =
-            step.id
-    in
-    updateChildren (incrementGreater step.id) zip
+    mapChildren (incrementGreater step.id) zip
         |> Zipper.insert (Tree.singleton step)
         |> Zipper.update (Tree.sortBy .id)
 
@@ -189,11 +180,15 @@ update msg model =
                 |> (\z -> ( Zipper.root z, Cmd.none ))
 
         ConsecutiveStep zip ->
-            -- Danger Will Robinson. Needs Id management when enabled (id managment sorted (but do test))
             zip
                 |> Zipper.map (\s -> { s | edit = False })
-                |> insertBelow { blankStep | id = 1 + (Zipper.current zip).id }
-                |> (\z -> ( Zipper.root z, Cmd.none ))
+                |> insertBelow
+                    { blankStep
+                        | id = 1 + (Zipper.current zip).id
+                        , edit = True
+                        , equation = (Zipper.current zip).equation
+                    }
+                |> (\z -> ( Zipper.root z, Cmd.batch [ katexStep zip, katexStep z ] ))
 
         NewProcessStep parent ->
             parent
@@ -222,10 +217,29 @@ update msg model =
             ( model, Cmd.batch <| List.map katexStep (Zipper.openAll model) )
 
 
+
+-------------------------- View --------------------------
+
+
+backroundColor : Color
+backroundColor =
+    rgb 0.9 0.9 0.9
+
+
+paperColor : Color
+paperColor =
+    rgb 1 1 1
+
+
+shadowColor : Color
+shadowColor =
+    rgb 0.6 0.6 0.7
+
+
 viewProcess : Zipper Step -> List (Element Msg)
 viewProcess zip =
     if (Zipper.current zip).process == Expanded then
-        List.map viewStep (Zipper.openAll zip)
+        List.map card (Zipper.openAll zip)
 
     else
         []
@@ -263,23 +277,13 @@ viewProcessIcon zip =
                 }
 
 
-edges =
-    { top = 0
-    , right = 0
-    , bottom = 0
-    , left = 0
-    }
-
-
 viewOperation : Zipper Step -> List (Element Msg)
 viewOperation zip =
     List.concat
         [ if (Zipper.current zip).process == Expanded then
-            row [ width fill, spacing 10 ]
+            row [ width fill, padding 20 ]
                 [ el
-                    [ Font.bold
-                    , Event.onDoubleClick <| EditStep zip
-                    ]
+                    [ Font.bold ]
                   <|
                     text (Zipper.current zip).operation
                 , Input.button [ Font.family [ Font.monospace ] ]
@@ -290,10 +294,11 @@ viewOperation zip =
                 :: viewProcess zip
 
           else
-            []
-        , [ row [ width fill, spacing 10 ]
+            [ none ]
+        , [ row [ width fill, padding 20 ]
                 [ el
                     [ Font.bold
+                    , Font.family [ Font.typeface "Computer Modern", Font.serif ]
                     , Event.onDoubleClick <| EditStep zip
                     ]
                     (text (Zipper.current zip).operation)
@@ -325,7 +330,13 @@ viewKatexEquation zip =
 
 viewNote : Zipper Step -> Element Msg
 viewNote zip =
-    text (Zipper.current zip).note
+    el
+        [ width fill
+        , padding 20
+        , Font.family [ Font.typeface "Computer Modern", Font.serif ]
+        ]
+    <|
+        text (Zipper.current zip).note
 
 
 viewStep : Zipper Step -> Element Msg
@@ -338,13 +349,7 @@ viewStep zip =
         editStep zip
 
     else
-        column
-            [ width fill
-            , spacing 20
-
-            --   , paddingEach { edges | left = 10 }
-            ]
-        <|
+        column [ width fill, spacing 6 ] <|
             List.concat
                 -- operation
                 [ viewOperation zip
@@ -357,13 +362,34 @@ viewStep zip =
                 ]
 
 
+edges : { top : Int, right : Int, bottom : Int, left : Int }
+edges =
+    { top = 0
+    , right = -3
+    , bottom = 0
+    , left = 3
+    }
+
+
+card : Zipper Step -> Element Msg
+card zip =
+    el
+        [ width fill
+        , spacing 20
+        , Backround.color paperColor
+        , Border.rounded 30
+        , Border.shadow { blur = 4, color = shadowColor, offset = ( 1, 2 ), size = 1 }
+        ]
+        (viewStep zip)
+
+
 editStep : Zipper Step -> Element Msg
 editStep zip =
     let
         step =
             Zipper.current zip
     in
-    column [ width fill ]
+    column [ width fill, padding 20, spacing 10 ]
         [ if step.process == Expanded then
             none
 
@@ -373,6 +399,10 @@ editStep zip =
             { onPress = Just <| RenderStep zip
             , label = text "[x]"
             }
+        , Input.button [ Font.family [ Font.monospace ] ]
+            { onPress = Just <| ConsecutiveStep zip
+            , label = text "[=]"
+            }
         , Input.multiline []
             { onChange = OperationText zip
             , text = step.operation
@@ -380,7 +410,7 @@ editStep zip =
             , label = Input.labelAbove [] <| text "Operation"
             , spellcheck = True
             }
-        , katexPlaceholder zip
+        , el [ centerX ] (katexPlaceholder zip)
         , Input.multiline []
             { onChange = EquationText zip
             , text = step.equation
@@ -420,7 +450,9 @@ labelEquation zip =
 
 view : Model -> Html Msg
 view model =
-    layout []
+    layout
+        [ Backround.color backroundColor
+        ]
         (column
             [ width fill
             , padding 30
