@@ -5183,9 +5183,9 @@ var $elm$core$Task$perform = F2(
 var $elm$browser$Browser$element = _Browser_element;
 var $author$project$Exp$Expanded = {$: 'Expanded'};
 var $author$project$Exp$Standalone = {$: 'Standalone'};
-var $author$project$Exp$Step = F6(
-	function (operation, equation, note, id, edit, process) {
-		return {edit: edit, equation: equation, id: id, note: note, operation: operation, process: process};
+var $author$project$Exp$Step = F7(
+	function (operation, equation, note, process, edit, equationLabel, id) {
+		return {edit: edit, equation: equation, equationLabel: equationLabel, id: id, note: note, operation: operation, process: process};
 	});
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$Zipper = F2(
@@ -5261,79 +5261,6 @@ var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$item = function (_v0) {
 	return i;
 };
 var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current = A2($elm$core$Basics$composeL, $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$item, $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$getTree);
-var $elm$core$List$drop = F2(
-	function (n, list) {
-		drop:
-		while (true) {
-			if (n <= 0) {
-				return list;
-			} else {
-				if (!list.b) {
-					return list;
-				} else {
-					var x = list.a;
-					var xs = list.b;
-					var $temp$n = n - 1,
-						$temp$list = xs;
-					n = $temp$n;
-					list = $temp$list;
-					continue drop;
-				}
-			}
-		}
-	});
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$getPath = F2(
-	function (fc, _v0) {
-		var tree = _v0.a;
-		var zipperBreadcrumbs = _v0.b;
-		return A3(
-			$elm$core$List$foldl,
-			F2(
-				function (_v1, acc) {
-					var parent = _v1.a.parent;
-					return A2(
-						$elm$core$List$cons,
-						fc(parent),
-						acc);
-				}),
-			_List_fromArray(
-				[
-					fc(
-					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$item(tree))
-				]),
-			zipperBreadcrumbs);
-	});
-var $elm$core$List$isEmpty = function (xs) {
-	if (!xs.b) {
-		return true;
-	} else {
-		return false;
-	}
-};
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$isRoot = function (_v0) {
-	var bs = _v0.b;
-	return $elm$core$List$isEmpty(bs);
-};
-var $author$project$Exp$labelEquation = function (zip) {
-	return $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$isRoot(zip) ? 'Turtle Shell' : A2(
-		$elm$core$String$join,
-		'.',
-		A2(
-			$elm$core$List$map,
-			$elm$core$String$fromInt,
-			A2(
-				$elm$core$List$map,
-				$elm$core$Basics$add(1),
-				A2(
-					$elm$core$List$drop,
-					1,
-					A2(
-						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$getPath,
-						function ($) {
-							return $.id;
-						},
-						zip)))));
-};
 var $elm$json$Json$Encode$object = function (pairs) {
 	return _Json_wrap(
 		A3(
@@ -5349,7 +5276,7 @@ var $elm$json$Json$Encode$object = function (pairs) {
 };
 var $author$project$Exp$render = _Platform_outgoingPort('render', $elm$core$Basics$identity);
 var $elm$json$Json$Encode$string = _Json_wrap;
-var $author$project$Exp$katexRenderEquation = function (zip) {
+var $author$project$Exp$katexRenderEquation = function (step) {
 	return $author$project$Exp$render(
 		$elm$json$Json$Encode$object(
 			_List_fromArray(
@@ -5357,13 +5284,13 @@ var $author$project$Exp$katexRenderEquation = function (zip) {
 					_Utils_Tuple2(
 					'id',
 					$elm$json$Json$Encode$string(
-						$author$project$Exp$labelEquation(zip))),
+						$elm$core$String$fromInt(step.id))),
 					_Utils_Tuple2(
 					'eq',
-					$elm$json$Json$Encode$string(
-						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(zip).equation))
+					$elm$json$Json$Encode$string(step.equation))
 				])));
 };
+var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$Breadcrumb = function (a) {
 	return {$: 'Breadcrumb', a: a};
 };
@@ -5436,25 +5363,14 @@ var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$openAll = function (_v0) {
 			$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$descendants(tree)));
 };
 var $author$project$Exp$katexStep = function (zip) {
-	var _v0 = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(zip).process;
-	switch (_v0.$) {
-		case 'Standalone':
-			return $author$project$Exp$katexRenderEquation(zip);
-		case 'Collapsed':
-			return $author$project$Exp$katexRenderEquation(zip);
-		default:
-			var _v1 = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$openAll(zip);
-			if (!_v1.b) {
-				return $author$project$Exp$katexRenderEquation(zip);
-			} else {
-				var z = _v1;
-				return $elm$core$Platform$Cmd$batch(
-					A2(
-						$elm$core$List$cons,
-						$author$project$Exp$katexRenderEquation(zip),
-						A2($elm$core$List$map, $author$project$Exp$katexStep, z)));
-			}
-	}
+	var step = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(zip);
+	var children = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$openAll(zip);
+	return $elm$core$Platform$Cmd$batch(
+		A2(
+			$elm$core$List$cons,
+			$author$project$Exp$katexRenderEquation(step),
+			_Utils_eq(step.process, $author$project$Exp$Expanded) ? A2($elm$core$List$map, $author$project$Exp$katexStep, children) : _List_fromArray(
+				[$elm$core$Platform$Cmd$none])));
 };
 var $elm$core$Basics$negate = function (n) {
 	return -n;
@@ -5464,13 +5380,13 @@ var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$singleton = function (a) {
 };
 var $author$project$Exp$init = function (_v0) {
 	var startingStep = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$singleton(
-		A6($author$project$Exp$Step, 'Starting Operation', 'y=mx+b', 'notesnotesnotes', 0, false, $author$project$Exp$Standalone));
+		A7($author$project$Exp$Step, 'Starting Operation', 'y=mx+b', 'notesnotesnotes', $author$project$Exp$Standalone, false, 0, 0));
 	var root = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$singleton(
-		A6($author$project$Exp$Step, 'On', 'Turtles', 'Turtles All the way', -1, false, $author$project$Exp$Expanded));
+		A7($author$project$Exp$Step, 'On', 'Turtles', 'Turtles All the way', $author$project$Exp$Expanded, false, -1, -1));
 	var zip = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$fromTree(
 		A2($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$insert, startingStep, root));
 	return _Utils_Tuple2(
-		zip,
+		{e: 'None yet!', seed: 1, steps: zip},
 		$elm$core$Platform$Cmd$batch(
 			A2(
 				$elm$core$List$map,
@@ -5483,7 +5399,7 @@ var $author$project$Exp$subscriptions = function (_v0) {
 	return $elm$core$Platform$Sub$none;
 };
 var $author$project$Exp$Collapsed = {$: 'Collapsed'};
-var $author$project$Exp$blankStep = A6($author$project$Exp$Step, 'operation', 'equation', 'notes notes notes', 0, false, $author$project$Exp$Standalone);
+var $author$project$Exp$blankStep = A7($author$project$Exp$Step, 'operation', 'equation', 'notes notes notes', $author$project$Exp$Standalone, false, -1, 0);
 var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$children = A2(
 	$elm$core$Basics$composeL,
 	A2(
@@ -5492,6 +5408,136 @@ var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$children = A2(
 		$turboMaCk$lazy_tree_with_zipper$Lazy$LList$toList),
 	$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$descendants);
 var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$children = A2($elm$core$Basics$composeL, $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$children, $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$getTree);
+var $elm$core$Result$andThen = F2(
+	function (callback, result) {
+		if (result.$ === 'Ok') {
+			var value = result.a;
+			return callback(value);
+		} else {
+			var msg = result.a;
+			return $elm$core$Result$Err(msg);
+		}
+	});
+var $elm$core$Result$fromMaybe = F2(
+	function (err, maybe) {
+		if (maybe.$ === 'Just') {
+			var v = maybe.a;
+			return $elm$core$Result$Ok(v);
+		} else {
+			return $elm$core$Result$Err(err);
+		}
+	});
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$cutForest_ = F3(
+	function (acc, predicate, forest) {
+		cutForest_:
+		while (true) {
+			var _v0 = $turboMaCk$lazy_tree_with_zipper$Lazy$LList$toList(forest);
+			if (!_v0.b) {
+				return _Utils_Tuple3(acc, $elm$core$Maybe$Nothing, $turboMaCk$lazy_tree_with_zipper$Lazy$LList$empty);
+			} else {
+				var head = _v0.a;
+				var tail = _v0.b;
+				if (predicate(
+					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$item(head))) {
+					return _Utils_Tuple3(
+						acc,
+						$elm$core$Maybe$Just(head),
+						$turboMaCk$lazy_tree_with_zipper$Lazy$LList$fromList(tail));
+				} else {
+					var $temp$acc = A2($turboMaCk$lazy_tree_with_zipper$Lazy$LList$cons, head, acc),
+						$temp$predicate = predicate,
+						$temp$forest = $turboMaCk$lazy_tree_with_zipper$Lazy$LList$fromList(tail);
+					acc = $temp$acc;
+					predicate = $temp$predicate;
+					forest = $temp$forest;
+					continue cutForest_;
+				}
+			}
+		}
+	});
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$cutForest = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$cutForest_($turboMaCk$lazy_tree_with_zipper$Lazy$LList$empty);
+var $elm$core$Maybe$map = F2(
+	function (f, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return $elm$core$Maybe$Just(
+				f(value));
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$open = F2(
+	function (predicate, _v0) {
+		var zipperTree = _v0.a;
+		var zipperBreadcrumbs = _v0.b;
+		var treeChildren = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$descendants(zipperTree);
+		var currentItem = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$item(zipperTree);
+		var _v1 = A2($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$cutForest, predicate, treeChildren);
+		var left = _v1.a;
+		var item = _v1.b;
+		var right = _v1.c;
+		return A2(
+			$elm$core$Maybe$map,
+			function (tree) {
+				return A2(
+					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$Zipper,
+					tree,
+					A2(
+						$elm$core$List$cons,
+						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$Breadcrumb(
+							{left: left, parent: currentItem, right: right}),
+						zipperBreadcrumbs));
+			},
+			item);
+	});
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$openPath = F3(
+	function (predicate, path, zipper) {
+		var toResult = function (_v0) {
+			return $elm$core$Result$fromMaybe('Can\'t resolve open');
+		};
+		return A3(
+			$elm$core$List$foldl,
+			F2(
+				function (i, acc) {
+					return A2(
+						$elm$core$Result$andThen,
+						A2(
+							$elm$core$Basics$composeL,
+							toResult(i),
+							$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$open(
+								predicate(i))),
+						acc);
+				}),
+			$elm$core$Result$Ok(zipper),
+			path);
+	});
+var $author$project$Exp$dive = F2(
+	function (path, zip) {
+		return A3(
+			$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$openPath,
+			F2(
+				function (a, b) {
+					return _Utils_eq(a, b.id);
+				}),
+			path,
+			zip);
+	});
+var $author$project$Exp$incrementId = F2(
+	function (model, _v0) {
+		var zip = _v0.a;
+		var cmd = _v0.b;
+		return _Utils_Tuple2(
+			_Utils_update(
+				model,
+				{seed: model.seed + 1, steps: zip}),
+			cmd);
+	});
+var $author$project$Exp$incrementGreater = F2(
+	function (start, a) {
+		return (_Utils_cmp(start, a.equationLabel) < 1) ? _Utils_update(
+			a,
+			{equationLabel: a.equationLabel + 1}) : a;
+	});
 var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$insert = F2(
 	function (tree, _v0) {
 		var t = _v0.a;
@@ -5500,6 +5546,45 @@ var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$insert = F2(
 			$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$Zipper,
 			A2($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$insert, tree, t),
 			zipperBreadcrumbs);
+	});
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$setTree = F2(
+	function (tree, _v0) {
+		var zipperBreadcrumbs = _v0.b;
+		return A2($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$Zipper, tree, zipperBreadcrumbs);
+	});
+var $author$project$Exp$deleteChildren = function (zip) {
+	return A2(
+		$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$setTree,
+		$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$singleton(
+			$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(zip)),
+		zip);
+};
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem = F2(
+	function (fc, _v0) {
+		var tree = _v0.a;
+		var zipperBreadcrumbs = _v0.b;
+		return A2(
+			$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$Zipper,
+			A2(
+				$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Tree,
+				fc(
+					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$item(tree)),
+				$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$descendants(tree)),
+			zipperBreadcrumbs);
+	});
+var $author$project$Exp$mapChildren = F2(
+	function (f, zip) {
+		return A3(
+			$elm$core$List$foldl,
+			$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$insert,
+			$author$project$Exp$deleteChildren(zip),
+			A2(
+				$elm$core$List$map,
+				$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$getTree,
+				A2(
+					$elm$core$List$map,
+					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem(f),
+					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$openAll(zip))));
 	});
 var $turboMaCk$lazy_tree_with_zipper$Lazy$LList$map = function (f) {
 	return $turboMaCk$lazy_tree_with_zipper$Lazy$map(
@@ -5540,12 +5625,15 @@ var $author$project$Exp$nest = F2(
 			$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$update,
 			$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$sortBy(
 				function ($) {
-					return $.id;
+					return $.equationLabel;
 				}),
 			A2(
 				$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$insert,
 				$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$singleton(step),
-				zip));
+				A2(
+					$author$project$Exp$mapChildren,
+					$author$project$Exp$incrementGreater(step.equationLabel),
+					zip)));
 	});
 var $elm$core$Maybe$withDefault = F2(
 	function (_default, maybe) {
@@ -5612,13 +5700,10 @@ var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root = function (zipper) {
 		zipper);
 };
 var $author$project$Exp$upOrRoot = function (z) {
-	var _v0 = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$up(z);
-	if (_v0.$ === 'Just') {
-		var zip = _v0.a;
-		return zip;
-	} else {
-		return $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z);
-	}
+	return A2(
+		$elm$core$Maybe$withDefault,
+		$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z),
+		$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$up(z));
 };
 var $author$project$Exp$insertBelow = F2(
 	function (step, zip) {
@@ -5663,210 +5748,298 @@ var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$map = F2(
 			A2($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$map, fc, tree),
 			A2($turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$breadcrumbsMap, fc, zipperBreadcrumbs));
 	});
-var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
-var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem = F2(
-	function (fc, _v0) {
-		var tree = _v0.a;
-		var zipperBreadcrumbs = _v0.b;
-		return A2(
-			$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$Zipper,
-			A2(
-				$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Tree,
-				fc(
-					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$item(tree)),
-				$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$descendants(tree)),
-			zipperBreadcrumbs);
+var $author$project$Exp$wrapModel = F2(
+	function (model, _v0) {
+		var zip = _v0.a;
+		var cmd = _v0.b;
+		return _Utils_Tuple2(
+			_Utils_update(
+				model,
+				{steps: zip}),
+			cmd);
 	});
 var $author$project$Exp$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
-			case 'EditStep':
-				var zip = msg.a;
-				return function (z) {
-					return _Utils_Tuple2(
-						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z),
-						$elm$core$Platform$Cmd$none);
-				}(
-					A2(
-						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
-						function (a) {
-							return _Utils_update(
-								a,
-								{edit: true});
-						},
-						A2(
-							$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$map,
-							function (a) {
-								return _Utils_update(
-									a,
-									{edit: false});
-							},
-							zip)));
-			case 'RenderStep':
-				var zip = msg.a;
-				return function (z) {
-					return _Utils_Tuple2(
-						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z),
-						$author$project$Exp$katexStep(z));
-				}(
-					A2(
-						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
-						function (s) {
-							return _Utils_update(
-								s,
-								{edit: false});
-						},
-						zip));
-			case 'OperationText':
-				var zip = msg.a;
-				var newOp = msg.b;
-				return function (z) {
-					return _Utils_Tuple2(
-						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z),
-						$elm$core$Platform$Cmd$none);
-				}(
-					A2(
-						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
-						function (s) {
-							return _Utils_update(
-								s,
-								{operation: newOp});
-						},
-						zip));
-			case 'EquationText':
-				var zip = msg.a;
-				var newEq = msg.b;
-				return function (z) {
-					return _Utils_Tuple2(
-						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z),
-						$author$project$Exp$katexStep(z));
-				}(
-					A2(
-						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
-						function (s) {
-							return _Utils_update(
-								s,
-								{equation: newEq});
-						},
-						zip));
-			case 'NotesText':
-				var zip = msg.a;
-				var newNote = msg.b;
-				return function (z) {
-					return _Utils_Tuple2(
-						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z),
-						$elm$core$Platform$Cmd$none);
-				}(
-					A2(
-						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
-						function (s) {
-							return _Utils_update(
-								s,
-								{note: newNote});
-						},
-						zip));
-			case 'ConsecutiveStep':
-				var zip = msg.a;
-				return function (z) {
-					return _Utils_Tuple2(
-						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z),
-						$elm$core$Platform$Cmd$none);
-				}(
-					A2(
-						$author$project$Exp$insertBelow,
-						_Utils_update(
-							$author$project$Exp$blankStep,
-							{
-								id: 1 + $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(zip).id
-							}),
-						A2(
-							$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$map,
-							function (s) {
-								return _Utils_update(
-									s,
-									{edit: false});
-							},
-							zip)));
 			case 'NewProcessStep':
-				var parent = msg.a;
-				return function (z) {
-					return _Utils_Tuple2(
-						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z),
-						$author$project$Exp$katexStep(z));
-				}(
-					A2(
-						$author$project$Exp$nest,
-						_Utils_update(
-							$author$project$Exp$blankStep,
-							{
-								id: $elm$core$List$length(
-									$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$children(parent))
-							}),
-						A2(
-							$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
-							function (s) {
-								return _Utils_update(
-									s,
-									{process: $author$project$Exp$Expanded});
-							},
+				var parentPath = msg.a;
+				var _v1 = A2($author$project$Exp$dive, parentPath, model.steps);
+				if (_v1.$ === 'Ok') {
+					var parent = _v1.a;
+					return A2(
+						$author$project$Exp$incrementId,
+						model,
+						function (z) {
+							return _Utils_Tuple2(
+								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z),
+								$author$project$Exp$katexStep(z));
+						}(
 							A2(
-								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$map,
+								$author$project$Exp$nest,
+								_Utils_update(
+									$author$project$Exp$blankStep,
+									{
+										equationLabel: $elm$core$List$length(
+											$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$children(parent)),
+										id: model.seed
+									}),
+								A2(
+									$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
+									function (s) {
+										return _Utils_update(
+											s,
+											{process: $author$project$Exp$Expanded});
+									},
+									A2(
+										$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$map,
+										function (s) {
+											return _Utils_update(
+												s,
+												{edit: false});
+										},
+										parent)))));
+				} else {
+					var error = _v1.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{e: error}),
+						$elm$core$Platform$Cmd$none);
+				}
+			case 'NewConsecutiveStep':
+				var siblingPath = msg.a;
+				var _v2 = A2($author$project$Exp$dive, siblingPath, model.steps);
+				if (_v2.$ === 'Ok') {
+					var sibling = _v2.a;
+					return A2(
+						$author$project$Exp$incrementId,
+						model,
+						function (z) {
+							return _Utils_Tuple2(
+								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z),
+								$elm$core$Platform$Cmd$batch(
+									_List_fromArray(
+										[
+											$author$project$Exp$katexStep(sibling),
+											$author$project$Exp$katexStep(z)
+										])));
+						}(
+							A2(
+								$author$project$Exp$insertBelow,
+								_Utils_update(
+									$author$project$Exp$blankStep,
+									{
+										edit: true,
+										equation: $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(sibling).equation,
+										equationLabel: 1 + $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(sibling).equationLabel,
+										id: model.seed
+									}),
+								A2(
+									$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$map,
+									function (s) {
+										return _Utils_update(
+											s,
+											{edit: false});
+									},
+									sibling))));
+				} else {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
+			case 'ToggleProcess':
+				var path = msg.a;
+				var _v3 = A2($author$project$Exp$dive, path, model.steps);
+				if (_v3.$ === 'Ok') {
+					var zip = _v3.a;
+					var _v4 = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(zip).process;
+					switch (_v4.$) {
+						case 'Standalone':
+							return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+						case 'Expanded':
+							return function (z) {
+								return _Utils_Tuple2(
+									_Utils_update(
+										model,
+										{
+											steps: $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z)
+										}),
+									$author$project$Exp$katexStep(z));
+							}(
+								A2(
+									$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
+									function (a) {
+										return _Utils_update(
+											a,
+											{process: $author$project$Exp$Collapsed});
+									},
+									zip));
+						default:
+							return function (z) {
+								return _Utils_Tuple2(
+									_Utils_update(
+										model,
+										{
+											steps: $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z)
+										}),
+									$author$project$Exp$katexStep(z));
+							}(
+								A2(
+									$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
+									function (a) {
+										return _Utils_update(
+											a,
+											{process: $author$project$Exp$Expanded});
+									},
+									zip));
+					}
+				} else {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
+			case 'EditStep':
+				var path = msg.a;
+				var _v5 = A2($author$project$Exp$dive, path, model.steps);
+				if (_v5.$ === 'Ok') {
+					var zip = _v5.a;
+					return A2(
+						$author$project$Exp$wrapModel,
+						model,
+						function (z) {
+							return _Utils_Tuple2(
+								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z),
+								$author$project$Exp$katexStep(z));
+						}(
+							A2(
+								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
+								function (a) {
+									return _Utils_update(
+										a,
+										{edit: true});
+								},
+								A2(
+									$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$map,
+									function (a) {
+										return _Utils_update(
+											a,
+											{edit: false});
+									},
+									zip))));
+				} else {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
+			case 'OperationText':
+				var path = msg.a;
+				var newText = msg.b;
+				var _v6 = A2($author$project$Exp$dive, path, model.steps);
+				if (_v6.$ === 'Ok') {
+					var zip = _v6.a;
+					return A2(
+						$author$project$Exp$wrapModel,
+						model,
+						function (z) {
+							return _Utils_Tuple2(
+								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z),
+								$elm$core$Platform$Cmd$none);
+						}(
+							A2(
+								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
+								function (s) {
+									return _Utils_update(
+										s,
+										{operation: newText});
+								},
+								zip)));
+				} else {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
+			case 'EquationText':
+				var path = msg.a;
+				var newEq = msg.b;
+				var _v7 = A2($author$project$Exp$dive, path, model.steps);
+				if (_v7.$ === 'Ok') {
+					var zip = _v7.a;
+					return A2(
+						$author$project$Exp$wrapModel,
+						model,
+						function (z) {
+							return _Utils_Tuple2(
+								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z),
+								$author$project$Exp$katexStep(z));
+						}(
+							A2(
+								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
+								function (s) {
+									return _Utils_update(
+										s,
+										{equation: newEq});
+								},
+								zip)));
+				} else {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
+			case 'NotesText':
+				var path = msg.a;
+				var newNote = msg.b;
+				var _v8 = A2($author$project$Exp$dive, path, model.steps);
+				if (_v8.$ === 'Ok') {
+					var zip = _v8.a;
+					return A2(
+						$author$project$Exp$wrapModel,
+						model,
+						function (z) {
+							return _Utils_Tuple2(
+								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z),
+								$elm$core$Platform$Cmd$none);
+						}(
+							A2(
+								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
+								function (s) {
+									return _Utils_update(
+										s,
+										{note: newNote});
+								},
+								zip)));
+				} else {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
+			case 'RenderStep':
+				var path = msg.a;
+				var _v9 = A2($author$project$Exp$dive, path, model.steps);
+				if (_v9.$ === 'Ok') {
+					var zip = _v9.a;
+					return A2(
+						$author$project$Exp$wrapModel,
+						model,
+						function (z) {
+							return _Utils_Tuple2(
+								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z),
+								$author$project$Exp$katexStep(z));
+						}(
+							A2(
+								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
 								function (s) {
 									return _Utils_update(
 										s,
 										{edit: false});
 								},
-								parent))));
-			case 'ToggleProcess':
-				var zip = msg.a;
-				var _v1 = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(zip).process;
-				switch (_v1.$) {
-					case 'Standalone':
-						return function (z) {
-							return _Utils_Tuple2(
-								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z),
-								$elm$core$Platform$Cmd$none);
-						}(zip);
-					case 'Expanded':
-						return function (z) {
-							return _Utils_Tuple2(
-								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z),
-								$author$project$Exp$katexStep(z));
-						}(
-							A2(
-								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
-								function (a) {
-									return _Utils_update(
-										a,
-										{process: $author$project$Exp$Collapsed});
-								},
-								zip));
-					default:
-						return function (z) {
-							return _Utils_Tuple2(
-								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z),
-								$author$project$Exp$katexStep(z));
-						}(
-							A2(
-								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
-								function (a) {
-									return _Utils_update(
-										a,
-										{process: $author$project$Exp$Expanded});
-								},
-								zip));
+								zip)));
+				} else {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
 			default:
 				return _Utils_Tuple2(
 					model,
-					$elm$core$Platform$Cmd$batch(
-						A2(
-							$elm$core$List$map,
-							$author$project$Exp$katexStep,
-							$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$openAll(model))));
+					$author$project$Exp$katexStep(model.steps));
 		}
 	});
 var $author$project$Exp$RenderAll = {$: 'RenderAll'};
+var $mdgriffith$elm_ui$Internal$Model$Rgba = F4(
+	function (a, b, c, d) {
+		return {$: 'Rgba', a: a, b: b, c: c, d: d};
+	});
+var $mdgriffith$elm_ui$Element$rgb = F3(
+	function (r, g, b) {
+		return A4($mdgriffith$elm_ui$Internal$Model$Rgba, r, g, b, 1);
+	});
+var $author$project$Exp$backroundColor = A3($mdgriffith$elm_ui$Element$rgb, 0.9, 0.9, 0.9);
 var $mdgriffith$elm_ui$Internal$Model$Attr = function (a) {
 	return {$: 'Attr', a: a};
 };
@@ -6399,16 +6572,6 @@ var $mdgriffith$elm_ui$Internal$Model$formatBoxShadow = function (shadow) {
 					$mdgriffith$elm_ui$Internal$Model$formatColor(shadow.color))
 				])));
 };
-var $elm$core$Maybe$map = F2(
-	function (f, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return $elm$core$Maybe$Just(
-				f(value));
-		} else {
-			return $elm$core$Maybe$Nothing;
-		}
-	});
 var $elm$core$Tuple$mapFirst = F2(
 	function (func, _v0) {
 		var x = _v0.a;
@@ -9770,6 +9933,13 @@ var $mdgriffith$elm_ui$Internal$Model$finalizeNode = F6(
 				return html;
 		}
 	});
+var $elm$core$List$isEmpty = function (xs) {
+	if (!xs.b) {
+		return true;
+	} else {
+		return false;
+	}
+};
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $mdgriffith$elm_ui$Internal$Model$textElementClasses = $mdgriffith$elm_ui$Internal$Style$classes.any + (' ' + ($mdgriffith$elm_ui$Internal$Style$classes.text + (' ' + ($mdgriffith$elm_ui$Internal$Style$classes.widthContent + (' ' + $mdgriffith$elm_ui$Internal$Style$classes.heightContent)))));
 var $mdgriffith$elm_ui$Internal$Model$textElement = function (str) {
@@ -11538,6 +11708,32 @@ var $mdgriffith$elm_ui$Element$Input$button = F2(
 				_List_fromArray(
 					[label])));
 	});
+var $mdgriffith$elm_ui$Internal$Model$Colored = F3(
+	function (a, b, c) {
+		return {$: 'Colored', a: a, b: b, c: c};
+	});
+var $mdgriffith$elm_ui$Internal$Model$StyleClass = F2(
+	function (a, b) {
+		return {$: 'StyleClass', a: a, b: b};
+	});
+var $mdgriffith$elm_ui$Internal$Flag$bgColor = $mdgriffith$elm_ui$Internal$Flag$flag(8);
+var $mdgriffith$elm_ui$Internal$Model$formatColorClass = function (_v0) {
+	var red = _v0.a;
+	var green = _v0.b;
+	var blue = _v0.c;
+	var alpha = _v0.d;
+	return $mdgriffith$elm_ui$Internal$Model$floatClass(red) + ('-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(green) + ('-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(blue) + ('-' + $mdgriffith$elm_ui$Internal$Model$floatClass(alpha))))));
+};
+var $mdgriffith$elm_ui$Element$Background$color = function (clr) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$bgColor,
+		A3(
+			$mdgriffith$elm_ui$Internal$Model$Colored,
+			'bg-' + $mdgriffith$elm_ui$Internal$Model$formatColorClass(clr),
+			'background-color',
+			clr));
+};
 var $mdgriffith$elm_ui$Internal$Model$AsColumn = {$: 'AsColumn'};
 var $mdgriffith$elm_ui$Internal$Model$asColumn = $mdgriffith$elm_ui$Internal$Model$AsColumn;
 var $mdgriffith$elm_ui$Element$column = F2(
@@ -11572,10 +11768,6 @@ var $mdgriffith$elm_ui$Internal$Model$StaticRootAndDynamic = F2(
 	});
 var $mdgriffith$elm_ui$Internal$Model$AllowHover = {$: 'AllowHover'};
 var $mdgriffith$elm_ui$Internal$Model$Layout = {$: 'Layout'};
-var $mdgriffith$elm_ui$Internal$Model$Rgba = F4(
-	function (a, b, c, d) {
-		return {$: 'Rgba', a: a, b: b, c: c, d: d};
-	});
 var $mdgriffith$elm_ui$Internal$Model$focusDefaultStyle = {
 	backgroundColor: $elm$core$Maybe$Nothing,
 	borderColor: $elm$core$Maybe$Nothing,
@@ -11710,10 +11902,6 @@ var $mdgriffith$elm_ui$Internal$Model$renderRoot = F3(
 					_List_fromArray(
 						[child]))));
 	});
-var $mdgriffith$elm_ui$Internal$Model$Colored = F3(
-	function (a, b, c) {
-		return {$: 'Colored', a: a, b: b, c: c};
-	});
 var $mdgriffith$elm_ui$Internal$Model$FontFamily = F2(
 	function (a, b) {
 		return {$: 'FontFamily', a: a, b: b};
@@ -11722,24 +11910,12 @@ var $mdgriffith$elm_ui$Internal$Model$FontSize = function (a) {
 	return {$: 'FontSize', a: a};
 };
 var $mdgriffith$elm_ui$Internal$Model$SansSerif = {$: 'SansSerif'};
-var $mdgriffith$elm_ui$Internal$Model$StyleClass = F2(
-	function (a, b) {
-		return {$: 'StyleClass', a: a, b: b};
-	});
 var $mdgriffith$elm_ui$Internal$Model$Typeface = function (a) {
 	return {$: 'Typeface', a: a};
 };
-var $mdgriffith$elm_ui$Internal$Flag$bgColor = $mdgriffith$elm_ui$Internal$Flag$flag(8);
 var $mdgriffith$elm_ui$Internal$Flag$fontColor = $mdgriffith$elm_ui$Internal$Flag$flag(14);
 var $mdgriffith$elm_ui$Internal$Flag$fontFamily = $mdgriffith$elm_ui$Internal$Flag$flag(5);
 var $mdgriffith$elm_ui$Internal$Flag$fontSize = $mdgriffith$elm_ui$Internal$Flag$flag(4);
-var $mdgriffith$elm_ui$Internal$Model$formatColorClass = function (_v0) {
-	var red = _v0.a;
-	var green = _v0.b;
-	var blue = _v0.c;
-	var alpha = _v0.d;
-	return $mdgriffith$elm_ui$Internal$Model$floatClass(red) + ('-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(green) + ('-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(blue) + ('-' + $mdgriffith$elm_ui$Internal$Model$floatClass(alpha))))));
-};
 var $elm$core$String$toLower = _String_toLower;
 var $elm$core$String$words = _String_words;
 var $mdgriffith$elm_ui$Internal$Model$renderFontClassName = F2(
@@ -11893,6 +12069,9 @@ var $author$project$Exp$EquationText = F2(
 	function (a, b) {
 		return {$: 'EquationText', a: a, b: b};
 	});
+var $author$project$Exp$NewConsecutiveStep = function (a) {
+	return {$: 'NewConsecutiveStep', a: a};
+};
 var $author$project$Exp$NotesText = F2(
 	function (a, b) {
 		return {$: 'NotesText', a: a, b: b};
@@ -11904,11 +12083,33 @@ var $author$project$Exp$OperationText = F2(
 var $author$project$Exp$RenderStep = function (a) {
 	return {$: 'RenderStep', a: a};
 };
+var $mdgriffith$elm_ui$Internal$Model$AlignX = function (a) {
+	return {$: 'AlignX', a: a};
+};
+var $mdgriffith$elm_ui$Internal$Model$CenterX = {$: 'CenterX'};
+var $mdgriffith$elm_ui$Element$centerX = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$CenterX);
 var $mdgriffith$elm_ui$Internal$Model$AlignY = function (a) {
 	return {$: 'AlignY', a: a};
 };
 var $mdgriffith$elm_ui$Internal$Model$CenterY = {$: 'CenterY'};
 var $mdgriffith$elm_ui$Element$centerY = $mdgriffith$elm_ui$Internal$Model$AlignY($mdgriffith$elm_ui$Internal$Model$CenterY);
+var $mdgriffith$elm_ui$Element$el = F2(
+	function (attrs, child) {
+		return A4(
+			$mdgriffith$elm_ui$Internal$Model$element,
+			$mdgriffith$elm_ui$Internal$Model$asEl,
+			$mdgriffith$elm_ui$Internal$Model$div,
+			A2(
+				$elm$core$List$cons,
+				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
+				A2(
+					$elm$core$List$cons,
+					$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
+					attrs)),
+			$mdgriffith$elm_ui$Internal$Model$Unkeyed(
+				_List_fromArray(
+					[child])));
+	});
 var $mdgriffith$elm_ui$Element$Font$family = function (families) {
 	return A2(
 		$mdgriffith$elm_ui$Internal$Model$StyleClass,
@@ -11926,14 +12127,14 @@ var $mdgriffith$elm_ui$Internal$Model$unstyled = A2($elm$core$Basics$composeL, $
 var $mdgriffith$elm_ui$Element$html = $mdgriffith$elm_ui$Internal$Model$unstyled;
 var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
 var $elm$html$Html$span = _VirtualDom_node('span');
-var $author$project$Exp$katexPlaceholder = function (zip) {
+var $author$project$Exp$katexPlaceholder = function (id) {
 	return $mdgriffith$elm_ui$Element$html(
 		A2(
 			$elm$html$Html$span,
 			_List_fromArray(
 				[
 					$elm$html$Html$Attributes$id(
-					$author$project$Exp$labelEquation(zip))
+					$elm$core$String$fromInt(id))
 				]),
 			_List_Nil));
 };
@@ -11943,6 +12144,72 @@ var $mdgriffith$elm_ui$Element$Input$Label = F3(
 		return {$: 'Label', a: a, b: b, c: c};
 	});
 var $mdgriffith$elm_ui$Element$Input$labelAbove = $mdgriffith$elm_ui$Element$Input$Label($mdgriffith$elm_ui$Element$Input$Above);
+var $elm$core$List$drop = F2(
+	function (n, list) {
+		drop:
+		while (true) {
+			if (n <= 0) {
+				return list;
+			} else {
+				if (!list.b) {
+					return list;
+				} else {
+					var x = list.a;
+					var xs = list.b;
+					var $temp$n = n - 1,
+						$temp$list = xs;
+					n = $temp$n;
+					list = $temp$list;
+					continue drop;
+				}
+			}
+		}
+	});
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$getPath = F2(
+	function (fc, _v0) {
+		var tree = _v0.a;
+		var zipperBreadcrumbs = _v0.b;
+		return A3(
+			$elm$core$List$foldl,
+			F2(
+				function (_v1, acc) {
+					var parent = _v1.a.parent;
+					return A2(
+						$elm$core$List$cons,
+						fc(parent),
+						acc);
+				}),
+			_List_fromArray(
+				[
+					fc(
+					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$item(tree))
+				]),
+			zipperBreadcrumbs);
+	});
+var $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$isRoot = function (_v0) {
+	var bs = _v0.b;
+	return $elm$core$List$isEmpty(bs);
+};
+var $author$project$Exp$labelEquation = function (zip) {
+	return $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$isRoot(zip) ? 'Turtle Shell' : A2(
+		$elm$core$String$join,
+		'.',
+		A2(
+			$elm$core$List$map,
+			$elm$core$String$fromInt,
+			A2(
+				$elm$core$List$map,
+				$elm$core$Basics$add(1),
+				A2(
+					$elm$core$List$drop,
+					1,
+					A2(
+						$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$getPath,
+						function ($) {
+							return $.equationLabel;
+						},
+						zip)))));
+};
 var $mdgriffith$elm_ui$Element$Input$OnRight = {$: 'OnRight'};
 var $mdgriffith$elm_ui$Element$Input$labelRight = $mdgriffith$elm_ui$Element$Input$Label($mdgriffith$elm_ui$Element$Input$OnRight);
 var $mdgriffith$elm_ui$Internal$Model$Monospace = {$: 'Monospace'};
@@ -12078,16 +12345,6 @@ var $mdgriffith$elm_ui$Element$Input$calcMoveToCompensateForPadding = function (
 };
 var $mdgriffith$elm_ui$Internal$Flag$overflow = $mdgriffith$elm_ui$Internal$Flag$flag(20);
 var $mdgriffith$elm_ui$Element$clip = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$overflow, $mdgriffith$elm_ui$Internal$Style$classes.clip);
-var $mdgriffith$elm_ui$Element$Background$color = function (clr) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$bgColor,
-		A3(
-			$mdgriffith$elm_ui$Internal$Model$Colored,
-			'bg-' + $mdgriffith$elm_ui$Internal$Model$formatColorClass(clr),
-			'background-color',
-			clr));
-};
 var $mdgriffith$elm_ui$Internal$Flag$borderColor = $mdgriffith$elm_ui$Internal$Flag$flag(28);
 var $mdgriffith$elm_ui$Element$Border$color = function (clr) {
 	return A2(
@@ -12099,10 +12356,6 @@ var $mdgriffith$elm_ui$Element$Border$color = function (clr) {
 			'border-color',
 			clr));
 };
-var $mdgriffith$elm_ui$Element$rgb = F3(
-	function (r, g, b) {
-		return A4($mdgriffith$elm_ui$Internal$Model$Rgba, r, g, b, 1);
-	});
 var $mdgriffith$elm_ui$Element$Input$darkGrey = A3($mdgriffith$elm_ui$Element$rgb, 186 / 255, 189 / 255, 182 / 255);
 var $mdgriffith$elm_ui$Element$paddingXY = F2(
 	function (x, y) {
@@ -12595,23 +12848,6 @@ var $mdgriffith$elm_ui$Element$Font$color = function (fontColor) {
 			'color',
 			fontColor));
 };
-var $mdgriffith$elm_ui$Element$el = F2(
-	function (attrs, child) {
-		return A4(
-			$mdgriffith$elm_ui$Internal$Model$element,
-			$mdgriffith$elm_ui$Internal$Model$asEl,
-			$mdgriffith$elm_ui$Internal$Model$div,
-			A2(
-				$elm$core$List$cons,
-				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
-				A2(
-					$elm$core$List$cons,
-					$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
-					attrs)),
-			$mdgriffith$elm_ui$Internal$Model$Unkeyed(
-				_List_fromArray(
-					[child])));
-	});
 var $mdgriffith$elm_ui$Element$rgba = $mdgriffith$elm_ui$Internal$Model$Rgba;
 var $mdgriffith$elm_ui$Element$Input$renderPlaceholder = F3(
 	function (_v0, forPlaceholder, on) {
@@ -12905,13 +13141,26 @@ var $mdgriffith$elm_ui$Element$Input$Placeholder = F2(
 		return {$: 'Placeholder', a: a, b: b};
 	});
 var $mdgriffith$elm_ui$Element$Input$placeholder = $mdgriffith$elm_ui$Element$Input$Placeholder;
+var $author$project$Exp$trace = function (zip) {
+	return A2(
+		$elm$core$List$drop,
+		1,
+		A2(
+			$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$getPath,
+			function ($) {
+				return $.id;
+			},
+			zip));
+};
 var $author$project$Exp$editStep = function (zip) {
 	var step = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(zip);
 	return A2(
 		$mdgriffith$elm_ui$Element$column,
 		_List_fromArray(
 			[
-				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+				$mdgriffith$elm_ui$Element$padding(20),
+				$mdgriffith$elm_ui$Element$spacing(10)
 			]),
 		_List_fromArray(
 			[
@@ -12927,7 +13176,22 @@ var $author$project$Exp$editStep = function (zip) {
 				{
 					label: $mdgriffith$elm_ui$Element$text('[x]'),
 					onPress: $elm$core$Maybe$Just(
-						$author$project$Exp$RenderStep(zip))
+						$author$project$Exp$RenderStep(
+							$author$project$Exp$trace(zip)))
+				}),
+				A2(
+				$mdgriffith$elm_ui$Element$Input$button,
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$Font$family(
+						_List_fromArray(
+							[$mdgriffith$elm_ui$Element$Font$monospace]))
+					]),
+				{
+					label: $mdgriffith$elm_ui$Element$text('[=]'),
+					onPress: $elm$core$Maybe$Just(
+						$author$project$Exp$NewConsecutiveStep(
+							$author$project$Exp$trace(zip)))
 				}),
 				A2(
 				$mdgriffith$elm_ui$Element$Input$multiline,
@@ -12937,12 +13201,17 @@ var $author$project$Exp$editStep = function (zip) {
 						$mdgriffith$elm_ui$Element$Input$labelAbove,
 						_List_Nil,
 						$mdgriffith$elm_ui$Element$text('Operation')),
-					onChange: $author$project$Exp$OperationText(zip),
+					onChange: $author$project$Exp$OperationText(
+						$author$project$Exp$trace(zip)),
 					placeholder: $elm$core$Maybe$Nothing,
 					spellcheck: true,
 					text: step.operation
 				}),
-				$author$project$Exp$katexPlaceholder(zip),
+				A2(
+				$mdgriffith$elm_ui$Element$el,
+				_List_fromArray(
+					[$mdgriffith$elm_ui$Element$centerX]),
+				$author$project$Exp$katexPlaceholder(step.id)),
 				A2(
 				$mdgriffith$elm_ui$Element$Input$multiline,
 				_List_Nil,
@@ -12953,7 +13222,8 @@ var $author$project$Exp$editStep = function (zip) {
 							[$mdgriffith$elm_ui$Element$centerY]),
 						$mdgriffith$elm_ui$Element$text(
 							'Equation ' + $author$project$Exp$labelEquation(zip))),
-					onChange: $author$project$Exp$EquationText(zip),
+					onChange: $author$project$Exp$EquationText(
+						$author$project$Exp$trace(zip)),
 					placeholder: $elm$core$Maybe$Just(
 						A2(
 							$mdgriffith$elm_ui$Element$Input$placeholder,
@@ -12970,7 +13240,8 @@ var $author$project$Exp$editStep = function (zip) {
 						$mdgriffith$elm_ui$Element$Input$labelAbove,
 						_List_Nil,
 						$mdgriffith$elm_ui$Element$text('notes')),
-					onChange: $author$project$Exp$NotesText(zip),
+					onChange: $author$project$Exp$NotesText(
+						$author$project$Exp$trace(zip)),
 					placeholder: $elm$core$Maybe$Nothing,
 					spellcheck: true,
 					text: step.note
@@ -12984,6 +13255,7 @@ var $elm$html$Html$Events$onDoubleClick = function (msg) {
 		$elm$json$Json$Decode$succeed(msg));
 };
 var $mdgriffith$elm_ui$Element$Events$onDoubleClick = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Attr, $elm$html$Html$Events$onDoubleClick);
+var $author$project$Exp$paperColor = A3($mdgriffith$elm_ui$Element$rgb, 1, 1, 1);
 var $mdgriffith$elm_ui$Element$row = F2(
 	function (attrs, children) {
 		return A4(
@@ -13002,15 +13274,38 @@ var $mdgriffith$elm_ui$Element$row = F2(
 						attrs))),
 			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
 	});
-var $mdgriffith$elm_ui$Internal$Model$AlignX = function (a) {
-	return {$: 'AlignX', a: a};
+var $mdgriffith$elm_ui$Internal$Model$Serif = {$: 'Serif'};
+var $mdgriffith$elm_ui$Element$Font$serif = $mdgriffith$elm_ui$Internal$Model$Serif;
+var $mdgriffith$elm_ui$Internal$Model$boxShadowClass = function (shadow) {
+	return $elm$core$String$concat(
+		_List_fromArray(
+			[
+				shadow.inset ? 'box-inset' : 'box-',
+				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.offset.a) + 'px',
+				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.offset.b) + 'px',
+				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.blur) + 'px',
+				$mdgriffith$elm_ui$Internal$Model$floatClass(shadow.size) + 'px',
+				$mdgriffith$elm_ui$Internal$Model$formatColorClass(shadow.color)
+			]));
 };
+var $mdgriffith$elm_ui$Internal$Flag$shadows = $mdgriffith$elm_ui$Internal$Flag$flag(19);
+var $mdgriffith$elm_ui$Element$Border$shadow = function (almostShade) {
+	var shade = {blur: almostShade.blur, color: almostShade.color, inset: false, offset: almostShade.offset, size: almostShade.size};
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$shadows,
+		A3(
+			$mdgriffith$elm_ui$Internal$Model$Single,
+			$mdgriffith$elm_ui$Internal$Model$boxShadowClass(shade),
+			'box-shadow',
+			$mdgriffith$elm_ui$Internal$Model$formatBoxShadow(shade)));
+};
+var $author$project$Exp$shadowColor = A3($mdgriffith$elm_ui$Element$rgb, 0.6, 0.6, 0.7);
+var $mdgriffith$elm_ui$Element$Font$typeface = $mdgriffith$elm_ui$Internal$Model$Typeface;
 var $mdgriffith$elm_ui$Internal$Model$Left = {$: 'Left'};
 var $mdgriffith$elm_ui$Element$alignLeft = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$Left);
 var $mdgriffith$elm_ui$Internal$Model$Right = {$: 'Right'};
 var $mdgriffith$elm_ui$Element$alignRight = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$Right);
-var $mdgriffith$elm_ui$Internal$Model$CenterX = {$: 'CenterX'};
-var $mdgriffith$elm_ui$Element$centerX = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$CenterX);
 var $mdgriffith$elm_ui$Internal$Model$Px = function (a) {
 	return {$: 'Px', a: a};
 };
@@ -13028,7 +13323,8 @@ var $author$project$Exp$viewKatexEquation = function (zip) {
 				$mdgriffith$elm_ui$Element$el,
 				_List_fromArray(
 					[$mdgriffith$elm_ui$Element$centerX]),
-				$author$project$Exp$katexPlaceholder(zip)),
+				$author$project$Exp$katexPlaceholder(
+					$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(zip).id)),
 				A2(
 				$mdgriffith$elm_ui$Element$el,
 				_List_fromArray(
@@ -13046,8 +13342,21 @@ var $author$project$Exp$viewKatexEquation = function (zip) {
 			]));
 };
 var $author$project$Exp$viewNote = function (zip) {
-	return $mdgriffith$elm_ui$Element$text(
-		$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(zip).note);
+	return A2(
+		$mdgriffith$elm_ui$Element$el,
+		_List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+				$mdgriffith$elm_ui$Element$padding(20),
+				$mdgriffith$elm_ui$Element$Font$family(
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$Font$typeface('Computer Modern'),
+						$mdgriffith$elm_ui$Element$Font$serif
+					]))
+			]),
+		$mdgriffith$elm_ui$Element$text(
+			$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(zip).note));
 };
 var $author$project$Exp$NewProcessStep = function (a) {
 	return {$: 'NewProcessStep', a: a};
@@ -13067,7 +13376,8 @@ var $author$project$Exp$viewProcessIcon = function (zip) {
 				{
 					label: $mdgriffith$elm_ui$Element$text('[^]'),
 					onPress: $elm$core$Maybe$Just(
-						$author$project$Exp$NewProcessStep(zip))
+						$author$project$Exp$NewProcessStep(
+							$author$project$Exp$trace(zip)))
 				});
 		case 'Expanded':
 			return A2(
@@ -13077,7 +13387,8 @@ var $author$project$Exp$viewProcessIcon = function (zip) {
 				{
 					label: $mdgriffith$elm_ui$Element$text('[^]'),
 					onPress: $elm$core$Maybe$Just(
-						$author$project$Exp$NewProcessStep(zip))
+						$author$project$Exp$NewProcessStep(
+							$author$project$Exp$trace(zip)))
 				});
 		default:
 			return A2(
@@ -13087,9 +13398,29 @@ var $author$project$Exp$viewProcessIcon = function (zip) {
 				{
 					label: $mdgriffith$elm_ui$Element$text('[+]'),
 					onPress: $elm$core$Maybe$Just(
-						$author$project$Exp$ToggleProcess(zip))
+						$author$project$Exp$ToggleProcess(
+							$author$project$Exp$trace(zip)))
 				});
 	}
+};
+var $author$project$Exp$card = function (zip) {
+	return A2(
+		$mdgriffith$elm_ui$Element$el,
+		_List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+				$mdgriffith$elm_ui$Element$spacing(20),
+				$mdgriffith$elm_ui$Element$Background$color($author$project$Exp$paperColor),
+				$mdgriffith$elm_ui$Element$Border$rounded(30),
+				$mdgriffith$elm_ui$Element$Border$shadow(
+				{
+					blur: 4,
+					color: $author$project$Exp$shadowColor,
+					offset: _Utils_Tuple2(1, 2),
+					size: 1
+				})
+			]),
+		$author$project$Exp$viewStep(zip));
 };
 var $author$project$Exp$viewOperation = function (zip) {
 	return $elm$core$List$concat(
@@ -13104,18 +13435,14 @@ var $author$project$Exp$viewOperation = function (zip) {
 					_List_fromArray(
 						[
 							$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-							$mdgriffith$elm_ui$Element$spacing(10)
+							$mdgriffith$elm_ui$Element$padding(20)
 						]),
 					_List_fromArray(
 						[
 							A2(
 							$mdgriffith$elm_ui$Element$el,
 							_List_fromArray(
-								[
-									$mdgriffith$elm_ui$Element$Font$bold,
-									$mdgriffith$elm_ui$Element$Events$onDoubleClick(
-									$author$project$Exp$EditStep(zip))
-								]),
+								[$mdgriffith$elm_ui$Element$Font$bold]),
 							$mdgriffith$elm_ui$Element$text(
 								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(zip).operation)),
 							A2(
@@ -13129,10 +13456,12 @@ var $author$project$Exp$viewOperation = function (zip) {
 							{
 								label: $mdgriffith$elm_ui$Element$text('[-]'),
 								onPress: $elm$core$Maybe$Just(
-									$author$project$Exp$ToggleProcess(zip))
+									$author$project$Exp$ToggleProcess(
+										$author$project$Exp$trace(zip)))
 							})
 						])),
-				$author$project$Exp$viewProcess(zip)) : _List_Nil,
+				$author$project$Exp$viewProcess(zip)) : _List_fromArray(
+				[$mdgriffith$elm_ui$Element$none]),
 				_List_fromArray(
 				[
 					A2(
@@ -13140,7 +13469,7 @@ var $author$project$Exp$viewOperation = function (zip) {
 					_List_fromArray(
 						[
 							$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-							$mdgriffith$elm_ui$Element$spacing(10)
+							$mdgriffith$elm_ui$Element$padding(20)
 						]),
 					_List_fromArray(
 						[
@@ -13149,8 +13478,15 @@ var $author$project$Exp$viewOperation = function (zip) {
 							_List_fromArray(
 								[
 									$mdgriffith$elm_ui$Element$Font$bold,
+									$mdgriffith$elm_ui$Element$Font$family(
+									_List_fromArray(
+										[
+											$mdgriffith$elm_ui$Element$Font$typeface('Computer Modern'),
+											$mdgriffith$elm_ui$Element$Font$serif
+										])),
 									$mdgriffith$elm_ui$Element$Events$onDoubleClick(
-									$author$project$Exp$EditStep(zip))
+									$author$project$Exp$EditStep(
+										$author$project$Exp$trace(zip)))
 								]),
 							$mdgriffith$elm_ui$Element$text(
 								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(zip).operation)),
@@ -13164,7 +13500,7 @@ var $author$project$Exp$viewProcess = function (zip) {
 		$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(zip).process,
 		$author$project$Exp$Expanded) ? A2(
 		$elm$core$List$map,
-		$author$project$Exp$viewStep,
+		$author$project$Exp$card,
 		$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$openAll(zip)) : _List_Nil;
 };
 var $author$project$Exp$viewStep = function (zip) {
@@ -13174,7 +13510,7 @@ var $author$project$Exp$viewStep = function (zip) {
 		_List_fromArray(
 			[
 				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-				$mdgriffith$elm_ui$Element$spacing(20)
+				$mdgriffith$elm_ui$Element$spacing(6)
 			]),
 		$elm$core$List$concat(
 			_List_fromArray(
@@ -13193,7 +13529,10 @@ var $author$project$Exp$viewStep = function (zip) {
 var $author$project$Exp$view = function (model) {
 	return A2(
 		$mdgriffith$elm_ui$Element$layout,
-		_List_Nil,
+		_List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$Background$color($author$project$Exp$backroundColor)
+			]),
 		A2(
 			$mdgriffith$elm_ui$Element$column,
 			_List_fromArray(
@@ -13205,7 +13544,7 @@ var $author$project$Exp$view = function (model) {
 			$elm$core$List$concat(
 				_List_fromArray(
 					[
-						$author$project$Exp$viewProcess(model),
+						$author$project$Exp$viewProcess(model.steps),
 						_List_fromArray(
 						[
 							A2(
@@ -13218,6 +13557,10 @@ var $author$project$Exp$view = function (model) {
 								label: $mdgriffith$elm_ui$Element$text('Render'),
 								onPress: $elm$core$Maybe$Just($author$project$Exp$RenderAll)
 							})
+						]),
+						_List_fromArray(
+						[
+							$mdgriffith$elm_ui$Element$text(model.e)
 						])
 					]))));
 };
