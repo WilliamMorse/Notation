@@ -14,12 +14,12 @@ import Element.Font as Font
 import Element.Input as Input
 import Html exposing (Html)
 import Html.Attributes
-import Json.Encode as E
+import Json.Encode as Encode
 import Lazy.Tree as Tree exposing (Tree(..))
 import Lazy.Tree.Zipper as Zipper exposing (Zipper)
 
 
-port render : E.Value -> Cmd msg
+port render : Encode.Value -> Cmd msg
 
 
 main : Program () Model Msg
@@ -38,18 +38,26 @@ type Process
     | Collapsed
 
 
+type alias IdPath =
+    List Int
+
+
 type alias Step =
     { operation : String
     , equation : String
     , note : String
-    , id : Int
-    , edit : Bool
     , process : Process
+    , edit : Bool
+    , equationLabel : Int
+    , id : Int
     }
 
 
 type alias Model =
-    Zipper Step
+    { steps : Zipper Step
+    , seed : Int
+    , e : String
+    }
 
 
 init : () -> ( Model, Cmd Msg )
@@ -61,27 +69,28 @@ init _ =
                     "On"
                     "Turtles"
                     "Turtles All the way"
-                    -1
-                    False
                     Expanded
+                    False
+                    -1
+                    -1
                 )
 
         startingStep =
             Tree.singleton
-                (Step "Starting Operation" "y=mx+b" "notesnotesnotes" 0 False Standalone)
+                (Step "Starting Operation" "y=mx+b" "notesnotesnotes" Standalone False 0 0)
 
         zip =
             root
                 |> Tree.insert startingStep
                 |> Zipper.fromTree
     in
-    ( zip
+    ( { steps = zip, seed = 1, e = "None yet!" }
     , Cmd.batch <| List.map katexStep (Zipper.openAll zip)
     )
 
 
 
---
+----------------- UPDATE -----------------
 
 
 subscriptions : Model -> Sub Msg
@@ -89,21 +98,9 @@ subscriptions _ =
     Sub.none
 
 
-type Msg
-    = EditStep (Zipper Step)
-    | RenderStep (Zipper Step)
-    | OperationText (Zipper Step) String
-    | EquationText (Zipper Step) String
-    | NotesText (Zipper Step) String
-    | ConsecutiveStep (Zipper Step)
-    | NewProcessStep (Zipper Step)
-    | ToggleProcess (Zipper Step)
-    | RenderAll
-
-
 blankStep : Step
 blankStep =
-    Step "operation" "equation" "notes notes notes" 0 False Standalone
+    Step "operation" "equation" "notes notes notes" Standalone False -1 0
 
 
 upOrRoot : Zipper a -> Zipper a
@@ -129,10 +126,10 @@ mapChildren f zip =
         |> List.foldl Zipper.insert (deleteChildren zip)
 
 
-incrementGreater : Int -> { a | id : Int } -> { a | id : Int }
+incrementGreater : Int -> { a | equationLabel : Int } -> { a | equationLabel : Int }
 incrementGreater start a =
-    if start <= a.id then
-        { a | id = a.id + 1 }
+    if start <= a.equationLabel then
+        { a | equationLabel = a.equationLabel + 1 }
 
     else
         a
@@ -140,9 +137,9 @@ incrementGreater start a =
 
 nest : Step -> Zipper Step -> Zipper Step
 nest step zip =
-    mapChildren (incrementGreater step.id) zip
+    mapChildren (incrementGreater step.equationLabel) zip
         |> Zipper.insert (Tree.singleton step)
-        |> Zipper.update (Tree.sortBy .id)
+        |> Zipper.update (Tree.sortBy .equationLabel)
 
 
 insertBelow : Step -> Zipper Step -> Zipper Step
@@ -150,71 +147,170 @@ insertBelow step zip =
     nest step (upOrRoot zip)
 
 
+
+-- ID Management
+
+
+trace : Zipper Step -> IdPath
+trace zip =
+    List.drop 1 <| Zipper.getPath .id zip
+
+
+dive : IdPath -> Zipper { a | id : Int } -> Result String (Zipper { a | id : Int })
+dive path zip =
+    Zipper.openPath (\a b -> a == b.id) path zip
+
+
+incrementId : Model -> ( Zipper Step, Cmd Msg ) -> ( Model, Cmd Msg )
+incrementId model ( zip, cmd ) =
+    ( { model | steps = zip, seed = model.seed + 1 }, cmd )
+
+
+wrapModel : Model -> ( Zipper Step, Cmd Msg ) -> ( Model, Cmd Msg )
+wrapModel model ( zip, cmd ) =
+    ( { model | steps = zip }, cmd )
+
+
+
+-- update
+
+
+type Msg
+    = NewProcessStep IdPath
+    | NewConsecutiveStep IdPath
+    | ToggleProcess IdPath
+    | EditStep IdPath
+    | OperationText IdPath String
+    | EquationText IdPath String
+    | NotesText IdPath String
+    | RenderStep IdPath
+    | RenderAll
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        EditStep zip ->
-            zip
-                |> Zipper.map (\a -> { a | edit = False })
-                |> Zipper.updateItem (\a -> { a | edit = True })
-                |> (\z -> ( Zipper.root z, Cmd.none ))
+        NewProcessStep parentPath ->
+            case dive parentPath model.steps of
+                Ok parent ->
+                    parent
+                        |> Zipper.map (\s -> { s | edit = False })
+                        |> Zipper.updateItem (\s -> { s | process = Expanded })
+                        |> nest
+                            { blankStep
+                                | id = model.seed
+                                , equationLabel = List.length <| Zipper.children parent
+                            }
+                        |> upOrRoot
+                        |> (\z -> ( Zipper.root z, katexStep z ))
+                        |> incrementId model
 
-        RenderStep zip ->
-            zip
-                |> Zipper.updateItem (\s -> { s | edit = False })
-                |> (\z -> ( Zipper.root z, katexStep z ))
+                Err error ->
+                    ( { model | e = error }, Cmd.none )
 
-        OperationText zip newOp ->
-            zip
-                |> Zipper.updateItem (\s -> { s | operation = newOp })
-                |> (\z -> ( Zipper.root z, Cmd.none ))
+        NewConsecutiveStep siblingPath ->
+            case dive siblingPath model.steps of
+                Ok sibling ->
+                    sibling
+                        |> Zipper.map (\s -> { s | edit = False })
+                        |> insertBelow
+                            { blankStep
+                                | id = model.seed
+                                , equationLabel = 1 + (Zipper.current sibling).equationLabel
+                                , edit = True
+                                , equation = (Zipper.current sibling).equation
+                            }
+                        --check command
+                        |> upOrRoot
+                        |> (\z -> ( Zipper.root z, katexStep z ))
+                        |> incrementId model
 
-        EquationText zip newEq ->
-            zip
-                |> Zipper.updateItem (\s -> { s | equation = newEq })
-                |> (\z -> ( Zipper.root z, katexStep z ))
+                Err _ ->
+                    ( model, Cmd.none )
 
-        NotesText zip newNote ->
-            zip
-                |> Zipper.updateItem (\s -> { s | note = newNote })
-                |> (\z -> ( Zipper.root z, Cmd.none ))
+        ToggleProcess path ->
+            case dive path model.steps of
+                Ok zip ->
+                    case (Zipper.current zip).process of
+                        Standalone ->
+                            ( model, Cmd.none )
 
-        ConsecutiveStep zip ->
-            zip
-                |> Zipper.map (\s -> { s | edit = False })
-                |> insertBelow
-                    { blankStep
-                        | id = 1 + (Zipper.current zip).id
-                        , edit = True
-                        , equation = (Zipper.current zip).equation
-                    }
-                |> (\z -> ( Zipper.root z, Cmd.batch [ katexStep zip, katexStep z ] ))
+                        Expanded ->
+                            zip
+                                |> Zipper.updateItem
+                                    (\a -> { a | process = Collapsed })
+                                |> (\z ->
+                                        ( { model | steps = Zipper.root z }
+                                        , katexStep z
+                                        )
+                                   )
 
-        NewProcessStep parent ->
-            parent
-                |> Zipper.map (\s -> { s | edit = False })
-                |> Zipper.updateItem (\s -> { s | process = Expanded })
-                |> nest { blankStep | id = List.length <| Zipper.children parent }
-                |> (\z -> ( Zipper.root z, katexStep z ))
+                        Collapsed ->
+                            zip
+                                |> Zipper.updateItem (\a -> { a | process = Expanded })
+                                |> (\z -> ( { model | steps = Zipper.root z }, katexStep z ))
 
-        ToggleProcess zip ->
-            case (Zipper.current zip).process of
-                Standalone ->
+                Err _ ->
+                    ( model, Cmd.none )
+
+        EditStep path ->
+            case dive path model.steps of
+                Ok zip ->
                     zip
+                        |> Zipper.map (\a -> { a | edit = False })
+                        |> Zipper.updateItem (\a -> { a | edit = True })
+                        |> (\z -> ( Zipper.root z, katexStep z ))
+                        |> wrapModel model
+
+                Err _ ->
+                    ( model, Cmd.none )
+
+        OperationText path newText ->
+            case dive path model.steps of
+                Ok zip ->
+                    zip
+                        |> Zipper.updateItem (\s -> { s | operation = newText })
                         |> (\z -> ( Zipper.root z, Cmd.none ))
+                        |> wrapModel model
 
-                Expanded ->
-                    zip
-                        |> Zipper.updateItem (\a -> { a | process = Collapsed })
-                        |> (\z -> ( Zipper.root z, katexStep z ))
+                Err _ ->
+                    ( model, Cmd.none )
 
-                Collapsed ->
+        EquationText path newEq ->
+            case dive path model.steps of
+                Ok zip ->
                     zip
-                        |> Zipper.updateItem (\a -> { a | process = Expanded })
+                        |> Zipper.updateItem (\s -> { s | equation = newEq })
                         |> (\z -> ( Zipper.root z, katexStep z ))
+                        |> wrapModel model
+
+                Err _ ->
+                    ( model, Cmd.none )
+
+        NotesText path newNote ->
+            case dive path model.steps of
+                Ok zip ->
+                    zip
+                        |> Zipper.updateItem (\s -> { s | note = newNote })
+                        |> (\z -> ( Zipper.root z, Cmd.none ))
+                        |> wrapModel model
+
+                Err _ ->
+                    ( model, Cmd.none )
+
+        RenderStep path ->
+            case dive path model.steps of
+                Ok zip ->
+                    zip
+                        |> Zipper.updateItem (\s -> { s | edit = False })
+                        |> (\z -> ( Zipper.root z, katexStep z ))
+                        |> wrapModel model
+
+                Err _ ->
+                    ( model, Cmd.none )
 
         RenderAll ->
-            ( model, Cmd.batch <| List.map katexStep (Zipper.openAll model) )
+            ( model, katexStep model.steps )
 
 
 
@@ -233,7 +329,7 @@ paperColor =
 
 shadowColor : Color
 shadowColor =
-    rgb 0.6 0.6 0.7
+    rgb 0.5 0.5 0.5
 
 
 viewProcess : Zipper Step -> List (Element Msg)
@@ -258,21 +354,21 @@ viewProcessIcon zip =
         Standalone ->
             -- plain step
             Input.button [ a ]
-                { onPress = Just <| NewProcessStep zip
+                { onPress = Just <| NewProcessStep (trace zip)
                 , label = text "[^]"
                 }
 
         Expanded ->
             -- step has a process that we are showing
             Input.button [ a ]
-                { onPress = Just <| NewProcessStep zip
+                { onPress = Just <| NewProcessStep (trace zip)
                 , label = text "[^]"
                 }
 
         Collapsed ->
             -- there is a process that we could show
             Input.button [ a ]
-                { onPress = Just <| ToggleProcess zip
+                { onPress = Just <| ToggleProcess (trace zip)
                 , label = text "[+]"
                 }
 
@@ -287,7 +383,7 @@ viewOperation zip =
                   <|
                     text (Zipper.current zip).operation
                 , Input.button [ Font.family [ Font.monospace ] ]
-                    { onPress = Just <| ToggleProcess zip
+                    { onPress = Just <| ToggleProcess (trace zip)
                     , label = text "[-]"
                     }
                 ]
@@ -299,7 +395,7 @@ viewOperation zip =
                 [ el
                     [ Font.bold
                     , Font.family [ Font.typeface "Computer Modern", Font.serif ]
-                    , Event.onDoubleClick <| EditStep zip
+                    , Event.onDoubleClick <| EditStep (trace zip)
                     ]
                     (text (Zipper.current zip).operation)
                 , viewProcessIcon zip
@@ -308,10 +404,10 @@ viewOperation zip =
         ]
 
 
-katexPlaceholder : Zipper Step -> Element Msg
-katexPlaceholder zip =
+katexPlaceholder : Int -> Element Msg
+katexPlaceholder id =
     html <|
-        Html.span [ Html.Attributes.id <| labelEquation zip ] []
+        Html.span [ Html.Attributes.id <| String.fromInt id ] []
 
 
 viewKatexEquation : Zipper Step -> Element Msg
@@ -321,7 +417,7 @@ viewKatexEquation zip =
         [ -- leave empty so that KaTex can fill in (perhaps it would be better to use the autorender extension?)
           el
             [ centerX ]
-            (katexPlaceholder zip)
+            (katexPlaceholder <| .id <| Zipper.current zip)
 
         -- equation label
         , el [ alignRight ] (el [ width <| px 100, alignLeft ] <| text <| labelEquation zip)
@@ -377,8 +473,8 @@ card zip =
         [ width fill
         , spacing 20
         , Backround.color paperColor
-        , Border.rounded 30
-        , Border.shadow { blur = 4, color = shadowColor, offset = ( 1, 2 ), size = 1 }
+        , Border.rounded 20
+        , Border.shadow { blur = 0, color = shadowColor, offset = ( 0, 0 ), size = 1 }
         ]
         (viewStep zip)
 
@@ -396,30 +492,30 @@ editStep zip =
           else
             none
         , Input.button [ Font.family [ Font.monospace ] ]
-            { onPress = Just <| RenderStep zip
+            { onPress = Just <| RenderStep (trace zip)
             , label = text "[x]"
             }
         , Input.button [ Font.family [ Font.monospace ] ]
-            { onPress = Just <| ConsecutiveStep zip
+            { onPress = Just <| NewConsecutiveStep (trace zip)
             , label = text "[=]"
             }
         , Input.multiline []
-            { onChange = OperationText zip
+            { onChange = OperationText (trace zip)
             , text = step.operation
             , placeholder = Nothing
             , label = Input.labelAbove [] <| text "Operation"
             , spellcheck = True
             }
-        , el [ centerX ] (katexPlaceholder zip)
+        , el [ centerX ] (katexPlaceholder step.id)
         , Input.multiline []
-            { onChange = EquationText zip
+            { onChange = EquationText (trace zip)
             , text = step.equation
             , placeholder = Just <| Input.placeholder [] <| text "Equation"
             , label = Input.labelRight [ centerY ] <| text <| "Equation " ++ labelEquation zip
             , spellcheck = False
             }
         , Input.multiline []
-            { onChange = NotesText zip
+            { onChange = NotesText (trace zip)
             , text = step.note
             , placeholder = Nothing
             , label = Input.labelAbove [] <| text "notes"
@@ -431,13 +527,13 @@ editStep zip =
 labelEquation : Zipper Step -> String
 labelEquation zip =
     if Zipper.isRoot zip then
-        --gets rid of the root node id
+        --gets rid of the root node equationLabel
         "Turtle Shell"
 
     else
         zip
-            -- get id path to current node
-            |> Zipper.getPath .id
+            -- get equationLabel path to current node
+            |> Zipper.getPath .equationLabel
             -- drop off the root node (it is never rendered)
             |> List.drop 1
             -- start counting at 1 instead of 0
@@ -459,13 +555,14 @@ view model =
             , spacing 20
             ]
             (List.concat
-                [ model
+                [ model.steps
                     |> viewProcess
                 , [ Input.button [ Border.width 4 ]
                         { label = text "Render"
                         , onPress = Just <| RenderAll
                         }
                   ]
+                , [ text model.e ]
                 ]
             )
         )
@@ -473,26 +570,28 @@ view model =
 
 katexStep : Zipper Step -> Cmd msg
 katexStep zip =
-    case (Zipper.current zip).process of
-        Standalone ->
-            katexRenderEquation zip
+    let
+        step =
+            Zipper.current zip
 
-        Collapsed ->
-            katexRenderEquation zip
+        children =
+            Zipper.openAll zip
+    in
+    Cmd.batch
+        (katexRenderEquation step
+            :: (if step.process == Expanded then
+                    List.map katexStep children
 
-        Expanded ->
-            case Zipper.openAll zip of
-                [] ->
-                    katexRenderEquation zip
-
-                children ->
-                    Cmd.batch (katexRenderEquation zip :: List.map katexStep children)
+                else
+                    [ Cmd.none ]
+               )
+        )
 
 
-katexRenderEquation : Zipper Step -> Cmd msg
-katexRenderEquation zip =
+katexRenderEquation : Step -> Cmd msg
+katexRenderEquation step =
     render <|
-        E.object
-            [ ( "id", E.string (zip |> labelEquation) )
-            , ( "eq", E.string (zip |> Zipper.current |> .equation) )
+        Encode.object
+            [ ( "id", Encode.string <| String.fromInt step.id )
+            , ( "eq", Encode.string step.equation )
             ]

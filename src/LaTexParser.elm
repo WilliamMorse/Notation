@@ -13,7 +13,7 @@ type alias Point =
 
 type alias LatexCommand a =
     { latex : String
-    , parser : Parser Node
+    , parser : Parser a
     , name : String
     }
 
@@ -26,7 +26,7 @@ type alias Equation =
 
 type alias Operation =
     { descritption : List String -- these stay static
-    , args : List Zipper Node -- These change with the whims of the operation
+    , args : List Node -- These change with the whims of the operation
     }
 
 
