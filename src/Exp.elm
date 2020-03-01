@@ -14,12 +14,12 @@ import Element.Font as Font
 import Element.Input as Input
 import Html exposing (Html)
 import Html.Attributes
-import Json.Encode as E
+import Json.Encode as Encode
 import Lazy.Tree as Tree exposing (Tree(..))
 import Lazy.Tree.Zipper as Zipper exposing (Zipper)
 
 
-port render : E.Value -> Cmd msg
+port render : Encode.Value -> Cmd msg
 
 
 main : Program () Model Msg
@@ -201,6 +201,7 @@ update msg model =
                                 | id = model.seed
                                 , equationLabel = List.length <| Zipper.children parent
                             }
+                        |> upOrRoot
                         |> (\z -> ( Zipper.root z, katexStep z ))
                         |> incrementId model
 
@@ -220,7 +221,8 @@ update msg model =
                                 , equation = (Zipper.current sibling).equation
                             }
                         --check command
-                        |> (\z -> ( Zipper.root z, Cmd.batch [ katexStep sibling, katexStep z ] ))
+                        |> upOrRoot
+                        |> (\z -> ( Zipper.root z, katexStep z ))
                         |> incrementId model
 
                 Err _ ->
@@ -235,8 +237,13 @@ update msg model =
 
                         Expanded ->
                             zip
-                                |> Zipper.updateItem (\a -> { a | process = Collapsed })
-                                |> (\z -> ( { model | steps = Zipper.root z }, katexStep z ))
+                                |> Zipper.updateItem
+                                    (\a -> { a | process = Collapsed })
+                                |> (\z ->
+                                        ( { model | steps = Zipper.root z }
+                                        , katexStep z
+                                        )
+                                   )
 
                         Collapsed ->
                             zip
@@ -322,7 +329,7 @@ paperColor =
 
 shadowColor : Color
 shadowColor =
-    rgb 0.6 0.6 0.7
+    rgb 0.5 0.5 0.5
 
 
 viewProcess : Zipper Step -> List (Element Msg)
@@ -466,8 +473,8 @@ card zip =
         [ width fill
         , spacing 20
         , Backround.color paperColor
-        , Border.rounded 30
-        , Border.shadow { blur = 4, color = shadowColor, offset = ( 1, 2 ), size = 1 }
+        , Border.rounded 20
+        , Border.shadow { blur = 0, color = shadowColor, offset = ( 0, 0 ), size = 1 }
         ]
         (viewStep zip)
 
@@ -584,7 +591,7 @@ katexStep zip =
 katexRenderEquation : Step -> Cmd msg
 katexRenderEquation step =
     render <|
-        E.object
-            [ ( "id", E.string <| String.fromInt step.id )
-            , ( "eq", E.string step.equation )
+        Encode.object
+            [ ( "id", Encode.string <| String.fromInt step.id )
+            , ( "eq", Encode.string step.equation )
             ]

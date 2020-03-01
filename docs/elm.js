@@ -5774,30 +5774,31 @@ var $author$project$Exp$update = F2(
 								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z),
 								$author$project$Exp$katexStep(z));
 						}(
-							A2(
-								$author$project$Exp$nest,
-								_Utils_update(
-									$author$project$Exp$blankStep,
-									{
-										equationLabel: $elm$core$List$length(
-											$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$children(parent)),
-										id: model.seed
-									}),
+							$author$project$Exp$upOrRoot(
 								A2(
-									$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
-									function (s) {
-										return _Utils_update(
-											s,
-											{process: $author$project$Exp$Expanded});
-									},
+									$author$project$Exp$nest,
+									_Utils_update(
+										$author$project$Exp$blankStep,
+										{
+											equationLabel: $elm$core$List$length(
+												$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$children(parent)),
+											id: model.seed
+										}),
 									A2(
-										$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$map,
+										$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$updateItem,
 										function (s) {
 											return _Utils_update(
 												s,
-												{edit: false});
+												{process: $author$project$Exp$Expanded});
 										},
-										parent)))));
+										A2(
+											$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$map,
+											function (s) {
+												return _Utils_update(
+													s,
+													{edit: false});
+											},
+											parent))))));
 				} else {
 					var error = _v1.a;
 					return _Utils_Tuple2(
@@ -5817,31 +5818,27 @@ var $author$project$Exp$update = F2(
 						function (z) {
 							return _Utils_Tuple2(
 								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$root(z),
-								$elm$core$Platform$Cmd$batch(
-									_List_fromArray(
-										[
-											$author$project$Exp$katexStep(sibling),
-											$author$project$Exp$katexStep(z)
-										])));
+								$author$project$Exp$katexStep(z));
 						}(
-							A2(
-								$author$project$Exp$insertBelow,
-								_Utils_update(
-									$author$project$Exp$blankStep,
-									{
-										edit: true,
-										equation: $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(sibling).equation,
-										equationLabel: 1 + $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(sibling).equationLabel,
-										id: model.seed
-									}),
+							$author$project$Exp$upOrRoot(
 								A2(
-									$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$map,
-									function (s) {
-										return _Utils_update(
-											s,
-											{edit: false});
-									},
-									sibling))));
+									$author$project$Exp$insertBelow,
+									_Utils_update(
+										$author$project$Exp$blankStep,
+										{
+											edit: true,
+											equation: $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(sibling).equation,
+											equationLabel: 1 + $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(sibling).equationLabel,
+											id: model.seed
+										}),
+									A2(
+										$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$map,
+										function (s) {
+											return _Utils_update(
+												s,
+												{edit: false});
+										},
+										sibling)))));
 				} else {
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
@@ -13300,7 +13297,7 @@ var $mdgriffith$elm_ui$Element$Border$shadow = function (almostShade) {
 			'box-shadow',
 			$mdgriffith$elm_ui$Internal$Model$formatBoxShadow(shade)));
 };
-var $author$project$Exp$shadowColor = A3($mdgriffith$elm_ui$Element$rgb, 0.6, 0.6, 0.7);
+var $author$project$Exp$shadowColor = A3($mdgriffith$elm_ui$Element$rgb, 0.5, 0.5, 0.5);
 var $mdgriffith$elm_ui$Element$Font$typeface = $mdgriffith$elm_ui$Internal$Model$Typeface;
 var $mdgriffith$elm_ui$Internal$Model$Left = {$: 'Left'};
 var $mdgriffith$elm_ui$Element$alignLeft = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$Left);
@@ -13411,12 +13408,12 @@ var $author$project$Exp$card = function (zip) {
 				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
 				$mdgriffith$elm_ui$Element$spacing(20),
 				$mdgriffith$elm_ui$Element$Background$color($author$project$Exp$paperColor),
-				$mdgriffith$elm_ui$Element$Border$rounded(30),
+				$mdgriffith$elm_ui$Element$Border$rounded(20),
 				$mdgriffith$elm_ui$Element$Border$shadow(
 				{
-					blur: 4,
+					blur: 0,
 					color: $author$project$Exp$shadowColor,
-					offset: _Utils_Tuple2(1, 2),
+					offset: _Utils_Tuple2(0, 0),
 					size: 1
 				})
 			]),
