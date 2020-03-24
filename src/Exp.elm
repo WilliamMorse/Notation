@@ -6,6 +6,7 @@
 port module Exp exposing (Model, Msg(..), Process(..), Step, blankStep, edges, editStep, init, insertBelow, labelEquation, main, nest, render, subscriptions, upOrRoot, update, view, viewKatexEquation, viewNote, viewOperation, viewProcess, viewProcessIcon, viewStep)
 
 import Browser
+import Browser.Events
 import Element exposing (..)
 import Element.Background as Backround
 import Element.Border as Border
@@ -14,6 +15,7 @@ import Element.Font as Font
 import Element.Input as Input
 import Html exposing (Html)
 import Html.Attributes
+import Json.Decode as Decode
 import Json.Encode as Encode
 import Lazy.Tree as Tree exposing (Tree(..))
 import Lazy.Tree.Zipper as Zipper exposing (Zipper)
@@ -485,7 +487,7 @@ editStep zip =
         step =
             Zipper.current zip
     in
-    column [ width fill, padding 20, spacing 10 ]
+    column [ width fill, padding 20, spacing 10, Font.family [ Font.typeface "Computer Modern", Font.serif ] ]
         [ if step.process == Expanded then
             none
 
@@ -595,3 +597,19 @@ katexRenderEquation step =
             [ ( "id", Encode.string <| String.fromInt step.id )
             , ( "eq", Encode.string step.equation )
             ]
+
+
+
+{--
+onShiftEnter : msg -> Sub msg
+onShiftEnter message =
+    let
+        a =
+            Browser.Events.onKeyPress
+                (Decode.map2
+                    (Decode.field "shiftKey" Decode.bool)
+                    (Decode.field "enterKey" Decode.bool)
+                )
+    in
+    Sub.none
+--}
