@@ -395,7 +395,6 @@ viewOperation zip =
                 [ el
                     [ Font.bold
                     , Font.family [ Font.typeface "Computer Modern", Font.serif ]
-                    , Event.onDoubleClick <| EditStep (trace zip)
                     ]
                     (text (Zipper.current zip).operation)
                 , viewProcessIcon zip
@@ -445,7 +444,16 @@ viewStep zip =
         editStep zip
 
     else
-        column [ width fill, spacing 6 ] <|
+        column
+            ([ width fill, spacing 6 ]
+                ++ (if step.process /= Expanded then
+                        [ Event.onDoubleClick <| EditStep (trace zip) ]
+
+                    else
+                        []
+                   )
+            )
+        <|
             List.concat
                 -- operation
                 [ viewOperation zip

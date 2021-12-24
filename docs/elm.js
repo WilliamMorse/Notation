@@ -13480,10 +13480,7 @@ var $author$project$Exp$viewOperation = function (zip) {
 										[
 											$mdgriffith$elm_ui$Element$Font$typeface('Computer Modern'),
 											$mdgriffith$elm_ui$Element$Font$serif
-										])),
-									$mdgriffith$elm_ui$Element$Events$onDoubleClick(
-									$author$project$Exp$EditStep(
-										$author$project$Exp$trace(zip)))
+										]))
 								]),
 							$mdgriffith$elm_ui$Element$text(
 								$turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(zip).operation)),
@@ -13504,11 +13501,18 @@ var $author$project$Exp$viewStep = function (zip) {
 	var step = $turboMaCk$lazy_tree_with_zipper$Lazy$Tree$Zipper$current(zip);
 	return step.edit ? $author$project$Exp$editStep(zip) : A2(
 		$mdgriffith$elm_ui$Element$column,
-		_List_fromArray(
-			[
-				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-				$mdgriffith$elm_ui$Element$spacing(6)
-			]),
+		_Utils_ap(
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+					$mdgriffith$elm_ui$Element$spacing(6)
+				]),
+			(!_Utils_eq(step.process, $author$project$Exp$Expanded)) ? _List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$Events$onDoubleClick(
+					$author$project$Exp$EditStep(
+						$author$project$Exp$trace(zip)))
+				]) : _List_Nil),
 		$elm$core$List$concat(
 			_List_fromArray(
 				[
